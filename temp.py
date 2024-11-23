@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import override
 
-from ScheduleSettings import ScheduleSettings
-from dt_useful import get_start_weekday, next_start_day
+from schedule_settings import ScheduleSettings
+from date_time_utils import get_start_weekday, next_start_day
 
 
 class Lesson:

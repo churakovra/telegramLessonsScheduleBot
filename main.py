@@ -8,8 +8,8 @@ from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 
 from config import Config
-from dt_useful import weekdays
-from message_templates import Strings as str
+from date_time_utils import weekdays
+from strings import Strings as str
 
 dp = Dispatcher()
 
