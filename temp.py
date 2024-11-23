@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import override
 
 from schedule_settings import ScheduleSettings
-from date_time_utils import get_start_weekday, next_start_day
+from datetime_utils import get_start_weekday, next_start_day
 
 
 class Lesson:

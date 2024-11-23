@@ -1,7 +1,5 @@
 import calendar
-import pytz
 from datetime import datetime, timedelta
-
 
 full_format: str = '%d.%m.%Y %H:%M:%S'
 day_format: str = '%d.%m.%Y'
@@ -40,16 +38,6 @@ def next_start_day(day: datetime) -> datetime:
     return next_day
 
 
-def get_day_schedule(day_callback: str):
-    weekday: int = int(day_callback[len(day_callback) - 1])
-    day: datetime = get_datetime_from_weekday(weekday)
-    lessons = get_day_lessons(day)
-    schedule = get_schedule(lessons)
-
-def get_schedule(lessons: list[datetime]) -> list[datetime]:
-    pass
-
-
 def get_datetime_from_weekday(weekday: int) -> datetime:
     cday = datetime.now()
     ccal = which_day(cday)
@@ -65,13 +53,3 @@ def get_datetime_from_weekday(weekday: int) -> datetime:
         if ccal == 5:
             day += timedelta(1)
         return day
-
-
-def get_day_lessons(day: datetime) -> list[datetime]:
-    # TODO get from dp lessons for day
-    pass
-
-
-
-ccal = calendar.weekday(datetime.now().year, datetime.now().month, datetime.now().day)
-print(ccal)
