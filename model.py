@@ -1,11 +1,12 @@
 from datetime import datetime
-
+from strings import Strings as s
 from aiogram.types import CallbackQuery
+from lesson import Lesson
 
+import datetime_utils
 import datetime_utils as dt
 import markups
 import schedule_db
-from strings import Strings as s
 
 
 async def send_select_day_message(callback: CallbackQuery):
@@ -28,10 +29,10 @@ def get_day_schedule(day_callback: str, cday: datetime):
     schedule = get_schedule(lessons)
 
 
-def get_schedule(lessons: list[datetime]) -> list[datetime]:
+def get_schedule(lessons: list[Lesson]) -> list[datetime]:
     pass
 
 
-def get_day_lessons(day: datetime) -> list[datetime]:
+def get_day_lessons(day: datetime) -> list[Lesson]:
     lessons = schedule_db.get_lessons(day)
-    pass
+    return lessons

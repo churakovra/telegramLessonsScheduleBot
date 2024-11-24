@@ -56,5 +56,15 @@ def get_datetime_from_weekday(weekday: int, cday: datetime) -> datetime:
 
 
 def get_datetime_from_string(str_datetime: str) -> datetime:
-    """date time in format day.month.year hour:minute"""
-    pass
+    """date time must be in format day.month.year hour:minute"""
+    day, month, year = str_datetime.split('.')
+    year, time = year.split(' ')
+    hour, minute = time.split(':')
+    dt = datetime(
+        year=int(year),
+        month=int(month),
+        day=int(day),
+        hour=int(hour),
+        minute=int(minute)
+    )
+    return dt
