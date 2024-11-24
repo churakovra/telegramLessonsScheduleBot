@@ -5,9 +5,8 @@ import sys
 from aiogram import Dispatcher, Bot, F
 from aiogram.filters import Command
 from aiogram.types import Message
-
+from schedule_config import TOKEN
 import model
-from config import Config
 from model import *
 from strings import Strings as s
 
@@ -36,7 +35,7 @@ async def get_day_schedule_handler(callback: CallbackQuery):
 
 
 async def main() -> None:
-    bot = Bot(token=Config.TOKEN)
+    bot = Bot(token=TOKEN)
     await dp.start_polling(bot)
 
 

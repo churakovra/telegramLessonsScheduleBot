@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 full_format: str = '%d.%m.%Y %H:%M:%S'
 day_format: str = '%d.%m.%Y'
+day_format_db: str = '_%d.%m.%Y_'
 time_format: str = '%H:%M:%S'
 
 weekdays = {
@@ -52,3 +53,8 @@ def get_datetime_from_weekday(weekday: int, cday: datetime) -> datetime:
         if ccal == calendar.SATURDAY:
             day += timedelta(1)
         return day
+
+
+def get_datetime_from_string(str_datetime: str) -> datetime:
+    """date time in format day.month.year hour:minute"""
+    pass

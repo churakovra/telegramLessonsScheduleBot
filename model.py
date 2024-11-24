@@ -4,6 +4,7 @@ from aiogram.types import CallbackQuery
 
 import datetime_utils as dt
 import markups
+import schedule_db
 from strings import Strings as s
 
 
@@ -26,10 +27,11 @@ def get_day_schedule(day_callback: str, cday: datetime):
     lessons = get_day_lessons(day)
     schedule = get_schedule(lessons)
 
+
 def get_schedule(lessons: list[datetime]) -> list[datetime]:
     pass
 
 
 def get_day_lessons(day: datetime) -> list[datetime]:
-    # TODO get from dp lessons for day
+    lessons = schedule_db.get_lessons(day)
     pass
