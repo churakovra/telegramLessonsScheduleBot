@@ -9,14 +9,14 @@ from aiogram.types import Message
 import model
 from config import Config
 from model import *
-from strings import Strings as str
+from strings import Strings as s
 
 dp = Dispatcher()
 
 
 @dp.message(Command('set_lesson'))
 async def set_lesson(message: Message):
-    message_text = str.GREETING
+    message_text = s.GREETING
     branch_markup = markups.get_set_types_markup()
     await message.answer(text=message_text, reply_markup=branch_markup)
 
@@ -24,10 +24,10 @@ async def set_lesson(message: Message):
 @dp.callback_query(F.data.startswith('branch_'))
 async def get_branch_handler(callback: CallbackQuery):
     match callback.data:
-        case str.CALLBACK_BRANCH_DAYS:
-            await send_select_day_message(callback)
-        case str.CALLBACK_BRANCH_MANUAL:
-            await send_set_manual_message(callback)
+        case s.CALLBACK_BRANCH_DAYS:
+            await model.send_select_day_message(callback)
+        case s.CALLBACK_BRANCH_MANUAL:
+            await model.send_set_manual_message(callback)
 
 
 @dp.callback_query(F.data.startswith('day_'))

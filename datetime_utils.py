@@ -38,18 +38,17 @@ def next_start_day(day: datetime) -> datetime:
     return next_day
 
 
-def get_datetime_from_weekday(weekday: int) -> datetime:
-    cday = datetime.now()
+def get_datetime_from_weekday(weekday: int, cday: datetime) -> datetime:
     ccal = which_day(cday)
-    if weekday > 6:
+    if weekday > calendar.FRIDAY or weekday < calendar.MONDAY:
         raise Exception
-    if ccal <= 4:
+    if ccal <= calendar.FRIDAY:
         # Получаем дату для дня на этой неделе
         day = cday + timedelta(days=weekday - ccal)
         return day
     else:
         # Получаем дату для дня на следующей неделе
         day = cday + timedelta(weekday + 1)
-        if ccal == 5:
+        if ccal == calendar.SATURDAY:
             day += timedelta(1)
         return day
