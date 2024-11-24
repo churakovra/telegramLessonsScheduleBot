@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from attr import dataclass
 
 
@@ -5,6 +7,6 @@ from attr import dataclass
 class Lesson:
     t_username: str
     s_username: str
-    datetime_start: str
-    datetime_end: str
+    datetime_start: datetime
+    datetime_end: datetime
     lesson_type: int = 0

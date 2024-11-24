@@ -33,6 +33,13 @@ def accurate_daytime(day: datetime) -> datetime:
     return day
 
 
+def curr_start_day(day: datetime) -> datetime:
+    wd = which_day(day)
+    start_day = day - timedelta(days=wd)
+    start_day = accurate_daytime(start_day)
+    return start_day
+
+
 def next_start_day(day: datetime) -> datetime:
     next_day = day + timedelta(days=1)
     next_day = accurate_daytime(next_day)
@@ -53,18 +60,3 @@ def get_datetime_from_weekday(weekday: int, cday: datetime) -> datetime:
         if ccal == calendar.SATURDAY:
             day += timedelta(1)
         return day
-
-
-def get_datetime_from_string(str_datetime: str) -> datetime:
-    """date time must be in format day.month.year hour:minute"""
-    day, month, year = str_datetime.split('.')
-    year, time = year.split(' ')
-    hour, minute = time.split(':')
-    dt = datetime(
-        year=int(year),
-        month=int(month),
-        day=int(day),
-        hour=int(hour),
-        minute=int(minute)
-    )
-    return dt

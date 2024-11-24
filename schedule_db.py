@@ -15,8 +15,8 @@ def set_lesson(lesson: Lesson):
                 't_username': lesson.t_username,
                 's_username': lesson.s_username,
                 'lesson_type': lesson.lesson_type,
-                'datetime_start': lesson.datetime_start,
-                'datetime_end': lesson.datetime_end
+                'datetime_start': lesson.datetime_start.strftime(datetime_utils.full_format),
+                'datetime_end': lesson.datetime_end.strftime(datetime_utils.full_format)
             }
         )
         cursor = conn.cursor()
@@ -42,17 +42,19 @@ def get_lessons(day: datetime) -> list[Lesson]:
         cursor = conn.cursor()
         execution = cursor.execute(
             """
-            select * from lessons l
+            select t_username, s_username, lesson_type, datetime_start, datetime_end 
+            from lessons l
             where l.datetime_start like :datetime_start
+            order by datetime_start desc
             """, day_db)
         for row in execution:
             lessons.append(
                 Lesson(
-                    t_username=row[1],
-                    s_username=row[2],
-                    lesson_type=row[3],
-                    datetime_start=row[4],
-                    datetime_end=row[5])
+                    t_username=row[0],
+                    s_username=row[1],
+                    lesson_type=row[2],
+                    datetime_start=datetime.strptime(row[3], datetime_utils.full_format),
+                    datetime_end=datetime.strptime(row[4], datetime_utils.full_format))
             )
         conn.commit()
     return lessons
