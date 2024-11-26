@@ -2,9 +2,15 @@ import calendar
 from datetime import datetime, timedelta
 
 full_format: str = '%d.%m.%Y %H:%M:%S'
+full_format_no_sec: str = '%d.%m.%Y %H:%M'
 day_format: str = '%d.%m.%Y'
 day_format_db: str = '_%d.%m.%Y_'
 time_format: str = '%H:%M:%S'
+
+h1 = timedelta(hours=1)
+h1_5 = timedelta(hours=1, minutes=30)
+m10 = timedelta(minutes=10)
+m30 = timedelta(minutes=30)
 
 weekdays = {
     0: 'Понедельник',

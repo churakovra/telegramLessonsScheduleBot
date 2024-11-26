@@ -15,8 +15,8 @@ def set_lesson(lesson: Lesson):
                 't_username': lesson.t_username,
                 's_username': lesson.s_username,
                 'lesson_type': lesson.lesson_type,
-                'datetime_start': lesson.datetime_start.strftime(datetime_utils.full_format),
-                'datetime_end': lesson.datetime_end.strftime(datetime_utils.full_format)
+                'datetime_start': lesson.datetime_start.strftime(datetime_utils.full_format_no_sec),
+                'datetime_end': lesson.datetime_end.strftime(datetime_utils.full_format_no_sec)
             }
         )
         cursor = conn.cursor()
@@ -53,8 +53,8 @@ def get_lessons(day: datetime) -> list[Lesson]:
                     t_username=row[0],
                     s_username=row[1],
                     lesson_type=row[2],
-                    datetime_start=datetime.strptime(row[3], datetime_utils.full_format),
-                    datetime_end=datetime.strptime(row[4], datetime_utils.full_format))
+                    datetime_start=datetime.strptime(row[3], datetime_utils.full_format_no_sec),
+                    datetime_end=datetime.strptime(row[4], datetime_utils.full_format_no_sec))
             )
         conn.commit()
     return lessons
