@@ -31,7 +31,7 @@ async def get_branch_handler(callback: CallbackQuery):
 
 @dp.callback_query(F.data.startswith('day_'))
 async def get_day_schedule_handler(callback: CallbackQuery):
-    await model.get_day_schedule(day_callback=callback.data, cday=callback.message.date)
+    await model.send_day_schedule(callback)
 
 
 async def main() -> None:
