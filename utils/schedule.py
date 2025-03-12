@@ -1,5 +1,5 @@
 from datetime import datetime
-from datetime_utils import h1, m10, accurate_daytime
+from utils.datetime_utils import h1, m10, accurate_daytime
 from gap import Gap
 from lesson import Lesson
 from schedule_settings import ScheduleSettings

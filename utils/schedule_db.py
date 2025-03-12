@@ -1,7 +1,7 @@
 import sqlite3
 from datetime import datetime
 
-import datetime_utils
+from utils import datetime_utils
 from lesson import Lesson
 from schedule_config import DB_PATH
 
