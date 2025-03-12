@@ -3,8 +3,8 @@ from datetime import datetime
 import aiogram.types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from datetime_utils import weekdays, which_day
-from strings import Strings as str
+from utils.datetime_utils import weekdays, which_day
+from utils.strings import Strings as str
 
 
 def get_set_types_markup() -> InlineKeyboardMarkup:

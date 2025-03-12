@@ -1,14 +1,11 @@
 from datetime import datetime
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
-from gap import Gap
-from lesson import Lesson
-from schedule import Schedule
-from strings import Strings as s
+from utils.lesson import Lesson
+from utils.schedule import Schedule
+from utils.strings import Strings as s
 
-import datetime_utils
-import datetime_utils as dt
-import markups
-import schedule_db
+from utils import datetime_utils, datetime_utils as dt, schedule_db
+from keyboards import markups
 
 
 async def send_select_day_message(callback: CallbackQuery):
