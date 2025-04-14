@@ -1,8 +1,8 @@
 from datetime import datetime
-from utils.datetime_utils import h1, m10, accurate_daytime
+from app.utils.datetime_utils import h1, m10, accurate_daytime
 from gap import Gap
-from lesson import Lesson
-from schedule_settings import ScheduleSettings
+from app.models.lesson import Lesson
+from app.config.schedule_settings import ScheduleSettings
 from schedule_db import get_lessons
 
 
@@ -10,7 +10,7 @@ class Schedule(ScheduleSettings):
     def __init__(self, cday: datetime):
         self.__schedule = self._create_schedule(cday)
 
-    def get_schedule(self) -> list[Lesson | Gap]:
+    def get_schedule(self) -> list[Lesson | Gap] | None:
         if self.__schedule is not None:
             return self.__schedule
 

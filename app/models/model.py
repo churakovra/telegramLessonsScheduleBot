@@ -1,16 +1,17 @@
 from datetime import datetime
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
-from utils.lesson import Lesson
-from utils.schedule import Schedule
-from utils.strings import Strings as s
+from app.models.lesson import Lesson
+from app.models.schedule import Schedule
+from app.utils.strings import Strings as s
 
-from utils import datetime_utils, datetime_utils as dt, schedule_db
-from keyboards import markups
+from app.utils import datetime_utils
+from app.utils import datetime_utils as dt, schedule_db
+from app.keyboards.get_weekdays_markup import get_weekdays
 
 
 async def send_select_day_message(callback: CallbackQuery):
     message_text = s.WEEKDAY
-    weekdays_markup = markups.get_weekdays_markup(callback.message.date)
+    weekdays_markup = get_weekdays(callback.message.date)
     await callback.message.edit_text(text=message_text, reply_markup=weekdays_markup)
     await callback.answer()
 
