@@ -5,10 +5,10 @@ import sys
 from aiogram import Dispatcher, Bot, F
 from aiogram.filters import Command
 from aiogram.types import Message
-from utils.schedule_config import TOKEN
-import model
-from model import *
-from utils.strings import Strings as s
+from app.config.schedule_config import TOKEN
+from app.models import model
+from app.models.model import *
+from app.utils.strings import Strings as s
 
 dp = Dispatcher()
 
@@ -42,3 +42,5 @@ async def main() -> None:
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)
     asyncio.run(main())
+
+print("Another test")
