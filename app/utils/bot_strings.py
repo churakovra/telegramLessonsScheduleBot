@@ -1,6 +1,8 @@
-from enum import Enum
+from dataclasses import dataclass
 
-class Strings():
+
+@dataclass
+class BotStrings:
     GREETING: str = "Привет! Я Дианусик Гудлаки, твой преподаватель английского✨ Нажми на кнопку и запишись на урок 🤌"
     WEEKDAY: str = "Выбери день недели:"
     DAY_LESSONS: str = "Выбери время из доступного:"
@@ -21,3 +23,4 @@ class Strings():
     CALLBACK_DAY_4: str = "day_4"
 
 
+bot_strings = BotStrings()
