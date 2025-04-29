@@ -1,0 +1,30 @@
+services:
+  telegram-bot:
+    build: .
+    container_name: aiogram_bot
+    restart: unless-stopped
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - DATABASE_URL=${DATABASE_URL}
+    depends_on:
+      - postgres
+    volumes:
+      - .:/app
+    command: python main.py
+
+  postgres:
+    image: postgres:14
+    container_name: scheduler_pg
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "scheduler_bt" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+

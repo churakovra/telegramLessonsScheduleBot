@@ -1,12 +1,9 @@
 from datetime import datetime
 
-from attr import dataclass
 
-
-@dataclass
 class Lesson:
-    t_username: str
-    s_username: str
-    datetime_start: datetime
-    datetime_end: datetime
-    lesson_type: int = 0
+    def __init__(self, id_teacher: int, id_student: int, id_lesson_type: int, datetime_start: datetime):
+        self.id_teacher = id_teacher
+        self.id_student = id_student
+        self.id_lesson_type = id_lesson_type
+        self.datetime_start = datetime_start
