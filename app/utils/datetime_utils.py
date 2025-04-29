@@ -13,11 +13,11 @@ m10 = timedelta(minutes=10)
 m30 = timedelta(minutes=30)
 
 WEEKDAYS = [
-    ["Monday", "monday", "понедельник", "пн", "пнд"],
-    ["Tuesday", "tuesday", "вторник", "вт"],
-    ["Wednesday", "wednesday", "среда", "ср"],
-    ["Thursday", "thursday", "четверг", "чт"],
-    ["Friday", "friday", "пятница", "пт"]
+    ["Monday", "monday", "Понедельник",  "понедельник", "пн", "пнд"],
+    ["Tuesday", "tuesday", "Вторник", "вторник", "вт"],
+    ["Wednesday", "wednesday", "Среда", "среда", "ср"],
+    ["Thursday", "thursday", "Четверг", "четверг", "чт"],
+    ["Friday", "friday", "Пятница", "пятница", "пт"]
 ]
 
 
