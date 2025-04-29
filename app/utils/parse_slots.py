@@ -20,11 +20,12 @@ def parse_slots(mt: str, mf: str) -> list[Slot]:
                     break
                 finally:
                     today = datetime.today()
-                    slot_date = (today + timedelta(days=7 - today.weekday() + weekday_index)).date()
-                    day_name = weekdays[0]
+                    slot_date = (today + timedelta(
+                        days=7 - today.weekday() + weekday_index)).date()  # Считаем дату слота
+                    day_name = weekdays[2]  # Название дня недели на русском из доступных в WEEKDAYS
                     slot = Slot(
                         teacher=mf,
-                        slot_date=slot_date,  # Изменить
+                        slot_date=slot_date,
                         day_name=day_name,
                         available_time=slots_time
                     )
