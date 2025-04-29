@@ -2,6 +2,7 @@ from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
+from app.keyboards.is_slots_correct import get_is_slots_correct_markup
 from app.states.schedule_states import ScheduleStates
 from app.utils.parse_slots import parse_slots
 
