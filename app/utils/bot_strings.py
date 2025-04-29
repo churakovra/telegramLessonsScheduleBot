@@ -22,5 +22,18 @@ class BotStrings:
     CALLBACK_DAY_3: str = "day_3"
     CALLBACK_DAY_4: str = "day_4"
 
+    PARSING_SLOTS_PROCESSING: str = "Получил, обрабатываю"
+    PARSING_SLOTS_SUCCESS: str = "Обработал!"
+
+
+    YES: str = "Да"
+    NO: str = "Нет"
+
+    CALLBACK_SLOTS_CORRECT: str = "slots_correct"
+    CALLBACK_SLOTS_INCORRECT: str = "slots_incorrect"
+
+    SLOTS_SUCCESS_ANSWER: str = "Отлично! Отправил окошки ученикам 🤝"
+    SLOTS_FAILURE_ANSWER: str = "Отправьте окошки еще раз"
+
 
 bot_strings = BotStrings()
