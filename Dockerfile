@@ -1,6 +1,11 @@
 FROM python:3.13-slim
 LABEL authors="churakovra"
-WORKDIR /app
-COPY . .
+
+WORKDIR /bot
+
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-CMD ["python3", "main.py"]
+
+COPY . .
+
+CMD ["python3", "-m", "app.main"]

@@ -5,25 +5,33 @@ services:
     restart: unless-stopped
     environment:
       - BOT_TOKEN=${BOT_TOKEN}
-      - DATABASE_URL=${DATABASE_URL}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
     depends_on:
-      - postgres
-    volumes:
-      - .:/app
-    command: python main.py
+      scheduler_pg:
+        condition: service_healthy
 
-  postgres:
-    image: postgres:14
+    volumes:
+      - .:/bot
+    command: python -m app.main
+
+  scheduler_pg:
+    image: postgres:15-alpine
     container_name: scheduler_pg
     restart: always
+    env_file:
+      - .env
     environment:
+      - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
     ports:
       - "5432:5432"
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "scheduler_bt" ]
+      test: [ "CMD", "pg_isready", "-U", "scheduler_bt", "-d", "scheduler_db" ]
       interval: 10s
       timeout: 5s
       retries: 5
