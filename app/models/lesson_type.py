@@ -11,4 +11,4 @@ class LessonType(Base):
     name: Mapped[str]
     duration: Mapped[float]
 
-    lessons: Mapped[List["Lesson"]] = relationship(back_populates="")
+    lessons: Mapped[List["Lesson"]] = relationship(back_populates="lesson_type")
