@@ -4,6 +4,7 @@ from typing import Optional
 from sqlalchemy import String, DATETIME
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from app.models.admin import Admin
 from app.models.base import Base
 from app.models.student import Student
 from app.models.teacher import Teacher
