@@ -10,5 +10,6 @@ class Teacher(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     username = mapped_column(ForeignKey("users.username"))
+    notifications: Mapped[bool]
 
     user: Mapped[User] = relationship(back_populates="username")
