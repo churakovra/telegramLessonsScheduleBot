@@ -3,6 +3,8 @@ from typing import List
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
+from app.models.lesson import Lesson
+
 
 class LessonType(Base):
     __tablename__ = "lesson_types"
