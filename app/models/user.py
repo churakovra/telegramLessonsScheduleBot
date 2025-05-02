@@ -5,6 +5,7 @@ from sqlalchemy import String, DATETIME
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
+from app.models.teacher import Teacher
 
 
 class User(Base):
