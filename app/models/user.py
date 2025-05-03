@@ -19,7 +19,7 @@ class User(Base):
     username: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     firstname: Mapped[str] = mapped_column(String)
     lastname: Mapped[str | None] = mapped_column(String)
-    dt_reg: Mapped[datetime] = mapped_column(default=datetime.now())
+    dt_reg: Mapped[datetime] = mapped_column(default=datetime.now)
 
     teacher: Mapped["Teacher"] = relationship(back_populates="user", uselist=False)
     student: Mapped["Student"] = relationship(back_populates="user", uselist=False)
