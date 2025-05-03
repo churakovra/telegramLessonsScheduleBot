@@ -17,8 +17,8 @@ class Lesson(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     id_teacher: Mapped[int] = mapped_column(ForeignKey("teachers.id"), nullable=False)
-    id_student: Mapped[int] = mapped_column(ForeignKey("students.id"), nullable=False)
-    id_lesson_type: Mapped[int] = mapped_column(ForeignKey("lesson_types.id"), nullable=False)
+    id_student: Mapped[int] = mapped_column(ForeignKey("students.id"), nullable=True)
+    id_lesson_type: Mapped[int] = mapped_column(ForeignKey("lesson_types.id"), nullable=True)
     dt_start: Mapped[datetime] = mapped_column(nullable=False)
 
     teacher: Mapped["Teacher"] = relationship(back_populates="lessons")
