@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 @dataclass
 class BotStrings:
-    GREETING: str = "Привет! Я Дианусик Гудлаки, твой преподаватель английского✨ Нажми на кнопку и запишись на урок 🤌"
+    GREETING: str = "Привет! Я помощник Дианы, буду отправлять тебе окошки каждую неделю. До встречи на тансполе, там 🍸 в 🥤"
     WEEKDAY: str = "Выбери день недели:"
     DAY_LESSONS: str = "Выбери время из доступного:"
     DURATION: str = "Выбери продолжительность урока:"
@@ -25,9 +25,11 @@ class BotStrings:
     PARSING_SLOTS_PROCESSING: str = "Получил, обрабатываю"
     PARSING_SLOTS_SUCCESS: str = "Обработал!"
 
-
     YES: str = "Да"
     NO: str = "Нет"
+
+    INFO: str = "Информация"
+    CALLBACK_INFO: str = "info"
 
     CALLBACK_SLOTS_CORRECT: str = "slots_correct"
     CALLBACK_SLOTS_INCORRECT: str = "slots_incorrect"
