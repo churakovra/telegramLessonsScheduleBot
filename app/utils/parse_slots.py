@@ -5,7 +5,7 @@ from app.models.teacher_slot import Slot
 from app.utils.datetime_utils import WEEKDAYS
 
 
-async def parse_slots(mt: str, mf: str) -> list[Slot]:
+async def parse_slots(mt: str, mf: str) -> list[Slot] | None:
     raw_mt = [word.strip(string.punctuation) for word in mt.split()]
     res: list[Slot] = list()
     for index, word in enumerate(raw_mt):
