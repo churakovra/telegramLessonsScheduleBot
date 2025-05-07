@@ -8,8 +8,8 @@ def get_menu_markup() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.add(
         InlineKeyboardButton(
-            text=bt.INFO,
-            callback_data=bt.CALLBACK_INFO
+            text=bt.USER_INFO,
+            callback_data=bt.CALLBACK_USER_INFO
         )
     )
     return builder.as_markup()
