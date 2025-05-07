@@ -8,7 +8,7 @@ from app.database import SessionLocal
 from app.utils.make_user_info_response import make_user_info_response
 
 
-async def get_user_info(username: str) -> str:
+async def get_user_info_from_db(username: str) -> str:
     user_stmt = select(User).where(User.username==username)
     with SessionLocal.begin() as session:
         user = session.scalar(user_stmt)
