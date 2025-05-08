@@ -7,6 +7,8 @@ from app.states.schedule_states import ScheduleStates
 
 router = Router()
 
+roles = BotValues.UserRoles
+
 
 @router.message(Command("new_schedule"))
 async def set_new_schedule(message: Message, state: FSMContext):
