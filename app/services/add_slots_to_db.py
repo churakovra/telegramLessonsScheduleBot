@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy import select
 
 from app.models.teacher_slot import Slot
@@ -22,4 +24,4 @@ async def add_slots(slots: list[Slot]):
             return
         for slot in slots:
             for slot_dt in slot.available_time:
-                session.add(Lesson(teacher=teacher, dt_start=slot_dt))
+                session.add(Lesson(teacher=teacher, dt_start=datetime.combine(slot.slot_date, slot_dt)))
