@@ -6,4 +6,4 @@ roles = BotValues.UserRoles
 
 async def check_user_status(username: str, expected_status: roles):
     user_status = await get_user_status(username)
-    return user_status == expected_status
+    return expected_status in user_status
