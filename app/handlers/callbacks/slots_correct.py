@@ -17,4 +17,6 @@ async def reply_and_save_to_db(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     slots = data.get("parsed_lessons")
     await add_slots(slots)
+    await state.set_state(ScheduleStates.wait_slots_send)
+    await state.update_data(slots=slots)
     await callback.answer()
