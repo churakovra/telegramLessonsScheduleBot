@@ -1,7 +1,7 @@
 import string
 from datetime import datetime, timedelta
 
-from app.models.teacher_slot import Slot
+from app.models.orm.teacher_slot import Slot
 from app.utils.datetime_utils import WEEKDAYS
 
 

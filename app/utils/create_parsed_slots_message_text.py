@@ -1,4 +1,4 @@
-from app.models.teacher_slot import Slot
+from app.models.orm.teacher_slot import Slot
 
 
 def create_parsed_slots_message_text(parsed_lessons: list[Slot]) -> str:

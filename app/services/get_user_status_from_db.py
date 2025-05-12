@@ -1,13 +1,10 @@
 from sqlalchemy import select
 
 from app.database import SessionLocal
-from app.models.admin import Admin
-from app.models.student import Student
-from app.models.teacher import Teacher
-from app.models.user import User
-
-from app.models.lesson_type import LessonType
-from app.models.lesson import Lesson
+from app.models.orm.admin import Admin
+from app.models.orm.student import Student
+from app.models.orm.teacher import Teacher
+from app.models.orm.user import User
 
 from app.utils.bot_values import BotValues
 

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from app.models.user import User
+from app.models.orm.user import User
 
 
 @dataclass
