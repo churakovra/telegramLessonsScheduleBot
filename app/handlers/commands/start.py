@@ -4,7 +4,7 @@ from aiogram.types import Message
 from sqlalchemy.exc import IntegrityError
 
 from app.keyboards.menu_markup import get_menu_markup
-from app.models.user import User
+from app.models.orm.user import User
 from app.services.add_new_user_to_db import add_user
 from app.utils.bot_strings import bot_strings as bt
 

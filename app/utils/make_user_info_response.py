@@ -1,9 +1,8 @@
-from app.models.user import User
 from app.models.user_dto import UserDTO
 
 from app.utils.datetime_utils import day_format
 from app.utils.bot_strings import bot_strings as bt
-from app.utils.bot_values import BotValues as bv, BotValues
+from app.utils.bot_values import BotValues
 
 UserRoles = BotValues.UserRoles
 

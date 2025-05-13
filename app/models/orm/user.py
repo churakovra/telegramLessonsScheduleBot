@@ -4,12 +4,12 @@ from typing import TYPE_CHECKING
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import Base
+from app.models.orm.base import Base
 
 if TYPE_CHECKING:
-    from app.models.admin import Admin
-    from app.models.student import Student
-    from app.models.teacher import Teacher
+    from app.models.orm.admin import Admin
+    from app.models.orm.student import Student
+    from app.models.orm.teacher import Teacher
 
 
 class User(Base):

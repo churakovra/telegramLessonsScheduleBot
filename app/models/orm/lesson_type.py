@@ -3,8 +3,8 @@ from typing import List
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import Base
-from app.models.lesson import Lesson
+from app.models.orm.base import Base
+from app.models.orm.lesson import Lesson
 
 
 class LessonType(Base):

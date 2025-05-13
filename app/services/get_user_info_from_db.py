@@ -1,9 +1,6 @@
 from sqlalchemy import select
 
-from app.models.student import Student
-from app.models.teacher import Teacher
-from app.models.admin import Admin
-from app.models.user import User
+from app.models.orm.user import User
 from app.database import SessionLocal
 from app.utils.make_user_info_response import make_user_info_response
 

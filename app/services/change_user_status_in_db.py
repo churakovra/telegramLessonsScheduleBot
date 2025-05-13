@@ -1,12 +1,10 @@
-import asyncio
-
 from sqlalchemy import delete
 from sqlalchemy.exc import IntegrityError
 
 from app.database import SessionLocal
-from app.models.student import Student
-from app.models.teacher import Teacher
-from app.models.admin import Admin
+from app.models.orm.student import Student
+from app.models.orm.teacher import Teacher
+from app.models.orm.admin import Admin
 from app.services.get_user_from_db import get_user
 from app.utils.bot_values import BotValues as bv
 
