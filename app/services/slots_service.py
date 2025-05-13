@@ -1,11 +1,11 @@
 import string
 from datetime import datetime, timedelta
 
-from app.models.orm.teacher_slot import Slot
+from app.models.teacher_slot import Slot
 from app.utils.datetime_utils import WEEKDAYS
 
 
-class SlotService:
+class SlotsService:
     @staticmethod
     async def parse_slots(mt: str, mf: str) -> list[Slot] | None:
         raw_mt = [word.strip(string.punctuation) for word in mt.split()]
