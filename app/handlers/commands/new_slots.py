@@ -13,8 +13,8 @@ router = Router()
 roles = BotValues.UserRoles
 
 
-@router.message(Command("new_schedule"))
-async def set_new_schedule(message: Message, state: FSMContext):
+@router.message(Command("new_slots"))
+async def set_new_slots(message: Message, state: FSMContext):
     is_user_teacher = await check_user_status(message.from_user.username, roles.TEACHER)
 
     if not is_user_teacher:
