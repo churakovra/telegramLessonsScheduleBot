@@ -36,6 +36,10 @@ class SlotsService:
 
     @staticmethod
     def validate_slots(slots: list[Slot]) -> bool:
-        if isinstance(slots[0], Slot):
-            return True
-        return False
+        try:
+            if isinstance(slots[0], Slot):
+                return True
+        except IndexError:
+            return False
+        finally:
+            return False
