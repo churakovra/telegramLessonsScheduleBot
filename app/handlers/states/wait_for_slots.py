@@ -4,7 +4,7 @@ from aiogram.types import Message
 
 from app.keyboards.is_slots_correct import get_is_slots_correct_markup
 from app.states.schedule_states import ScheduleStates
-from app.use_cases.set_new_schedule import set_new_schedule_use_case
+from app.use_cases.set_new_slots import set_new_slots_use_case
 from app.utils.create_parsed_slots_message_text import create_parsed_slots_message_text
 
 router = Router()
@@ -14,7 +14,7 @@ router = Router()
 async def wait_for_slots(message: Message, state: FSMContext):
     slots_raw = message.text
     message_from = message.from_user.username
-    slots = await set_new_schedule_use_case(slots_raw, message_from)
+    slots = await set_new_slots_use_case(slots_raw, message_from)
 
     slots_reply = create_parsed_slots_message_text(slots)
     await message.answer(
