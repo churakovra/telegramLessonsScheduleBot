@@ -4,6 +4,7 @@ from sqlalchemy import delete, select
 from sqlalchemy.exc import IntegrityError
 
 from app.database import SessionLocal
+from app.exceptions.user_exceptions import AddUserError
 from app.models.orm.student import Student
 from app.models.orm.teacher import Teacher
 from app.models.orm.admin import Admin
@@ -11,7 +12,6 @@ from app.models.orm.user import User
 
 from app.models.orm.lesson_type import LessonType
 from app.models.orm.lesson import Lesson
-from app.services.user_service import UserService
 
 from app.utils.bot_values import BotValues
 from app.models.user_dto import UserDTO
@@ -21,33 +21,18 @@ roles = BotValues.UserRoles
 
 class UserRepo:
     @staticmethod
-    async def add_user(user: User):  # TODO make User inside
-        with SessionLocal.begin() as session:
-            session.add(user)
-            session.add(Student(user=user))
-
-    @staticmethod
-    async def change_user_status_in_db(initiator_user: str, teacher_username: str, new_status: roles) -> bool:
+    async def add_user(user: UserDTO):
         try:
+            user_orm = User(
+                username=user.username,
+                firstname=user.firstname,
+                lastname=user.lastname
+            )
             with SessionLocal.begin() as session:
-                delete_from_user_stmt = delete(Student).where(Student.username == teacher_username)
-
-                session.execute(delete_from_user_stmt)
-                user = await UserRepo.get_user(teacher_username, session)
-
-                match new_status:
-                    case roles.TEACHER:
-                        session.add(Teacher(user=user))
-                    case roles.ADMIN:
-                        session.add(Admin(user=user))
-                    case roles.STUDENT:
-                        session.add(Student(user=user))
-
+                session.add(user_orm)
+                session.add(Student(user=user_orm))
         except IntegrityError:
-            print(f"User {teacher_username} already exists at {new_status.name} table")
-            return False
-        return True
-        # TODO add log to db with initiator_user, dt of changing status etc
+            raise AddUserError
 
     @staticmethod
     async def get_user(username: str, session: Optional[SessionLocal]) -> User | UserDTO | None:
@@ -66,16 +51,6 @@ class UserRepo:
             return result_user
         except TypeError:
             return None
-
-    @staticmethod
-    async def get_user_info_from_db(username: str) -> str:
-        user_stmt = select(User).where(User.username == username)
-        with SessionLocal.begin() as session:
-            user = session.scalar(user_stmt)
-        if not user:
-            return "Такого не нашли"
-        result = UserService.make_user_info_response(user)
-        return result
 
     @staticmethod
     async def get_user_status(username: str) -> list[roles]:
@@ -100,3 +75,26 @@ class UserRepo:
             if len(res) > 0:
                 return res
             return [roles.NOT_DEFINED]
+
+    @staticmethod
+    async def change_user_status_in_db(initiator_user: str, teacher_username: str, new_status: roles) -> bool:
+        try:
+            with SessionLocal.begin() as session:
+                delete_from_user_stmt = delete(Student).where(Student.username == teacher_username)
+
+                session.execute(delete_from_user_stmt)
+                user = await UserRepo.get_user(teacher_username, session)
+
+                match new_status:
+                    case roles.TEACHER:
+                        session.add(Teacher(user=user))
+                    case roles.ADMIN:
+                        session.add(Admin(user=user))
+                    case roles.STUDENT:
+                        session.add(Student(user=user))
+
+        except IntegrityError:
+            print(f"User {teacher_username} already exists at {new_status.name} table")
+            return False
+        return True
+        # TODO add log to db with initiator_user, dt of changing status etc
