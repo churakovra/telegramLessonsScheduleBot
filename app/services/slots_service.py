@@ -41,5 +41,3 @@ class SlotsService:
                 return True
         except IndexError:
             return False
-        finally:
-            return False
