@@ -6,11 +6,11 @@ from app.models.orm.user import User
 
 @dataclass
 class UserDTO:
-    id: int
     username: str
     firstname: str
     lastname: str | None
-    dt_reg: datetime
+    id: int | None = None
+    dt_reg: datetime | None = None
     status: str | None = None
 
     @staticmethod
