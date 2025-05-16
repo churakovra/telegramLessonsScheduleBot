@@ -1,7 +1,8 @@
+from app.exceptions.user_exceptions import ChangeUserStatusError
 from app.models.user_dto import UserDTO
 from app.repositories.user_repo import UserRepo
-from app.utils.bot_values import BotValues
 from app.utils.bot_strings import bot_strings as bt
+from app.utils.bot_values import BotValues
 from app.utils.datetime_utils import day_format
 
 roles = BotValues.UserRoles
@@ -35,5 +36,6 @@ class UserService:
         return expected_status in user_status
 
     @staticmethod
-    async def change_user_status(initiator_user: str, teacher_username: str, new_status: bv.UserRoles):
-        return await UserRepo.change_user_status_in_db(initiator_user, teacher_username, new_status)
+    async def change_user_status(initiator_user: str, teacher_username: str, new_status: roles):
+        if not await UserRepo.change_user_status_in_db(initiator_user, teacher_username, new_status):
+            raise ChangeUserStatusError
