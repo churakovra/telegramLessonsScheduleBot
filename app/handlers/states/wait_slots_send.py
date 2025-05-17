@@ -7,6 +7,6 @@ from app.states.schedule_states import ScheduleStates
 router = Router()
 
 
-@router.message(ScheduleStates.wait_slots_send)
+@router.message(ScheduleStates.wait_slots_send_to_students)
 async def wait_slots_send(state: FSMContext):
     await send_slots(state)
