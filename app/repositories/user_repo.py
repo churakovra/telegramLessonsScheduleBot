@@ -54,7 +54,7 @@ class UserRepo:
             return None
 
     @staticmethod
-    async def get_user_status(username: str) -> list[roles]:
+    async def get_user_roles(username: str) -> list[roles]:
         stmt_admin = select(User.username).join(Admin).where(User.username == username)
         stmt_teacher = select(User.username).join(Teacher).where(User.username == username)
         stmt_student = select(User.username).join(Student).where(User.username == username)

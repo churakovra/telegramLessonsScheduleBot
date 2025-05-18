@@ -12,7 +12,7 @@ class UserService:
     @staticmethod
     async def get_user_info(username: str) -> str:
         user = await UserRepo.get_user(username, session=None)
-        user_status = await UserRepo.get_user_status(username)
+        user_status = await UserRepo.get_user_roles(username)
         res = UserService.make_user_info_response(user, user_status)
         return res
 
@@ -32,7 +32,7 @@ class UserService:
 
     @staticmethod
     async def check_user_status(username: str, expected_status: roles) -> bool:
-        user_status = await UserRepo.get_user_status(username)
+        user_status = await UserRepo.get_user_roles(username)
         return expected_status in user_status
 
     @staticmethod
