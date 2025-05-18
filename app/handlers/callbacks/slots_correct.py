@@ -20,6 +20,6 @@ async def reply_and_save_to_db(callback: CallbackQuery, state: FSMContext):
 
     await add_slots_use_case(slots)
 
-    await state.set_state(ScheduleStates.wait_slots_send)
+    await state.set_state(ScheduleStates.wait_slots_send_to_students)
     await state.update_data(slots=slots)
     await callback.answer()
