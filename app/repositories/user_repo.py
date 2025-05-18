@@ -26,7 +26,8 @@ class UserRepo:
             user_orm = User(
                 username=user.username,
                 firstname=user.firstname,
-                lastname=user.lastname
+                lastname=user.lastname,
+                chat_id=user.chat_id
             )
             with SessionLocal.begin() as session:
                 session.add(user_orm)

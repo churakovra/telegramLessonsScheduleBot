@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import String
+from sqlalchemy import String, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.orm.base import Base
@@ -19,6 +19,7 @@ class User(Base):
     username: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     firstname: Mapped[str] = mapped_column(String)
     lastname: Mapped[str | None] = mapped_column(String)
+    chat_id: Mapped[int] = mapped_column(Integer)
     dt_reg: Mapped[datetime] = mapped_column(default=datetime.now)
 
     teacher: Mapped["Teacher"] = relationship(back_populates="user", uselist=False)

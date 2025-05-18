@@ -15,7 +15,8 @@ async def add_new_user(message: Message):
     user = UserDTO(
         username=message.from_user.username,
         firstname=message.from_user.first_name,
-        lastname=message.from_user.last_name
+        lastname=message.from_user.last_name,
+        chat_id=message.from_user.id
     )
 
     await register_new_user_use_case(user)
