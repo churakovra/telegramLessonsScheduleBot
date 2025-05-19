@@ -11,12 +11,10 @@ router = Router()
 
 
 @router.callback_query(F.data == bt.CALLBACK_SLOTS_CORRECT, ScheduleStates.wait_for_confirmation)
-async def reply_and_save_to_db(callback: CallbackQuery, state: FSMContext):
-    await callback.message.answer(
-        text=bt.SLOTS_SUCCESS_ANSWER
-    )
+async def reply_and_save_to_db(callback: CallbackQuery, state: FSMContext, **kwargs):
     data = await state.get_data()
     slots = data.get("slots")
+    notifier = kwargs["notifier"]
 
     await add_slots_use_case(slots)
 
