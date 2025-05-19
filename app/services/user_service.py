@@ -11,7 +11,7 @@ roles = BotValues.UserRoles
 class UserService:
     @staticmethod
     async def get_user_info(username: str) -> str:
-        user = await UserRepo.get_user(username, session=None)
+        user = await UserRepo.get_user(username)
         user_status = await UserRepo.get_user_roles(username)
         res = UserService.make_user_info_response(user, user_status)
         return res
@@ -39,3 +39,11 @@ class UserService:
     async def change_user_status(initiator_user: str, teacher_username: str, new_status: roles):
         if not await UserRepo.change_user_status_in_db(initiator_user, teacher_username, new_status):
             raise ChangeUserStatusError
+
+    @staticmethod
+    async def check_user_exists(username: str) -> bool:
+        try:
+            await UserRepo.get_user(username)
+            return True
+        except GetUserError:
+            return False
