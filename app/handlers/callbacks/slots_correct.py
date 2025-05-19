@@ -2,9 +2,9 @@ from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
-from app.repositories.slots_repo import SlotsRepo
 from app.states.schedule_states import ScheduleStates
 from app.use_cases.add_slots import add_slots_use_case
+from app.use_cases.send_slots_to_students import send_slots_to_students_use_case
 from app.utils.bot_strings import bot_strings as bt
 
 router = Router()
@@ -17,7 +17,9 @@ async def reply_and_save_to_db(callback: CallbackQuery, state: FSMContext, **kwa
     notifier = kwargs["notifier"]
 
     await add_slots_use_case(slots)
-
-    await state.set_state(ScheduleStates.wait_slots_send_to_students)
-    await state.update_data(slots=slots)
+    await send_slots_to_students_use_case(slots, notifier)
+    await callback.message.answer(
+        text=bt.SLOTS_SUCCESS_ANSWER
+    )
+    await state.clear()
     await callback.answer()
