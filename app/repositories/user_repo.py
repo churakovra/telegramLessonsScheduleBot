@@ -4,7 +4,7 @@ from sqlalchemy import delete, select
 from sqlalchemy.exc import IntegrityError
 
 from app.database import SessionLocal
-from app.exceptions.user_exceptions import AddUserError
+from app.exceptions.user_exceptions import AddUserError, GetUserError
 from app.models.orm.student import Student
 from app.models.orm.teacher import Teacher
 from app.models.orm.admin import Admin
