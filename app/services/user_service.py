@@ -1,4 +1,4 @@
-from app.exceptions.user_exceptions import ChangeUserStatusError
+from app.exceptions.user_exceptions import ChangeUserStatusError, GetUserError
 from app.models.user_dto import UserDTO
 from app.repositories.user_repo import UserRepo
 from app.utils.bot_strings import bot_strings as bt
