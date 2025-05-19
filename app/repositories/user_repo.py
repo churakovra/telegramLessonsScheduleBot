@@ -75,17 +75,25 @@ class UserRepo:
         try:
             with SessionLocal.begin() as session:
                 delete_from_user_stmt = delete(Student).where(Student.username == teacher_username)
-
                 session.execute(delete_from_user_stmt)
-                user = await UserRepo.get_user(teacher_username, session)
+
+                user = await UserRepo.get_user(teacher_username)
+                user_orm = User(
+                    id=user.id,
+                    username=user.username,
+                    firstname=user.firstname,
+                    lastname=user.lastname,
+                    chat_id=user.chat_id,
+                    dt_reg=user.dt_reg
+                )
 
                 match new_status:
                     case roles.TEACHER:
-                        session.add(Teacher(user=user))
+                        session.add(Teacher(user=user_orm))
                     case roles.ADMIN:
-                        session.add(Admin(user=user))
+                        session.add(Admin(user=user_orm))
                     case roles.STUDENT:
-                        session.add(Student(user=user))
+                        session.add(Student(user=user_orm))
 
         except IntegrityError:
             print(f"User {teacher_username} already exists at {new_status.name} table")
