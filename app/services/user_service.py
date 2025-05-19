@@ -39,6 +39,7 @@ class UserService:
     async def change_user_status(initiator_user: str, teacher_username: str, new_status: roles):
         if not await UserRepo.change_user_status_in_db(initiator_user, teacher_username, new_status):
             raise ChangeUserStatusError
+        return True
 
     @staticmethod
     async def check_user_exists(username: str) -> bool:

@@ -15,6 +15,6 @@ async def make_teacher_use_case(initiator_username, new_teacher_username):
         return False
 
     try:
-        await UserService.change_user_status(initiator_username, new_teacher_username, UserRoles.TEACHER)
+        return await UserService.change_user_status(initiator_username, new_teacher_username, UserRoles.TEACHER)
     except ChangeUserStatusError:
         pass
