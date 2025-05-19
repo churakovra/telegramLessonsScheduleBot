@@ -36,22 +36,15 @@ class UserRepo:
             raise AddUserError
 
     @staticmethod
-    async def get_user(username: str, session: Optional[SessionLocal]) -> User | UserDTO | None:
-        stmt = (
-            select(User)
-            .where(User.username == username)
-        )
+    async def get_user(username: str) -> UserDTO:
+        stmt = select(User).where(User.username == username)
         try:
-            if session is not None:
+            with SessionLocal.begin() as session:
                 user = session.execute(stmt).first()
-                result_user = user[0]
-            else:
-                with SessionLocal.begin() as session:
-                    user = session.execute(stmt).first()
-                    result_user = UserDTO.get_user_dto(user[0])
+                result_user = UserDTO.get_user_dto(user[0])
             return result_user
         except TypeError:
-            return None
+            raise GetUserError
 
     @staticmethod
     async def get_user_roles(username: str) -> list[roles]:
