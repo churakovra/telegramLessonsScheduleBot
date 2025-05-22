@@ -11,7 +11,7 @@ class DaysForStudents(CallbackData, prefix="fabday"):
 
 def get_days_for_students_markup(slots: dict[str, UUID]) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    for day, day_uuid in slots:
+    for day, day_uuid in slots.items():
         builder.button(
             text=day,
             callback_data=DaysForStudents(day_uuid=day_uuid)
