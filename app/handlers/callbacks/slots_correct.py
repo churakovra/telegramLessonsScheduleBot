@@ -20,6 +20,6 @@ async def reply_and_save_to_db(callback: CallbackQuery, state: FSMContext, **kwa
     days_from_db = await add_slots_use_case(slots)
     await send_slots_to_students_use_case(teacher, days_from_db, notifier)
     await callback.message.answer(
-        text=bt.SLOTS_SUCCESS_ANSWER
+        text=bt.SLOTS_PROCESSING_SUCCESS_ANSWER
     )
     await callback.answer()
