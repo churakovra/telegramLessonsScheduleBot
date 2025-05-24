@@ -22,5 +22,5 @@ async def wait_for_slots(message: Message, state: FSMContext):
         reply_markup=get_is_slots_correct_markup()
     )
 
-    await state.update_data(slots=slots)
+    await state.update_data(slots=slots, parsed_slots=slots_reply)
     await state.set_state(ScheduleStates.wait_for_confirmation)
