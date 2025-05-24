@@ -12,7 +12,11 @@ class SlotsForStudents(CallbackData, prefix="fabslots"):
     uuid_slot: UUID
 
 
-def get_slots_for_students_markup(slots: list[LessonDTO]) -> InlineKeyboardMarkup:
+class BackPressed(CallbackData, prefix="back"):
+    chat_id: int
+
+
+def get_slots_for_students_markup(slots: list[LessonDTO], chat_id) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     for slot in slots:
         time_str = slot.dt_start.strftime(time_format_HM)
@@ -20,9 +24,9 @@ def get_slots_for_students_markup(slots: list[LessonDTO]) -> InlineKeyboardMarku
             text=time_str,
             callback_data=SlotsForStudents(uuid_slot=slot.uuid_slot)
         )
-    # builder.button(
-    #     text="Назад",
-    #     callback_data="назад"
-    # )
+    builder.button(
+        text="Назад",
+        callback_data=BackPressed(chat_id=chat_id)
+    )
     builder.adjust(1)
     return builder.as_markup()
