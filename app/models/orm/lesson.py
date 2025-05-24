@@ -1,3 +1,4 @@
+from uuid import UUID
 from datetime import datetime
 from typing import TYPE_CHECKING
 
@@ -15,11 +16,14 @@ if TYPE_CHECKING:
 class Lesson(Base):
     __tablename__ = "lessons"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    id_teacher: Mapped[int] = mapped_column(ForeignKey("teachers.id"), nullable=False)
-    id_student: Mapped[int] = mapped_column(ForeignKey("students.id"), nullable=True)
+    uuid_slot: Mapped[UUID] = mapped_column(primary_key=True)
+    uuid_day: Mapped[UUID] = mapped_column(primary_key=True)
+    t_username: Mapped[str] = mapped_column(ForeignKey("teachers.username"), nullable=False)
+    s_username: Mapped[str] = mapped_column(ForeignKey("students.username"), nullable=True)
     id_lesson_type: Mapped[int] = mapped_column(ForeignKey("lesson_types.id"), nullable=True)
     dt_start: Mapped[datetime] = mapped_column(nullable=False)
+    dt_add: Mapped[datetime] = mapped_column(nullable=False, default=datetime.now)
+    dt_spot: Mapped[datetime] = mapped_column(nullable=True)
 
     teacher: Mapped["Teacher"] = relationship(back_populates="lessons")
     student: Mapped["Student"] = relationship(back_populates="lessons")

@@ -1,4 +1,4 @@
-from app.exceptions.user_exceptions import ChangeUserStatusError
+from app.exceptions.user_exceptions import ChangeUserStatusError, GetUserError
 from app.models.user_dto import UserDTO
 from app.repositories.user_repo import UserRepo
 from app.utils.bot_strings import bot_strings as bt
@@ -11,8 +11,8 @@ roles = BotValues.UserRoles
 class UserService:
     @staticmethod
     async def get_user_info(username: str) -> str:
-        user = await UserRepo.get_user(username, session=None)
-        user_status = await UserRepo.get_user_status(username)
+        user = await UserRepo.get_user(username)
+        user_status = await UserRepo.get_user_roles(username)
         res = UserService.make_user_info_response(user, user_status)
         return res
 
@@ -32,10 +32,19 @@ class UserService:
 
     @staticmethod
     async def check_user_status(username: str, expected_status: roles) -> bool:
-        user_status = await UserRepo.get_user_status(username)
+        user_status = await UserRepo.get_user_roles(username)
         return expected_status in user_status
 
     @staticmethod
     async def change_user_status(initiator_user: str, teacher_username: str, new_status: roles):
         if not await UserRepo.change_user_status_in_db(initiator_user, teacher_username, new_status):
             raise ChangeUserStatusError
+        return True
+
+    @staticmethod
+    async def check_user_exists(username: str) -> bool:
+        try:
+            await UserRepo.get_user(username)
+            return True
+        except GetUserError:
+            return False

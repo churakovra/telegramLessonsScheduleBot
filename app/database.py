@@ -14,11 +14,3 @@ url = URL.create(
 
 engine = create_engine(url)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
-
-
-def get_session():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()

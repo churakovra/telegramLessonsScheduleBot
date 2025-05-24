@@ -1,10 +1,8 @@
-from typing import Optional
-
 from sqlalchemy import delete, select
 from sqlalchemy.exc import IntegrityError
 
 from app.database import SessionLocal
-from app.exceptions.user_exceptions import AddUserError
+from app.exceptions.user_exceptions import AddUserError, GetUserError
 from app.models.orm.student import Student
 from app.models.orm.teacher import Teacher
 from app.models.orm.admin import Admin
@@ -26,7 +24,8 @@ class UserRepo:
             user_orm = User(
                 username=user.username,
                 firstname=user.firstname,
-                lastname=user.lastname
+                lastname=user.lastname,
+                chat_id=user.chat_id
             )
             with SessionLocal.begin() as session:
                 session.add(user_orm)
@@ -35,25 +34,18 @@ class UserRepo:
             raise AddUserError
 
     @staticmethod
-    async def get_user(username: str, session: Optional[SessionLocal]) -> User | UserDTO | None:
-        stmt = (
-            select(User)
-            .where(User.username == username)
-        )
+    async def get_user(username: str) -> UserDTO:
+        stmt = select(User).where(User.username == username)
         try:
-            if session is not None:
+            with SessionLocal.begin() as session:
                 user = session.execute(stmt).first()
-                result_user = user[0]
-            else:
-                with SessionLocal.begin() as session:
-                    user = session.execute(stmt).first()
-                    result_user = UserDTO.get_user_dto(user[0])
+                result_user = UserDTO.get_user_dto(user[0])
             return result_user
         except TypeError:
-            return None
+            raise GetUserError
 
     @staticmethod
-    async def get_user_status(username: str) -> list[roles]:
+    async def get_user_roles(username: str) -> list[roles]:
         stmt_admin = select(User.username).join(Admin).where(User.username == username)
         stmt_teacher = select(User.username).join(Teacher).where(User.username == username)
         stmt_student = select(User.username).join(Student).where(User.username == username)
@@ -80,19 +72,16 @@ class UserRepo:
     async def change_user_status_in_db(initiator_user: str, teacher_username: str, new_status: roles) -> bool:
         try:
             with SessionLocal.begin() as session:
-                delete_from_user_stmt = delete(Student).where(Student.username == teacher_username)
-
-                session.execute(delete_from_user_stmt)
-                user = await UserRepo.get_user(teacher_username, session)
+                delete_from_student_stmt = delete(Student).where(Student.username == teacher_username)
+                session.execute(delete_from_student_stmt)
 
                 match new_status:
                     case roles.TEACHER:
-                        session.add(Teacher(user=user))
+                        session.add(Teacher(username=teacher_username))
                     case roles.ADMIN:
-                        session.add(Admin(user=user))
+                        session.add(Admin(username=teacher_username))
                     case roles.STUDENT:
-                        session.add(Student(user=user))
-
+                        session.add(Student(username=teacher_username))
         except IntegrityError:
             print(f"User {teacher_username} already exists at {new_status.name} table")
             return False
