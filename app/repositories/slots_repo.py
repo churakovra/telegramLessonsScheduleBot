@@ -1,7 +1,7 @@
 from uuid import uuid4, UUID
 from datetime import datetime
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 
 from app.database import SessionLocal
 from app.models.lesson_dto import LessonDTO
@@ -51,3 +51,21 @@ class SlotsRepo:
                 lesson_dto = LessonDTO.get_lesson_dto(lesson)
                 res.append(lesson_dto)
         return res
+
+    @staticmethod
+    async def get_slot(uuid_slot: UUID) -> LessonDTO:
+        stmt = select(Lesson).where(Lesson.uuid_slot == uuid_slot)
+        with SessionLocal.begin() as session:
+            lesson = session.scalar(stmt)
+            lesson_dto = LessonDTO.get_lesson_dto(lesson)
+        return lesson_dto
+
+    @staticmethod
+    async def assign_slot(slot: LessonDTO, s_username: str):
+        stmt = (
+            update(Lesson)
+            .where(Lesson.uuid_slot == slot.uuid_slot)
+            .values(s_username=s_username, dt_spot=datetime.now())
+        )
+        with SessionLocal.begin() as session:
+            session.execute(stmt)

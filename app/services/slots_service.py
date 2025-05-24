@@ -1,7 +1,11 @@
 import string
 from datetime import datetime, timedelta
+from uuid import UUID
 
+from app.exceptions.slot_exceptions import SlotAssignError
+from app.models.lesson_dto import LessonDTO
 from app.models.teacher_slot import Slot
+from app.repositories.slots_repo import SlotsRepo
 from app.utils.datetime_utils import WEEKDAYS
 
 
@@ -41,3 +45,10 @@ class SlotsService:
                 return True
         except IndexError:
             return False
+
+    @staticmethod
+    async def assign_slot(slot: LessonDTO, student: str):
+        try:
+            await SlotsRepo.assign_slot(slot, student)
+        except SlotAssignError:
+            pass
