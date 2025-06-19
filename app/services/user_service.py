@@ -1,6 +1,8 @@
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.exceptions.user_exceptions import ChangeUserStatusError, GetUserError
 from app.models.user_dto import UserDTO
-from app.repositories.user_repo import UserRepo
+from app.repositories.user_repository import UserRepository
 from app.utils.bot_strings import bot_strings as bt
 from app.utils.bot_values import BotValues
 from app.utils.datetime_utils import day_format
@@ -9,15 +11,16 @@ roles = BotValues.UserRoles
 
 
 class UserService:
-    @staticmethod
-    async def get_user_info(username: str) -> str:
-        user = await UserRepo.get_user(username)
-        user_status = await UserRepo.get_user_roles(username)
-        res = UserService.make_user_info_response(user, user_status)
+    def __init__(self, session: AsyncSession):
+        self.repository = UserRepository(session)
+
+    async def get_user_info(self, username: str) -> str:
+        user = await self.repository.get_user(username)
+        user_status = await self.repository.get_user_roles(username)
+        res = self.make_user_info_response(user, user_status)
         return res
 
-    @staticmethod
-    def make_user_info_response(user: UserDTO, user_status: list[roles]) -> str:
+    def make_user_info_response(self, user: UserDTO, user_status: list[roles]) -> str:
         try:
             result = (
                 f"Пользователь {user.firstname} {user.lastname}\n"
@@ -30,21 +33,18 @@ class UserService:
 
         return result
 
-    @staticmethod
-    async def check_user_status(username: str, expected_status: roles) -> bool:
-        user_status = await UserRepo.get_user_roles(username)
+    async def check_user_status(self, username: str, expected_status: roles) -> bool:
+        user_status = self.repository.get_user_roles(username)
         return expected_status in user_status
 
-    @staticmethod
-    async def change_user_status(initiator_user: str, teacher_username: str, new_status: roles):
-        if not await UserRepo.change_user_status_in_db(initiator_user, teacher_username, new_status):
+    async def change_user_status(self, initiator_user: str, teacher_username: str, new_status: roles):
+        if not await self.repository.change_user_status_in_db(initiator_user, teacher_username, new_status):
             raise ChangeUserStatusError
         return True
 
-    @staticmethod
-    async def check_user_exists(username: str) -> bool:
+    async def check_user_exists(self, username: str) -> bool:
         try:
-            await UserRepo.get_user(username)
+            await self.repository.get_user(username)
             return True
         except GetUserError:
             return False
