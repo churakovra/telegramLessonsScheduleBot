@@ -1,21 +1,31 @@
 from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
+from sqlalchemy.orm import Session
 
+from app.services.student_service import StudentService
+from app.services.teacher_service import TeacherService
 from app.states.schedule_states import ScheduleStates
-from app.use_cases.attach_student_to_teacher import attach_student_to_teacher_use_case
 
 router = Router()
 
 
 @router.message(ScheduleStates.wait_for_teacher_username)
-async def process_teacher_username(message: Message, state: FSMContext):
-    student_username = message.from_user.username
+async def process_teacher_username(
+        message: Message,
+        state: FSMContext,
+        session: Session
+):
     teacher_username = message.text
+    student_username = message.from_user.username
 
-    if await attach_student_to_teacher_use_case(teacher_username, student_username):
-        await message.answer("Ура! Победа! ZZZZZZ")
+    teacher_service = TeacherService(session)
+    student_service = StudentService(session)
+    try:
+        teacher = teacher_service.get_teacher(teacher_username)
+        student = student_service.get_student(student_username)
+        teacher_service.attach_student(teacher_uuid=teacher.uuid, student_uuid=student.uuid)
         await state.clear()
-    else:
+    except Exception:
         await message.answer("Попробуйте еще раз")
         await state.set_state(ScheduleStates.wait_for_teacher_username)
