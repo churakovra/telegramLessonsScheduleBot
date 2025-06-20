@@ -4,6 +4,7 @@ import logging
 from aiogram import Bot, Dispatcher
 
 from app.config.preferences import BOT_TOKEN
+from app.db.database import init_db
 from app.handlers import register_routers
 from app.middlewares.setup import setup_middlewares
 from app.notifiers.telegram_notifier import TelegramNotifier
@@ -26,4 +27,5 @@ async def main():
 
 
 if __name__ == '__main__':
+    init_db()
     asyncio.run(main())
