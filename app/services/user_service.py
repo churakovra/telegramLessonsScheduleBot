@@ -1,18 +1,36 @@
-from sqlalchemy.ext.asyncio import AsyncSession
+from uuid import UUID
 
+from sqlalchemy.orm import Session
+
+from app.enums.bot_values import UserRoles
 from app.exceptions.user_exceptions import ChangeUserStatusError, GetUserError
-from app.models.user_dto import UserDTO
 from app.repositories.user_repository import UserRepository
+from app.schemas.user_dto import UserDTO
 from app.utils.bot_strings import bot_strings as bt
-from app.utils.bot_values import BotValues
 from app.utils.datetime_utils import day_format
-
-roles = BotValues.UserRoles
 
 
 class UserService:
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session: Session):
         self.repository = UserRepository(session)
+
+    def register_user(
+            self,
+            username: str,
+            firstname: str,
+            lastname: str | None,
+            role: UserRoles,
+            chat_id: int
+    ) -> UUID:
+        new_user = UserDTO.new_dto(
+            username=username,
+            firstname=firstname,
+            lastname=lastname,
+            role=role,
+            chat_id=chat_id
+        )
+        self.repository.add_user(new_user)
+        return new_user.uuid
 
     async def get_user_info(self, username: str) -> str:
         user = await self.repository.get_user(username)
@@ -48,3 +66,11 @@ class UserService:
             return True
         except GetUserError:
             return False
+
+    @staticmethod
+    def get_user_role(role: UserRoles) -> tuple[bool, bool, bool]:
+        return (
+            role == UserRoles.STUDENT,
+            role == UserRoles.TEACHER,
+            role == UserRoles.ADMIN,
+        )

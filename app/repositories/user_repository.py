@@ -1,39 +1,27 @@
 from sqlalchemy import delete, select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
-from app.models.orm.admin import Admin
-from app.models.orm.student import Student
-from app.models.orm.teacher import Teacher
-from app.models.orm.user import User
-from app.models.user_dto import UserDTO
-from app.utils.bot_values import BotValues
-
-roles = BotValues.UserRoles
+from app.db.orm.user import User
+from app.enums.bot_values import UserRoles
+from app.schemas.user_dto import UserDTO
 
 
 class UserRepository:
-    def __init__(self, session: AsyncSession):
-        self.db = session
+    def __init__(self, session: Session):
+        self._db = session
 
     def add_user(self, user: UserDTO):
-        user = User(
-            username=user.username,
-            firstname=user.firstname,
-            lastname=user.lastname,
-            chat_id=user.chat_id
-        )
-        self.db.add(user)
-        self.db.commit()
-        self.db.refresh(user)
+        user = User.from_dto(user)
+        self._db.add(user)
+        self._db.commit()
+        self._db.refresh(user)
 
     async def get_user(self, username: str) -> UserDTO | None:
         stmt = select(User).where(User.username == username)
-
-        user = await self.db.scalar(stmt)
+        user = self._db.scalar(stmt)
         if user is None:
             return user
-
-        return UserDTO.get_user_dto(user)
+        return UserDTO.to_dto(user)
 
     async def get_user_roles(self, username: str) -> list[roles]:
         stmt_admin = select(User.username).join(Admin).where(User.username == username)
