@@ -1,22 +1,20 @@
 from app.enums.bot_values import UserRoles
 
 
-class GetUserError(Exception):
-    def __init__(self, message: str = "Ошибка в получении пользователя из бд"):
-        super().__init__(message)
-
-class UserStatusError(Exception):
-    def __init__(self, message: str = "Недостаточно прав у пользователя"):
-        super().__init__(message)
-
-class AddUserError(Exception):
-    def __init__(self, message: str = "Ошибка добавления пользователя. Пользователь уже существует."):
-        super().__init__(message)
+class UserStatusException(Exception):
+    def __init__(self, username: str):
+        self.message = f"User {username} doesn't have access to make an operation"
 
 
-class ChangeUserStatusError(Exception):
-    def __init__(self, message: str = "Ошибка изменения статуса пользователя."):
-        super().__init__(message)
+class UserAddException(Exception):
+    def __init__(self, username: str):
+        self.message = f"Error creating user {username}: User already exists"
+
+
+class UserChangeStatusException(Exception):
+    def __init__(self, username: str, role: UserRoles):
+        self.message = f"Can't change make {username} role {role}"
+
 
 class UserNotFoundException(Exception):
     def __init__(self, role: UserRoles, username: str):
