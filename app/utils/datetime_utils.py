@@ -13,13 +13,13 @@ h1_5 = timedelta(hours=1, minutes=30)
 m10 = timedelta(minutes=10)
 m30 = timedelta(minutes=30)
 
-WEEKDAYS = [
-    ["Monday", "monday", "Понедельник",  "понедельник", "пн", "пнд"],
-    ["Tuesday", "tuesday", "Вторник", "вторник", "вт"],
-    ["Wednesday", "wednesday", "Среда", "среда", "ср"],
-    ["Thursday", "thursday", "Четверг", "четверг", "чт"],
-    ["Friday", "friday", "Пятница", "пятница", "пт"]
-]
+WEEKDAYS = {
+    0: ["Monday", "monday", "Понедельник",  "понедельник", "пн", "пнд"],
+    1: ["Tuesday", "tuesday", "Вторник", "вторник", "вт"],
+    2: ["Wednesday", "wednesday", "Среда", "среда", "ср"],
+    3: ["Thursday", "thursday", "Четверг", "четверг", "чт"],
+    4: ["Friday", "friday", "Пятница", "пятница", "пт"]
+}
 
 
 def is_first_week_day(day: datetime) -> bool:

@@ -1,26 +1,32 @@
 from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
+from sqlalchemy.orm import Session
 
 from app.keyboards.is_slots_correct import get_is_slots_correct_markup
+from app.services.slot_service import SlotService
+from app.services.teacher_service import TeacherService
 from app.states.schedule_states import ScheduleStates
-from app.use_cases.set_new_slots import set_new_slots_use_case
-from app.utils.create_parsed_slots_message_text import create_parsed_slots_message_text
 
 router = Router()
 
 
 @router.message(ScheduleStates.wait_for_slots)
-async def wait_for_slots(message: Message, state: FSMContext):
+async def wait_for_slots(message: Message, state: FSMContext, session: Session):
     slots_raw = message.text
     message_from = message.from_user.username
-    slots = await set_new_slots_use_case(slots_raw, message_from)
 
-    slots_reply = create_parsed_slots_message_text(slots)
+    teacher_service = TeacherService(session)
+    teacher = teacher_service.get_teacher(message_from)
+
+    slot_service = SlotService(session)
+    slots = await slot_service.parse_slots(slots_raw, teacher.uuid)
+
+    slot_reply = await slot_service.get_slot_reply(slots)
     await message.answer(
-        text=slots_reply,
+        text=slot_reply,
         reply_markup=get_is_slots_correct_markup()
     )
 
-    await state.update_data(slots=slots, parsed_slots=slots_reply)
+    await state.update_data(slots=slots, teacher=teacher)
     await state.set_state(ScheduleStates.wait_for_confirmation)
