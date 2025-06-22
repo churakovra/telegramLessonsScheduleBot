@@ -17,5 +17,5 @@ class UserChangeStatusException(Exception):
 
 
 class UserNotFoundException(Exception):
-    def __init__(self, role: UserRoles, username: str):
-        self.message = f"{role} {username} were not found"
+    def __init__(self, username: str, role: UserRoles):
+        self.message = f"{username} {role} were not found"
