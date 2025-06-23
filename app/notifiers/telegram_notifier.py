@@ -1,6 +1,6 @@
 from aiogram import Bot
 
-from app.models.BotMessage import BotMessage
+from app.schemas.bot_message import BotMessage
 
 
 class TelegramNotifier:

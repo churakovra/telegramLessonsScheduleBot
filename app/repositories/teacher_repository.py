@@ -1,8 +1,9 @@
 from uuid import UUID
 
-from sqlalchemy import select, and_, update
+from sqlalchemy import select, and_, update, func, not_
 from sqlalchemy.orm import Session
 
+from app.db.orm.slot import Slot
 from app.db.orm.teacher_students import TeacherStudents
 from app.db.orm.user import User
 from app.schemas.user_dto import UserDTO
@@ -11,6 +12,16 @@ from app.schemas.user_dto import UserDTO
 class TeacherRepository:
     def __init__(self, session: Session):
         self._db = session
+
+    def add_teacher(self, user_uuid: UUID):
+        stmt = (
+            update(User)
+            .where(User.uuid == user_uuid)
+            .values(is_student=False)
+            .values(is_teacher=True)
+        )
+        self._db.execute(stmt)
+        self._db.commit()
 
     def _get_teacher(self, username: str) -> User | None:
         stmt = (
@@ -32,6 +43,16 @@ class TeacherRepository:
             return teacher
         return UserDTO.to_dto(teacher)
 
+    def remove_teacher(self, teacher_uuid: UUID):
+        stmt = (
+            update(User)
+            .where(User.uuid == teacher_uuid)
+            .values(is_teacher=False)
+            .values(is_student=True)
+        )
+        self._db.execute(stmt)
+        self._db.commit()
+
     def attach_student(self, teacher_uuid: UUID, student_uuid: UUID):
         teacher_student = TeacherStudents.new_instance(teacher_uuid, student_uuid)
         self._db.add(teacher_student)
@@ -51,22 +72,21 @@ class TeacherRepository:
 
         return users
 
-    def add_teacher(self, user_uuid: UUID):
-        stmt = (
-            update(User)
-            .where(User.uuid == user_uuid)
-            .values(is_student=False)
-            .values(is_teacher=True)
-        )
-        self._db.execute(stmt)
-        self._db.commit()
+    def get_unsigned_students(self, teacher_uuid: UUID):
+        users = list()
+        ts_subquery = select(TeacherStudents.uuid_student).where(
+            TeacherStudents.uuid_teacher == teacher_uuid).scalar_subquery()
 
-    def remove_teacher(self, teacher_uuid: UUID):
+        slots_subquery = select(Slot.uuid_student).where(Slot.dt_add > func.now()).scalar_subquery()
         stmt = (
-            update(User)
-            .where(User.uuid == teacher_uuid)
-            .values(is_teacher=False)
-            .values(is_student=True)
+            select(User)
+            .where(
+                and_(
+                    User.uuid.in_(ts_subquery),
+                    not_(User.uuid.in_(slots_subquery))
+                )
+            )
         )
-        self._db.execute(stmt)
-        self._db.commit()
+        for user in self._db.scalars(stmt):
+            users.append(UserDTO.to_dto(user))
+        return users

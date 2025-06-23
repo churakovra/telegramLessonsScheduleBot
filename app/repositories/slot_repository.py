@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import uuid4, UUID
 
-from sqlalchemy import select, update
+from sqlalchemy import select, update, func, and_
 from sqlalchemy.orm import Session
 
 from app.db.orm.lesson import Lesson
@@ -21,7 +21,6 @@ class SlotRepository:
         self._db.commit()
         self._db.refresh(slot)
 
-
     async def get_slots(self, uuid_day: UUID) -> list[LessonDTO]:
         res = list()
         stmt = select(Lesson).where(Lesson.uuid_day == uuid_day)
@@ -30,6 +29,21 @@ class SlotRepository:
             lesson_dto = LessonDTO.get_lesson_dto(lesson)
             res.append(lesson_dto)
         return res
+
+    def get_free_slots(self, teacher_uuid: UUID):
+        slots = list()
+        stmt = (
+            select(Slot)
+            .where(
+                and_(
+                    Slot.dt_add > func.now(),
+                    Slot.uuid_student == None
+                )
+            )
+        )
+        for slot in self._db.scalars(stmt):
+            slots.append(SlotDTO.to_dto(slot))
+
 
     async def get_slot(self, uuid_slot: UUID) -> LessonDTO:
         stmt = select(Lesson).where(Lesson.uuid_slot == uuid_slot)

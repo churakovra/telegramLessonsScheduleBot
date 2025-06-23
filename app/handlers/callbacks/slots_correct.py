@@ -19,7 +19,6 @@ async def reply_and_save_to_db(callback: CallbackQuery, state: FSMContext, sessi
 
     data = await state.get_data()
     slots = data.get("slots")
-    teacher = data.get("teacher")
 
     slot_service = SlotService(session)
     slot_service.add_slots(slots)
@@ -27,3 +26,4 @@ async def reply_and_save_to_db(callback: CallbackQuery, state: FSMContext, sessi
         text=bt.SLOTS_PROCESSING_SUCCESS_ANSWER
     )
     await callback.answer()
+    await state.set_state(ScheduleStates.new_slots_ready)

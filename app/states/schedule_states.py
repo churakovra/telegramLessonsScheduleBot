@@ -5,3 +5,4 @@ class ScheduleStates(StatesGroup):
     wait_for_teacher_username = State()
     wait_for_slots = State()
     wait_for_confirmation = State()
+    new_slots_ready = State()

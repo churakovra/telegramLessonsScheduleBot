@@ -5,7 +5,7 @@ from uuid import UUID
 
 from sqlalchemy.orm import Session
 
-from app.exceptions.slot_exceptions import SlotAssignError
+from app.exceptions.slot_exceptions import SlotAssignException, SlotFreeNotFoundException
 from app.repositories.slot_repository import SlotRepository
 from app.schemas.lesson_dto import LessonDTO
 from app.schemas.slot_dto import SlotDTO
@@ -20,10 +20,16 @@ class SlotService:
         for slot in slots:
             self._repository.add_slot(slot)
 
+    def get_free_slots(self, teacher_uuid: UUID) -> list[SlotDTO]:
+        slots = self._repository.get_free_slots(teacher_uuid)
+        if len(slots) <= 0:
+            raise SlotFreeNotFoundException(teacher_uuid)
+        return slots
+
     def assign_slot(self, slot: LessonDTO, student: str):
         try:
             self._repository.assign_slot(slot, student)
-        except SlotAssignError:
+        except SlotAssignException:
             pass
 
     @staticmethod
@@ -83,11 +89,3 @@ class SlotService:
                 f"🕐: {", ".join(slot_info[1])}\n\n"
             )
         return response
-
-    @staticmethod
-    def validate_slots(slots: list[SlotDTO]) -> bool:
-        try:
-            if isinstance(slots[0], SlotDTO):
-                return True
-        except IndexError:
-            return False
