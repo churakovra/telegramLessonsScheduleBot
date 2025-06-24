@@ -45,17 +45,15 @@ class UserService:
 
     def get_user_info(self, username: str) -> str:
         user = self._repository.get_user(username)
-        user_status = self._repository.get_user_roles(username)
-        res = self.make_user_info_response(user, user_status)
+        res = self.make_user_info_response(user)
         return res
 
     @staticmethod
-    def make_user_info_response(user: UserDTO, user_status: list[UserRoles]) -> str:
+    def make_user_info_response(user: UserDTO) -> str:
         try:
             result = (
                 f"Пользователь {user.firstname} {user.lastname}\n"
                 f"Имя пользователя {user.username}\n"
-                f"Статус {user_status}\n"
                 f"Дата регистрации {user.dt_reg.strftime(day_format)}\n"
             )
         except Exception:

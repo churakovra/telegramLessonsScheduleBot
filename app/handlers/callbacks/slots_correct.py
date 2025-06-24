@@ -12,11 +12,6 @@ router = Router()
 
 @router.callback_query(F.data == bt.CALLBACK_SLOTS_CORRECT, ScheduleStates.wait_for_confirmation)
 async def reply_and_save_to_db(callback: CallbackQuery, state: FSMContext, session: Session):
-    """
-    Удалил отсюда отправку слотов ученикам. После записи в БД нужно переходить в стейт NewSlotsAreReady или как-то так
-    и отправлять это дело ученикам из специализированного метода
-    """
-
     data = await state.get_data()
     slots = data.get("slots")
 
