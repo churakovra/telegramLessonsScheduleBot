@@ -1,26 +1,24 @@
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
+from sqlalchemy.orm import Session
 
+from app.services.slot_service import SlotService
 from app.states.schedule_states import ScheduleStates
-from app.use_cases.add_slots import add_slots_use_case
-from app.use_cases.send_slots_to_students import send_slots_to_students_use_case
 from app.utils.bot_strings import bot_strings as bt
 
 router = Router()
 
 
 @router.callback_query(F.data == bt.CALLBACK_SLOTS_CORRECT, ScheduleStates.wait_for_confirmation)
-async def reply_and_save_to_db(callback: CallbackQuery, state: FSMContext, **kwargs):
+async def reply_and_save_to_db(callback: CallbackQuery, state: FSMContext, session: Session):
     data = await state.get_data()
     slots = data.get("slots")
-    parsed_slots = data.get("parsed_slots")
-    notifier = kwargs["notifier"]
-    teacher = callback.from_user.username
 
-    days_from_db = await add_slots_use_case(slots)
-    await send_slots_to_students_use_case(teacher, days_from_db, parsed_slots, notifier)
+    slot_service = SlotService(session)
+    slot_service.add_slots(slots)
     await callback.message.answer(
         text=bt.SLOTS_PROCESSING_SUCCESS_ANSWER
     )
     await callback.answer()
+    await state.set_state(ScheduleStates.new_slots_ready)

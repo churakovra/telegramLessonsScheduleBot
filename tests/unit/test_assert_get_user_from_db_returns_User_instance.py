@@ -1,4 +1,4 @@
-from app.models.orm.user import User
+from app.db.orm import User
 from app.services.get_user_from_db import get_user
 
 

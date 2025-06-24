@@ -2,23 +2,22 @@ from aiogram import Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
+from sqlalchemy.orm import Session
 
-from app.exceptions.user_exceptions import UserStatusError
+from app.exceptions.user_exceptions import UserNotFoundException
+from app.services.teacher_service import TeacherService
 from app.states.schedule_states import ScheduleStates
-from app.use_cases.check_user_status import check_user_status_use_case
 from app.utils.bot_strings import bot_strings as bt
-from app.utils.bot_values import BotValues
 
 router = Router()
 
-UserRoles = BotValues.UserRoles
-
 
 @router.message(Command("new_slots"))
-async def set_new_slots(message: Message, state: FSMContext):
+async def set_new_slots(message: Message, state: FSMContext, session: Session):
+    teacher_service = TeacherService(session)
     try:
-        await check_user_status_use_case(message.from_user.username, UserRoles.TEACHER)
-    except UserStatusError:
+        teacher_service.get_teacher(message.from_user.username)
+    except UserNotFoundException:
         await message.answer(bt.SLOTS_NOT_ENOUGH_RIGHTS)
         return
 

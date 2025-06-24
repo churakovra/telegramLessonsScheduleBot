@@ -1,7 +1,21 @@
-class SlotValidationError(Exception):
-    def __init__(self, message: str = "Ошибка валидации слотов"):
-        super().__init__(message)
+from uuid import UUID
 
-class SlotAssignError(Exception):
-    def __init__(self, message: str = "Ошибка в прикреплении пользователя к слоту"):
-        super().__init__(message)
+
+class SlotValidationException(Exception):
+    def __init__(self):
+        self.message = f"Error validating slot"
+
+
+class SlotAssignException(Exception):
+    def __init__(self, user_uuid: UUID, slot_uuid: UUID):
+        self.message = f"Can't assign user {user_uuid} to slot {slot_uuid}"
+
+
+class SlotNotFoundException(Exception):
+    def __init__(self, slot_uuid: UUID):
+        self.message = f"Slot {slot_uuid} were not found"
+
+
+class SlotFreeNotFoundException(Exception):
+    def __init__(self, teacher_uuid: UUID):
+        self.message = f"Free slots for teacher {teacher_uuid} were not found"

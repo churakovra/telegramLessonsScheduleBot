@@ -1,18 +1,18 @@
 from aiogram import Router
 from aiogram.filters import Command, CommandObject
 from aiogram.types import Message
+from sqlalchemy.orm import Session
 
-from app.use_cases.make_teacher import make_teacher_use_case
+from app.enums.bot_values import UserRoles
+from app.exceptions.user_exceptions import UserNotFoundException, UserChangeStatusException
+from app.services.user_service import UserService
 from app.utils.bot_strings import bot_strings as bt
-from app.utils.bot_values import BotValues
 
 router = Router()
 
-UserRoles = BotValues.UserRoles
-
 
 @router.message(Command("make_teacher"))
-async def make_teacher_from_student(message: Message, command: CommandObject):
+async def make_teacher_from_student(message: Message, command: CommandObject, session: Session):
     # Проверяем, передали ли аргументы с командой
     if command.args is None:
         await message.answer(
@@ -20,14 +20,14 @@ async def make_teacher_from_student(message: Message, command: CommandObject):
         )
         return
 
-    # Получаем юзернейм того, кто хочет перевести в преподы, юзернейм потенциального препода, проверяем статусы
+    # Получаем username инициатора, username нового преподавателя, проверяем статусы
     initiator_user = message.from_user.username
     teacher_username = command.args.strip()
 
     # Меняем статус пользователю
-    teacher_maked = await make_teacher_use_case(initiator_user, teacher_username)
-
-    if teacher_maked:
+    try:
+        user_service = UserService(session)
+        user_service.add_role(initiator_user, teacher_username, UserRoles.TEACHER)
         await message.answer(bt.MAKE_TEACHER_SUCCESS)
-    else:
+    except (UserNotFoundException, UserChangeStatusException):
         await message.answer(bt.MAKE_TEACHER_FAILURE)
