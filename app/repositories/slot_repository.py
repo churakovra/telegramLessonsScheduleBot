@@ -1,13 +1,10 @@
-from datetime import datetime
-from uuid import uuid4, UUID
+from datetime import datetime, timezone
+from uuid import UUID
 
-from sqlalchemy import select, update, func, and_
+from sqlalchemy import select, func, and_, update
 from sqlalchemy.orm import Session
 
-from app.db.orm.lesson import Lesson
-from app.db.orm import Teacher
 from app.db.orm.slot import Slot
-from app.schemas.lesson_dto import LessonDTO
 from app.schemas.slot_dto import SlotDTO
 
 
@@ -21,21 +18,18 @@ class SlotRepository:
         self._db.commit()
         self._db.refresh(slot)
 
-    async def get_slots(self, uuid_day: UUID) -> list[LessonDTO]:
-        res = list()
-        stmt = select(Lesson).where(Lesson.uuid_day == uuid_day)
-        lessons = await self._db.scalars(stmt)
-        for lesson in lessons:
-            lesson_dto = LessonDTO.get_lesson_dto(lesson)
-            res.append(lesson_dto)
-        return res
+    def get_slot(self, slot_uuid: UUID):
+        stmt = select(Slot).where(Slot.uuid == slot_uuid)
+        slot = self._db.scalar(stmt)
+        return slot
 
-    def get_free_slots(self, teacher_uuid: UUID):
+    def get_free_slots(self, teacher_uuid: UUID) -> list[SlotDTO]:
         slots = list()
         stmt = (
             select(Slot)
             .where(
                 and_(
+                    Slot.teacher == teacher_uuid,
                     Slot.dt_add > func.now(),
                     Slot.uuid_student == None
                 )
@@ -43,19 +37,14 @@ class SlotRepository:
         )
         for slot in self._db.scalars(stmt):
             slots.append(SlotDTO.to_dto(slot))
+        return slots
 
-
-    async def get_slot(self, uuid_slot: UUID) -> LessonDTO:
-        stmt = select(Lesson).where(Lesson.uuid_slot == uuid_slot)
-        lesson = await self._db.scalar(stmt)
-        lesson_dto = LessonDTO.get_lesson_dto(lesson)
-
-        return lesson_dto
-
-    async def assign_slot(self, slot: LessonDTO, s_username: str):
+    def assign_slot(self, student_uuid: UUID, slot_uuid: UUID):
         stmt = (
-            update(Lesson)
-            .where(Lesson.uuid_slot == slot.uuid_slot)
-            .values(s_username=s_username, dt_spot=datetime.now())
+            update(Slot)
+            .where(Slot.uuid == slot_uuid)
+            .values(uuid_student=student_uuid)
+            .values(dt_spot=datetime.now(timezone.utc).astimezone())
         )
-        await self._db.execute(stmt)
+        self._db.execute(stmt)
+        self._db.commit()

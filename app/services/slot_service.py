@@ -5,9 +5,8 @@ from uuid import UUID
 
 from sqlalchemy.orm import Session
 
-from app.exceptions.slot_exceptions import SlotAssignException, SlotFreeNotFoundException
+from app.exceptions.slot_exceptions import SlotFreeNotFoundException, SlotNotFoundException
 from app.repositories.slot_repository import SlotRepository
-from app.schemas.lesson_dto import LessonDTO
 from app.schemas.slot_dto import SlotDTO
 from app.utils.datetime_utils import WEEKDAYS
 
@@ -20,17 +19,22 @@ class SlotService:
         for slot in slots:
             self._repository.add_slot(slot)
 
+    def get_slot(self, slot_uuid: UUID) -> SlotDTO:
+        slot = self._repository.get_slot(slot_uuid)
+        if slot is None:
+            raise SlotNotFoundException(slot_uuid)
+        return SlotDTO.to_dto(slot)
+
     def get_free_slots(self, teacher_uuid: UUID) -> list[SlotDTO]:
         slots = self._repository.get_free_slots(teacher_uuid)
         if len(slots) <= 0:
             raise SlotFreeNotFoundException(teacher_uuid)
         return slots
 
-    def assign_slot(self, slot: LessonDTO, student: str):
-        try:
-            self._repository.assign_slot(slot, student)
-        except SlotAssignException:
-            pass
+    def assign_slot(self, student_uuid: UUID, slot_uuid: UUID) -> SlotDTO:
+        slot = self.get_slot(slot_uuid)
+        self._repository.assign_slot(student_uuid, slot.uuid)
+        return slot
 
     @staticmethod
     async def parse_slots(message_text: str, uuid_teacher: UUID) -> list[SlotDTO]:
@@ -73,8 +77,11 @@ class SlotService:
         response = ""
         slots_temp = dict[str, tuple[set[str], list[str]]]()
         for slot in slots:
-            weekday = calendar.weekday(slot.dt_start.year, slot.dt_start.month,
-                                       slot.dt_start.day)  # Получаем номер дня недели в зависимости от даты
+            weekday = calendar.weekday(
+                slot.dt_start.year,
+                slot.dt_start.month,
+                slot.dt_start.day
+            )  # Получаем номер дня недели в зависимости от даты
             label = WEEKDAYS[weekday][2]  # Получаем название дня; [2]-русское название в WEEKDAYS
             sdate = slot.dt_start.strftime("%d.%m.%y")  # Дата (без времени) в формате строки
             time = slot.dt_start.strftime("%H:%M")  # Время (без даты) в формате строки

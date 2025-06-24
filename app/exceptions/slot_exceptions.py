@@ -11,6 +11,11 @@ class SlotAssignException(Exception):
         self.message = f"Can't assign user {user_uuid} to slot {slot_uuid}"
 
 
+class SlotNotFoundException(Exception):
+    def __init__(self, slot_uuid: UUID):
+        self.message = f"Slot {slot_uuid} were not found"
+
+
 class SlotFreeNotFoundException(Exception):
     def __init__(self, teacher_uuid: UUID):
         self.message = f"Free slots for teacher {teacher_uuid} were not found"

@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.exceptions.teacher_exceptions import TeacherStudentsNotFound
 from app.exceptions.user_exceptions import UserNotFoundException
+from app.keyboards.days_for_students_markup import get_days_for_students_markup
 from app.services.slot_service import SlotService
 from app.services.teacher_service import TeacherService
 from app.states.schedule_states import ScheduleStates
@@ -18,6 +19,8 @@ async def new_slots_ready(message: Message, state: FSMContext, session: Session)
     teacher = data.get("teacher")
 
     teacher_service = TeacherService(session)
+    slots_service = SlotService(session)
+
     try:
         teacher = teacher_service.get_teacher(teacher)
         students = teacher_service.get_unsigned_students(teacher.uuid)
@@ -26,7 +29,7 @@ async def new_slots_ready(message: Message, state: FSMContext, session: Session)
     except TeacherStudentsNotFound:
         pass
 
-    slots_service = SlotService(session)
     slots = slots_service.get_free_slots(teacher.uuid)
     message_text = await slots_service.get_slot_reply(slots)
-    await message.answer(message_text)
+    markup = get_days_for_students_markup(slots)
+    await message.answer(text=message_text, reply_markup=markup)

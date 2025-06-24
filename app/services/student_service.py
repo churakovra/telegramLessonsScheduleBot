@@ -13,5 +13,5 @@ class StudentService:
     def get_student(self, username: str) -> UserDTO:
         student = self._repository.get_student(username)
         if student is None:
-            raise UserNotFoundException(UserRoles.STUDENT, username)
+            raise UserNotFoundException(username, UserRoles.STUDENT)
         return student
