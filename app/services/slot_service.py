@@ -23,7 +23,7 @@ class SlotService:
         slot = self._repository.get_slot(slot_uuid)
         if slot is None:
             raise SlotNotFoundException(slot_uuid)
-        return SlotDTO.to_dto(slot)
+        return slot
 
     def get_free_slots(self, teacher_uuid: UUID) -> list[SlotDTO]:
         slots = self._repository.get_free_slots(teacher_uuid)
