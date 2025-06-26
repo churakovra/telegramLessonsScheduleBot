@@ -3,7 +3,6 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel
 
-from app.db.orm.user import User
 from app.enums.bot_values import UserRoles
 from app.services.user_service import UserService
 
@@ -19,21 +18,6 @@ class UserDTO(BaseModel):
     chat_id: int
     dt_reg: datetime
     dt_edit: datetime
-
-    @classmethod
-    def to_dto(cls, user: User):
-        return cls(
-            uuid=user.uuid,
-            username=user.username,
-            firstname=user.firstname,
-            lastname=user.lastname,
-            is_student=user.is_student,
-            is_teacher=user.is_teacher,
-            is_admin=user.is_admin,
-            chat_id=user.chat_id,
-            dt_reg=user.dt_reg,
-            dt_edit=user.dt_edit
-        )
 
     @classmethod
     def new_dto(

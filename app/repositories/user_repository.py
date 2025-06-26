@@ -23,7 +23,18 @@ class UserRepository:
         user = self._db.scalar(stmt)
         if user is None:
             return user
-        return UserDTO.to_dto(user)
+        return UserDTO(
+            uuid=user.uuid,
+            username=user.username,
+            firstname=user.firstname,
+            lastname=user.lastname,
+            is_student=user.is_student,
+            is_teacher=user.is_teacher,
+            is_admin=user.is_admin,
+            chat_id=user.chat_id,
+            dt_reg=user.dt_reg,
+            dt_edit=user.dt_edit
+        )
 
     def add_role(self, user_uuid: UUID, new_status: UserRoles):
         if new_status == UserRoles.TEACHER:
