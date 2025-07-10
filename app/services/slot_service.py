@@ -38,8 +38,7 @@ class SlotService:
 
     @staticmethod
     async def parse_slots(message_text: str, uuid_teacher: UUID) -> list[SlotDTO]:
-        raw_mt = [word.strip(string.punctuation) for word in
-                  message_text.split()]  # разбиваем сообщение на День и Время
+        raw_mt = [word.strip(string.punctuation) for word in message_text.split()]  # разбиваем сообщение на День и Время
         slots = list[SlotDTO]()
         weekday_index = None
         for word in raw_mt:

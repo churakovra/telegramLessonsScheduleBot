@@ -31,6 +31,9 @@ async def slot_button_handle(
     assigned_slot = slot_service.assign_slot(student.uuid, slot_uuid)
 
     await callback.message.answer(
-        bt.SLOTS_ASSIGN_SUCCESS_ANSWER.format(assigned_slot.uuid_teacher,
-                                              assigned_slot.dt_start.strftime(full_format_no_sec)))
+        bt.SLOTS_ASSIGN_SUCCESS_ANSWER.format(
+            assigned_slot.uuid_teacher,
+            assigned_slot.dt_start.strftime(full_format_no_sec)
+        )
+    )
     await callback.answer()

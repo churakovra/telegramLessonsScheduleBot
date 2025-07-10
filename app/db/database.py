@@ -2,9 +2,6 @@ from sqlalchemy import URL, create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.config.preferences import DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME
-from app.db.orm.user import User
-from app.db.orm.slot import Slot
-from app.db.orm.lesson import Lesson
 from app.db.orm.base import Base
 
 url = URL.create(
