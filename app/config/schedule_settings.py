@@ -1,6 +1,7 @@
+from dataclasses import dataclass
 from datetime import timedelta
 
-
+@dataclass
 class ScheduleSettings:
     DURATION_1H = timedelta(hours=1)
     DURATION_1H30M = timedelta(hours=1.5)

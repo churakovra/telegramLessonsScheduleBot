@@ -1,14 +1,15 @@
 from datetime import datetime
-from typing import List
+from typing import List, TYPE_CHECKING
 from uuid import UUID
 
 from sqlalchemy import String, BigInteger, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.orm.base import Base
-from app.db.orm.lesson import Lesson
-from app.db.orm.slot import Slot
-from app.schemas.user_dto import UserDTO
+
+if TYPE_CHECKING:
+    from app.db.orm.lesson import Lesson
+    from app.db.orm.slot import Slot
 
 
 class User(Base):
@@ -27,18 +28,3 @@ class User(Base):
 
     lessons: Mapped[List["Lesson"]] = relationship(back_populates="teacher")
     slots: Mapped[List["Slot"]] = relationship(back_populates="teacher")
-
-    @classmethod
-    def from_dto(cls, user: UserDTO):
-        return cls(
-            uuid=user.uuid,
-            username=user.username,
-            firstname=user.firstname,
-            lastname=user.lastname,
-            is_student=user.is_student,
-            is_teacher=user.is_teacher,
-            is_admin=user.is_admin,
-            chat_id=user.chat_id,
-            dt_reg=user.dt_reg,
-            dt_edit=user.dt_edit
-        )

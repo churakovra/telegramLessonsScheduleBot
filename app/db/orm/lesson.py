@@ -1,13 +1,10 @@
-from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.orm.base import Base
-
-if TYPE_CHECKING:
-    from app.db.orm.user import User
+from app.db.orm.user import User
 
 
 class Lesson(Base):

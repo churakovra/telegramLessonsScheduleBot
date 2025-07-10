@@ -1,7 +1,7 @@
 services:
-  telegram-bot:
+  scheduler:
     build: .
-    container_name: aiogram_bot
+    container_name: scheduler
     restart: unless-stopped
     environment:
       - BOT_TOKEN=${BOT_TOKEN}
@@ -14,16 +14,12 @@ services:
       scheduler_pg:
         condition: service_healthy
 
-    volumes:
-      - .:/bot
     command: python -m app.main
 
   scheduler_pg:
     image: postgres:15-alpine
     container_name: scheduler_pg
     restart: always
-    env_file:
-      - .env
     environment:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}

@@ -13,7 +13,7 @@ class UserRepository:
         self._db = session
 
     def add_user(self, user: UserDTO):
-        user = User.from_dto(user)
+        user = User(**user.model_dump())
         self._db.add(user)
         self._db.commit()
         self._db.refresh(user)
@@ -23,7 +23,18 @@ class UserRepository:
         user = self._db.scalar(stmt)
         if user is None:
             return user
-        return UserDTO.to_dto(user)
+        return UserDTO(
+            uuid=user.uuid,
+            username=user.username,
+            firstname=user.firstname,
+            lastname=user.lastname,
+            is_student=user.is_student,
+            is_teacher=user.is_teacher,
+            is_admin=user.is_admin,
+            chat_id=user.chat_id,
+            dt_reg=user.dt_reg,
+            dt_edit=user.dt_edit
+        )
 
     def add_role(self, user_uuid: UUID, new_status: UserRoles):
         if new_status == UserRoles.TEACHER:

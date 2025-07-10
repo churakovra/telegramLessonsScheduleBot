@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
+from app.enums.bot_values import UserRoles
 from app.exceptions.user_exceptions import UserNotFoundException
-from app.handlers.commands.new_slots import UserRoles
 from app.repositories.student_repository import StudentRepository
 from app.schemas.user_dto import UserDTO
 

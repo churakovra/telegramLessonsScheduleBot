@@ -23,7 +23,7 @@ class SlotService:
         slot = self._repository.get_slot(slot_uuid)
         if slot is None:
             raise SlotNotFoundException(slot_uuid)
-        return SlotDTO.to_dto(slot)
+        return slot
 
     def get_free_slots(self, teacher_uuid: UUID) -> list[SlotDTO]:
         slots = self._repository.get_free_slots(teacher_uuid)
@@ -38,8 +38,7 @@ class SlotService:
 
     @staticmethod
     async def parse_slots(message_text: str, uuid_teacher: UUID) -> list[SlotDTO]:
-        raw_mt = [word.strip(string.punctuation) for word in
-                  message_text.split()]  # разбиваем сообщение на День и Время
+        raw_mt = [word.strip(string.punctuation) for word in message_text.split()]  # разбиваем сообщение на День и Время
         slots = list[SlotDTO]()
         weekday_index = None
         for word in raw_mt:

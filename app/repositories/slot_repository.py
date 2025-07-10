@@ -21,7 +21,17 @@ class SlotRepository:
     def get_slot(self, slot_uuid: UUID):
         stmt = select(Slot).where(Slot.uuid == slot_uuid)
         slot = self._db.scalar(stmt)
-        return slot
+        if slot is None:
+            return slot
+        slot_dto = SlotDTO(
+            uuid=slot.uuid,
+            uuid_teacher=slot.uuid_teacher,
+            dt_start=slot.dt_start,
+            dt_add=slot.dt_add,
+            uuid_student=slot.uuid_student,
+            dt_spot=slot.dt_spot
+        )
+        return slot_dto
 
     def get_free_slots(self, teacher_uuid: UUID) -> list[SlotDTO]:
         slots = list()
@@ -36,7 +46,15 @@ class SlotRepository:
             )
         )
         for slot in self._db.scalars(stmt):
-            slots.append(SlotDTO.to_dto(slot))
+            slot_dto = SlotDTO(
+                uuid=slot.uuid,
+                uuid_teacher=slot.uuid_teacher,
+                dt_start=slot.dt_start,
+                dt_add=slot.dt_add,
+                uuid_student=slot.uuid_student,
+                dt_spot=slot.dt_spot
+            )
+            slots.append(slot_dto)
         return slots
 
     def assign_slot(self, student_uuid: UUID, slot_uuid: UUID):

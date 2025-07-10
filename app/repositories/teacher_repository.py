@@ -41,7 +41,18 @@ class TeacherRepository:
         teacher = self._get_teacher(username)
         if teacher is None:
             return teacher
-        return UserDTO.to_dto(teacher)
+        return UserDTO(
+            uuid=teacher.uuid,
+            username=teacher.username,
+            firstname=teacher.firstname,
+            lastname=teacher.lastname,
+            is_student=teacher.is_student,
+            is_teacher=teacher.is_teacher,
+            is_admin=teacher.is_admin,
+            chat_id=teacher.chat_id,
+            dt_reg=teacher.dt_reg,
+            dt_edit=teacher.dt_edit
+        )
 
     def remove_teacher(self, teacher_uuid: UUID):
         stmt = (
@@ -68,7 +79,20 @@ class TeacherRepository:
             .where(TeacherStudents.uuid_teacher == teacher_uuid)
         )
         for user in self._db.scalars(stmt):
-            users.append(UserDTO.to_dto(user))
+            users.append(
+                UserDTO(
+                    uuid=user.uuid,
+                    username=user.username,
+                    firstname=user.firstname,
+                    lastname=user.lastname,
+                    is_student=user.is_student,
+                    is_teacher=user.is_teacher,
+                    is_admin=user.is_admin,
+                    chat_id=user.chat_id,
+                    dt_reg=user.dt_reg,
+                    dt_edit=user.dt_edit
+                )
+            )
 
         return users
 
@@ -88,5 +112,18 @@ class TeacherRepository:
             )
         )
         for user in self._db.scalars(stmt):
-            users.append(UserDTO.to_dto(user))
+            users.append(
+                UserDTO(
+                    uuid=user.uuid,
+                    username=user.username,
+                    firstname=user.firstname,
+                    lastname=user.lastname,
+                    is_student=user.is_student,
+                    is_teacher=user.is_teacher,
+                    is_admin=user.is_admin,
+                    chat_id=user.chat_id,
+                    dt_reg=user.dt_reg,
+                    dt_edit=user.dt_edit
+                )
+            )
         return users
