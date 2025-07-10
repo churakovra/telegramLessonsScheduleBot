@@ -1,15 +1,11 @@
 from datetime import datetime
-from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlalchemy import ForeignKey, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.orm.base import Base
-from app.schemas.slot_dto import SlotDTO
-
-if TYPE_CHECKING:
-    from app.db.orm.user import User
+from app.db.orm.user import User
 
 
 class Slot(Base):
