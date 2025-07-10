@@ -13,7 +13,7 @@ class UserRepository:
         self._db = session
 
     def add_user(self, user: UserDTO):
-        user = User.from_dto(user)
+        user = User(**user.model_dump())
         self._db.add(user)
         self._db.commit()
         self._db.refresh(user)
