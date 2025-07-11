@@ -2,7 +2,6 @@ services:
   scheduler:
     build: .
     container_name: scheduler
-    restart: unless-stopped
     environment:
       - BOT_TOKEN=${BOT_TOKEN}
       - DB_NAME=${DB_NAME}

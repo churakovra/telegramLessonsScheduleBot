@@ -2,7 +2,7 @@ from sqlalchemy import select, and_
 from sqlalchemy.orm import Session
 
 from app.db.orm.user import User
-from app.schemas.user_dto import UserDTO
+from app.schemas.student_dto import StudentDTO
 
 
 class StudentRepository:
@@ -23,11 +23,11 @@ class StudentRepository:
         student = self._db.scalar(stmt)
         return student
 
-    def get_student(self, username: str) -> UserDTO | None:
+    def get_student(self, username: str) -> StudentDTO | None:
         student = self._get_student(username)
         if student is None:
             return student
-        return UserDTO(
+        return StudentDTO(
             uuid=student.uuid,
             username=student.username,
             firstname=student.firstname,

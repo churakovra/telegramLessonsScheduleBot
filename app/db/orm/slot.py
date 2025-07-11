@@ -6,6 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.orm.base import Base
 from app.db.orm.user import User
+from app.schemas.slot_dto import SlotDTO
 
 
 class Slot(Base):
