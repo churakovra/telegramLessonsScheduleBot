@@ -1,6 +1,6 @@
 from aiogram import Router
 from aiogram.types import CallbackQuery
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.exceptions.user_exceptions import UserNotFoundException
 from app.keyboards.slots_for_students_markup import SlotsForStudents
@@ -16,19 +16,19 @@ router = Router()
 async def slot_button_handle(
         callback: CallbackQuery,
         callback_data: SlotsForStudents,
-        session: Session
+        session: AsyncSession
 ):
     slot_uuid = callback_data.uuid_slot
 
     student_service = StudentService(session)
     student_username = callback.from_user.username
     try:
-        student = student_service.get_student(student_username)
+        student = await student_service.get_student(student_username)
     except UserNotFoundException:
         raise ValueError()
 
     slot_service = SlotService(session)
-    assigned_slot = slot_service.assign_slot(student.uuid, slot_uuid)
+    assigned_slot = await slot_service.assign_slot(student.uuid, slot_uuid)
 
     await callback.message.answer(
         bt.SLOTS_ASSIGN_SUCCESS_ANSWER.format(

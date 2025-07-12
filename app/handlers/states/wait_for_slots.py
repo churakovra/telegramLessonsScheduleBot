@@ -1,7 +1,7 @@
 from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.keyboards.is_slots_correct import get_is_slots_correct_markup
 from app.services.slot_service import SlotService
@@ -12,12 +12,12 @@ router = Router()
 
 
 @router.message(ScheduleStates.wait_for_slots)
-async def wait_for_slots(message: Message, state: FSMContext, session: Session):
+async def wait_for_slots(message: Message, state: FSMContext, session: AsyncSession):
     slots_raw = message.text
     message_from = message.from_user.username
 
     teacher_service = TeacherService(session)
-    teacher = teacher_service.get_teacher(message_from)
+    teacher = await teacher_service.get_teacher(message_from)
 
     slot_service = SlotService(session)
     slots = await slot_service.parse_slots(slots_raw, teacher.uuid)

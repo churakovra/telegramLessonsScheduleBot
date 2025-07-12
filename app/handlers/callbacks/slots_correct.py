@@ -1,7 +1,7 @@
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.services.slot_service import SlotService
 from app.states.schedule_states import ScheduleStates
@@ -11,12 +11,12 @@ router = Router()
 
 
 @router.callback_query(F.data == bt.CALLBACK_SLOTS_CORRECT, ScheduleStates.wait_for_confirmation)
-async def reply_and_save_to_db(callback: CallbackQuery, state: FSMContext, session: Session):
+async def reply_and_save_to_db(callback: CallbackQuery, state: FSMContext, session: AsyncSession):
     data = await state.get_data()
     slots = data.get("slots")
 
     slot_service = SlotService(session)
-    slot_service.add_slots(slots)
+    await slot_service.add_slots(slots)
     await callback.message.answer(
         text=bt.SLOTS_PROCESSING_SUCCESS_ANSWER
     )
