@@ -19,7 +19,16 @@ class Slot(Base):
     uuid_student: Mapped[UUID] = mapped_column(ForeignKey("users.uuid"), nullable=True)
     dt_spot: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    teacher: Mapped["User"] = relationship(back_populates="slots")
+    teacher: Mapped["User"] = relationship(
+        argument="User",
+        foreign_keys=[uuid_teacher],
+        back_populates="teacher_slots"
+    )
+    student: Mapped["User"] = relationship(
+        argument="User",
+        foreign_keys=[uuid_student],
+        back_populates="student_slots"
+    )
 
     @classmethod
     def new_instance(cls, slot_dto: SlotDTO):

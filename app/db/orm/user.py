@@ -18,7 +18,7 @@ class User(Base):
     uuid: Mapped[UUID] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     firstname: Mapped[str] = mapped_column(String, nullable=False)
-    lastname: Mapped[str]
+    lastname: Mapped[str] = mapped_column(String, nullable=True)
     is_student: Mapped[bool] = mapped_column(default=True)
     is_teacher: Mapped[bool] = mapped_column(default=False)
     is_admin: Mapped[bool] = mapped_column(default=False)
@@ -26,5 +26,14 @@ class User(Base):
     dt_reg: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     dt_edit: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
-    lessons: Mapped[List["Lesson"]] = relationship(back_populates="teacher")
-    slots: Mapped[List["Slot"]] = relationship(back_populates="teacher")
+    lessons: Mapped[List["Lesson"]] = relationship(argument="Lesson", back_populates="teacher")
+    teacher_slots: Mapped[List["Slot"]] = relationship(
+        argument="Slot",
+        foreign_keys="[Slot.uuid_teacher]",
+        back_populates="teacher"
+    )
+    student_slots: Mapped[List["Slot"]] = relationship(
+        argument="Slot",
+        foreign_keys="[Slot.uuid_student]",
+        back_populates="student"
+    )

@@ -10,7 +10,7 @@ class UserDTO(BaseModel):
     uuid: UUID | None = None
     username: str
     firstname: str
-    lastname: str
+    lastname: str | None
     is_student: bool
     is_teacher: bool
     is_admin: bool

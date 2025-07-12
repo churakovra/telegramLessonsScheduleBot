@@ -16,4 +16,4 @@ class Lesson(Base):
     uuid_teacher: Mapped[UUID] = mapped_column(ForeignKey("users.uuid"))
     price: Mapped[int]
 
-    teacher: Mapped["User"] = relationship(back_populates="lessons")
+    teacher: Mapped["User"] = relationship(argument="User", back_populates="lessons", )
