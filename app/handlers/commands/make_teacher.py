@@ -1,7 +1,7 @@
 from aiogram import Router
 from aiogram.filters import Command, CommandObject
 from aiogram.types import Message
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.enums.bot_values import UserRoles
 from app.exceptions.user_exceptions import UserNotFoundException, UserChangeStatusException
@@ -12,7 +12,7 @@ router = Router()
 
 
 @router.message(Command("make_teacher"))
-async def make_teacher_from_student(message: Message, command: CommandObject, session: Session):
+async def make_teacher_from_student(message: Message, command: CommandObject, session: AsyncSession):
     # Проверяем, передали ли аргументы с командой
     if command.args is None:
         await message.answer(
@@ -27,7 +27,7 @@ async def make_teacher_from_student(message: Message, command: CommandObject, se
     # Меняем статус пользователю
     try:
         user_service = UserService(session)
-        user_service.add_role(initiator_user, teacher_username, UserRoles.TEACHER)
+        await user_service.add_role(initiator_user, teacher_username, UserRoles.TEACHER)
         await message.answer(bt.MAKE_TEACHER_SUCCESS)
     except (UserNotFoundException, UserChangeStatusException):
         await message.answer(bt.MAKE_TEACHER_FAILURE)

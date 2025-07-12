@@ -1,15 +1,15 @@
 from sqlalchemy import select, and_
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.orm.user import User
 from app.schemas.student_dto import StudentDTO
 
 
 class StudentRepository:
-    def __init__(self, session: Session):
+    def __init__(self, session: AsyncSession):
         self._db = session
 
-    def _get_student(self, username: str) -> User | None:
+    async def _get_student(self, username: str) -> User | None:
         stmt = (
             select(User)
             .where(
@@ -20,11 +20,11 @@ class StudentRepository:
                 )
             )
         )
-        student = self._db.scalar(stmt)
+        student = await self._db.scalar(stmt)
         return student
 
-    def get_student(self, username: str) -> StudentDTO | None:
-        student = self._get_student(username)
+    async def get_student(self, username: str) -> StudentDTO | None:
+        student = await self._get_student(username)
         if student is None:
             return student
         return StudentDTO(

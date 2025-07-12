@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.enums.bot_values import UserRoles
 from app.exceptions.user_exceptions import UserNotFoundException, UserChangeStatusException
@@ -11,10 +11,10 @@ from app.utils.datetime_utils import day_format
 
 
 class UserService:
-    def __init__(self, session: Session):
+    def __init__(self, session: AsyncSession):
         self._repository = UserRepository(session)
 
-    def register_user(
+    async def register_user(
             self,
             username: str,
             firstname: str,
@@ -29,22 +29,22 @@ class UserService:
             role=role,
             chat_id=chat_id
         )
-        self._repository.add_user(new_user)
+        await self._repository.add_user(new_user)
         return new_user.uuid
 
-    def add_role(self, initiator: str, username: str, role: UserRoles):
-        initiator = self._repository.get_user(initiator)
-        user = self._repository.get_user(username)
+    async def add_role(self, initiator: str, username: str, role: UserRoles):
+        initiator = await self._repository.get_user(initiator)
+        user = await self._repository.get_user(username)
         if user or initiator is None:
             raise UserNotFoundException(username, role)
 
         i_student, i_teacher, i_admin = self.get_user_role(UserRoles.ADMIN)
         if not i_admin:
             raise UserChangeStatusException(user.username, UserRoles.ADMIN)
-        self._repository.add_role(user.uuid, role)
+        await self._repository.add_role(user.uuid, role)
 
-    def get_user_info(self, username: str) -> str:
-        user = self._repository.get_user(username)
+    async def get_user_info(self, username: str) -> str:
+        user = await self._repository.get_user(username)
         res = self.make_user_info_response(user)
         return res
 

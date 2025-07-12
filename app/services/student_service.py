@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.enums.bot_values import UserRoles
 from app.exceptions.user_exceptions import UserNotFoundException
@@ -7,11 +7,11 @@ from app.schemas.user_dto import UserDTO
 
 
 class StudentService:
-    def __init__(self, session: Session):
+    def __init__(self, session: AsyncSession):
         self._repository = StudentRepository(session)
 
-    def get_student(self, username: str) -> UserDTO:
-        student = self._repository.get_student(username)
+    async def get_student(self, username: str) -> UserDTO:
+        student = await self._repository.get_student(username)
         if student is None:
             raise UserNotFoundException(username, UserRoles.STUDENT)
         return student

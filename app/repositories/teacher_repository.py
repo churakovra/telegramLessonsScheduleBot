@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from sqlalchemy import select, and_, update, func, not_
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.orm.slot import Slot
 from app.db.orm.teacher_students import TeacherStudents
@@ -10,20 +10,20 @@ from app.schemas.user_dto import UserDTO
 
 
 class TeacherRepository:
-    def __init__(self, session: Session):
+    def __init__(self, session: AsyncSession):
         self._db = session
 
-    def add_teacher(self, user_uuid: UUID):
+    async def add_teacher(self, user_uuid: UUID):
         stmt = (
             update(User)
             .where(User.uuid == user_uuid)
             .values(is_student=False)
             .values(is_teacher=True)
         )
-        self._db.execute(stmt)
-        self._db.commit()
+        await self._db.execute(stmt)
+        await self._db.commit()
 
-    def _get_teacher(self, username: str) -> User | None:
+    async def _get_teacher(self, username: str) -> User | None:
         stmt = (
             select(User)
             .where(
@@ -34,11 +34,11 @@ class TeacherRepository:
                 )
             )
         )
-        teacher = self._db.scalar(stmt)
+        teacher = await self._db.scalar(stmt)
         return teacher
 
-    def get_teacher(self, username: str) -> UserDTO | None:
-        teacher = self._get_teacher(username)
+    async def get_teacher(self, username: str) -> UserDTO | None:
+        teacher = await self._get_teacher(username)
         if teacher is None:
             return teacher
         return UserDTO(
@@ -54,31 +54,31 @@ class TeacherRepository:
             dt_edit=teacher.dt_edit
         )
 
-    def remove_teacher(self, teacher_uuid: UUID):
+    async def remove_teacher(self, teacher_uuid: UUID):
         stmt = (
             update(User)
             .where(User.uuid == teacher_uuid)
             .values(is_teacher=False)
             .values(is_student=True)
         )
-        self._db.execute(stmt)
-        self._db.commit()
+        await self._db.execute(stmt)
+        await self._db.commit()
 
-    def attach_student(self, teacher_uuid: UUID, student_uuid: UUID):
+    async def attach_student(self, teacher_uuid: UUID, student_uuid: UUID):
         teacher_student = TeacherStudents.new_instance(teacher_uuid, student_uuid)
         self._db.add(teacher_student)
-        self._db.commit()
-        self._db.refresh(teacher_student)
+        await self._db.commit()
+        await self._db.refresh(teacher_student)
         return teacher_student.uuid
 
-    def get_students(self, teacher_uuid: UUID) -> list[UserDTO]:
+    async def get_students(self, teacher_uuid: UUID) -> list[UserDTO]:
         users = list()
         stmt = (
             select(User)
             .join(TeacherStudents, User.uuid == TeacherStudents.uuid_student)
             .where(TeacherStudents.uuid_teacher == teacher_uuid)
         )
-        for user in self._db.scalars(stmt):
+        for user in await self._db.scalars(stmt):
             users.append(
                 UserDTO(
                     uuid=user.uuid,
@@ -96,12 +96,18 @@ class TeacherRepository:
 
         return users
 
-    def get_unsigned_students(self, teacher_uuid: UUID):
+    async def get_unsigned_students(self, teacher_uuid: UUID):
         users = list()
-        ts_subquery = select(TeacherStudents.uuid_student).where(
-            TeacherStudents.uuid_teacher == teacher_uuid).scalar_subquery()
-
-        slots_subquery = select(Slot.uuid_student).where(Slot.dt_add > func.now()).scalar_subquery()
+        ts_subquery = (
+            select(TeacherStudents.uuid_student)
+            .where(TeacherStudents.uuid_teacher == teacher_uuid)
+            .scalar_subquery()
+        )
+        slots_subquery = (
+            select(Slot.uuid_student)
+            .where(Slot.dt_add > func.now())
+            .scalar_subquery()
+        )
         stmt = (
             select(User)
             .where(
@@ -111,7 +117,7 @@ class TeacherRepository:
                 )
             )
         )
-        for user in self._db.scalars(stmt):
+        for user in await self._db.scalars(stmt):
             users.append(
                 UserDTO(
                     uuid=user.uuid,
