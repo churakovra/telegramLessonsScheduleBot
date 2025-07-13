@@ -1,9 +1,11 @@
+from datetime import datetime, timezone
 from uuid import UUID
 
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.orm.user import User
+from app.db.orm.lesson import Lesson
 from app.enums.bot_values import UserRoles
 from app.schemas.user_dto import UserDTO
 
@@ -38,11 +40,32 @@ class UserRepository:
 
     async def edit_role(self, user_uuid: UUID, role: UserRoles, status: bool):
         if role == UserRoles.TEACHER:
-            stmt = update(User).where(User.uuid == user_uuid).values(is_teacher=status)
+            stmt = (
+                update(User)
+                .where(User.uuid == user_uuid)
+                .values(
+                    is_teacher=status,
+                    dt_edit=datetime.now(timezone.utc).astimezone()
+                )
+            )
         elif role == UserRoles.ADMIN:
-            stmt = update(User).where(User.uuid == user_uuid).values(is_admin=status)
-        elif role == UserRoles.ADMIN:
-            stmt = update(User).where(User.uuid == user_uuid).values(is_student=status)
+            stmt = (
+                update(User)
+                .where(User.uuid == user_uuid)
+                .values(
+                    is_admin=status,
+                    dt_edit=datetime.now(timezone.utc).astimezone()
+                )
+            )
+        elif role == UserRoles.STUDENT:
+            stmt = (
+                update(User)
+                .where(User.uuid == user_uuid)
+                .values(
+                    is_student=status,
+                    dt_edit=datetime.now(timezone.utc).astimezone()
+                )
+            )
         else:
             raise ValueError(f"role {role} is unacceptable")
         await self._db.execute(stmt)
