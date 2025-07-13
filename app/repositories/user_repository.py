@@ -1,12 +1,9 @@
 from uuid import UUID
 
-from sqlalchemy import select, update, insert
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.orm.user import User
-from app.db.orm.lesson import Lesson
-from app.db.orm.slot import Slot
-
 from app.enums.bot_values import UserRoles
 from app.schemas.user_dto import UserDTO
 
@@ -39,15 +36,15 @@ class UserRepository:
             dt_edit=user.dt_edit
         )
 
-    async def add_role(self, user_uuid: UUID, new_status: UserRoles):
-        if new_status == UserRoles.TEACHER:
-            stmt = update(User).where(User.uuid == user_uuid).values(is_teacher=True)
-        elif new_status == UserRoles.ADMIN:
-            stmt = update(User).where(User.uuid == user_uuid).values(is_admin=True)
-        elif new_status == UserRoles.ADMIN:
-            stmt = update(User).where(User.uuid == user_uuid).values(is_student=True)
+    async def edit_role(self, user_uuid: UUID, role: UserRoles, status: bool):
+        if role == UserRoles.TEACHER:
+            stmt = update(User).where(User.uuid == user_uuid).values(is_teacher=status)
+        elif role == UserRoles.ADMIN:
+            stmt = update(User).where(User.uuid == user_uuid).values(is_admin=status)
+        elif role == UserRoles.ADMIN:
+            stmt = update(User).where(User.uuid == user_uuid).values(is_student=status)
         else:
-            raise ValueError(f"new_status {new_status} is unacceptable")
+            raise ValueError(f"role {role} is unacceptable")
         await self._db.execute(stmt)
         await self._db.commit()
         # TODO add log to db with initiator_user, dt of changing status etc

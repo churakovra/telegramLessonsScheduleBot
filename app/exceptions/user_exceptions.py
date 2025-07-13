@@ -12,8 +12,11 @@ class UserAddException(Exception):
 
 
 class UserChangeStatusException(Exception):
-    def __init__(self, username: str, role: UserRoles):
-        self.message = f"Can't change make {username} role {role}"
+    def __init__(self, username: str, role: UserRoles, initiator_username: str):
+        self.message = (
+            f"Can't change {username} role {role}. "
+            f"Initiator {initiator_username} has not enough rights do make this operation"
+        )
 
 
 class UserNotFoundException(Exception):

@@ -32,16 +32,17 @@ class UserService:
         await self._repository.add_user(new_user)
         return new_user.uuid
 
-    async def add_role(self, initiator: str, username: str, role: UserRoles):
-        initiator = await self._repository.get_user(initiator)
-        user = await self._repository.get_user(username)
-        if user or initiator is None:
+    async def add_role(self, initiator_username: str, username: str, role: UserRoles):
+        initiator = await self._repository.get_user(initiator_username.strip())
+        user = await self._repository.get_user(username.strip())
+        if not initiator:
+            raise UserNotFoundException(initiator_username, UserRoles.ADMIN)
+        elif not user:
             raise UserNotFoundException(username, role)
 
-        i_student, i_teacher, i_admin = self.get_user_role(UserRoles.ADMIN)
-        if not i_admin:
-            raise UserChangeStatusException(user.username, UserRoles.ADMIN)
-        await self._repository.add_role(user.uuid, role)
+        if not initiator.is_admin:
+            raise UserChangeStatusException(user.username, UserRoles.ADMIN, initiator_username)
+        await self._repository.edit_role(user.uuid, role, True)
 
     async def get_user_info(self, username: str) -> str:
         user = await self._repository.get_user(username)

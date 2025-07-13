@@ -28,6 +28,6 @@ async def make_teacher_from_student(message: Message, command: CommandObject, se
     try:
         user_service = UserService(session)
         await user_service.add_role(initiator_user, teacher_username, UserRoles.TEACHER)
-        await message.answer(bt.MAKE_TEACHER_SUCCESS)
-    except (UserNotFoundException, UserChangeStatusException):
-        await message.answer(bt.MAKE_TEACHER_FAILURE)
+        await message.answer(bt.MAKE_TEACHER_SUCCESS.format(teacher_username))
+    except (UserNotFoundException, UserChangeStatusException) as e:
+        await message.answer(f"{bt.MAKE_TEACHER_FAILURE}; {e.message}")
