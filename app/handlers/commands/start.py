@@ -1,20 +1,17 @@
-from typing import Dict, Any
-
 from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.enums.bot_values import UserRoles
-from app.middlewares.db_session import DBSessionMiddleware
 from app.services.user_service import UserService
 from app.utils.bot_strings import bot_strings as bt
 
 router = Router()
 
+
 @router.message(Command("start"))
-async def add_new_user(message: Message, data: dict):
-    session: AsyncSession = data["session"]
+async def add_new_user(message: Message, session: AsyncSession):
     new_user = {
         "username": message.from_user.username,
         "firstname": message.from_user.first_name,
