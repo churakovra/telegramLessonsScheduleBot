@@ -4,7 +4,7 @@ from sqlalchemy import select, and_, update, func, not_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.orm.slot import Slot
-from app.db.orm.teacher_students import TeacherStudents
+from app.db.orm.teacher_student import TeacherStudent
 from app.db.orm.user import User
 from app.schemas.user_dto import UserDTO
 
@@ -65,7 +65,7 @@ class TeacherRepository:
         await self._db.commit()
 
     async def attach_student(self, teacher_uuid: UUID, student_uuid: UUID):
-        teacher_student = TeacherStudents.new_instance(teacher_uuid, student_uuid)
+        teacher_student = TeacherStudent.new_instance(teacher_uuid, student_uuid)
         self._db.add(teacher_student)
         await self._db.commit()
         await self._db.refresh(teacher_student)
@@ -75,8 +75,8 @@ class TeacherRepository:
         users = list()
         stmt = (
             select(User)
-            .join(TeacherStudents, User.uuid == TeacherStudents.uuid_student)
-            .where(TeacherStudents.uuid_teacher == teacher_uuid)
+            .join(TeacherStudent, User.uuid == TeacherStudent.uuid_student)
+            .where(TeacherStudent.uuid_teacher == teacher_uuid)
         )
         for user in await self._db.scalars(stmt):
             users.append(
@@ -99,8 +99,8 @@ class TeacherRepository:
     async def get_unsigned_students(self, teacher_uuid: UUID):
         users = list()
         ts_subquery = (
-            select(TeacherStudents.uuid_student)
-            .where(TeacherStudents.uuid_teacher == teacher_uuid)
+            select(TeacherStudent.uuid_student)
+            .where(TeacherStudent.uuid_teacher == teacher_uuid)
             .scalar_subquery()
         )
         slots_subquery = (

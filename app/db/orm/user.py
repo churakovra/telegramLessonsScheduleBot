@@ -10,6 +10,7 @@ from app.db.orm.base import Base
 if TYPE_CHECKING:
     from app.db.orm.lesson import Lesson
     from app.db.orm.slot import Slot
+    from app.db.orm.teacher_student import TeacherStudent
 
 
 class User(Base):
@@ -26,7 +27,11 @@ class User(Base):
     dt_reg: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     dt_edit: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
-    lessons: Mapped[List["Lesson"]] = relationship(argument="Lesson", back_populates="teacher")
+    lessons: Mapped[List["Lesson"]] = relationship(
+        argument="Lesson",
+        back_populates="teacher"
+    )
+
     teacher_slots: Mapped[List["Slot"]] = relationship(
         argument="Slot",
         foreign_keys="[Slot.uuid_teacher]",
@@ -35,5 +40,15 @@ class User(Base):
     student_slots: Mapped[List["Slot"]] = relationship(
         argument="Slot",
         foreign_keys="[Slot.uuid_student]",
+        back_populates="student"
+    )
+    teacher: Mapped[List["TeacherStudent"]] = relationship(
+        argument="TeacherStudent",
+        foreign_keys="[TeacherStudent.uuid_teacher]",
+        back_populates="teacher"
+    )
+    student: Mapped[List["TeacherStudent"]] = relationship(
+        argument="TeacherStudent",
+        foreign_keys="[TeacherStudent.uuid_student]",
         back_populates="student"
     )
