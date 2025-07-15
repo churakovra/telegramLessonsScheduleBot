@@ -1,7 +1,7 @@
 from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.enums.bot_values import UserRoles
 from app.services.user_service import UserService
@@ -11,19 +11,16 @@ router = Router()
 
 
 @router.message(Command("start"))
-async def add_new_user(message: Message, session: Session):
-    username = message.from_user.username
-    firstname = message.from_user.first_name
-    lastname = message.from_user.last_name
-    chat_id = message.from_user.id
+async def add_new_user(message: Message, session: AsyncSession):
+    new_user = {
+        "username": message.from_user.username,
+        "firstname": message.from_user.first_name,
+        "lastname": message.from_user.last_name,
+        "role": UserRoles.STUDENT,
+        "chat_id": message.from_user.id
+    }
 
     user_service = UserService(session)
-    user_service.register_user(
-        username=username,
-        firstname=firstname,
-        lastname=lastname,
-        role=UserRoles.STUDENT,
-        chat_id=chat_id
-    )
+    await user_service.register_user(**new_user)
 
-    await message.answer(text=bt.GREETING.format(firstname))
+    await message.answer(text=bt.GREETING.format(new_user["firstname"]))

@@ -3,7 +3,7 @@ import string
 from datetime import datetime, timedelta
 from uuid import UUID
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.exceptions.slot_exceptions import SlotFreeNotFoundException, SlotNotFoundException
 from app.repositories.slot_repository import SlotRepository
@@ -12,33 +12,34 @@ from app.utils.datetime_utils import WEEKDAYS
 
 
 class SlotService:
-    def __init__(self, session: Session):
+    def __init__(self, session: AsyncSession):
         self._repository = SlotRepository(session)
 
-    def add_slots(self, slots: list[SlotDTO]):
+    async def add_slots(self, slots: list[SlotDTO]):
         for slot in slots:
-            self._repository.add_slot(slot)
+            await self._repository.add_slot(slot)
 
-    def get_slot(self, slot_uuid: UUID) -> SlotDTO:
-        slot = self._repository.get_slot(slot_uuid)
+    async def get_slot(self, slot_uuid: UUID) -> SlotDTO:
+        slot = await self._repository.get_slot(slot_uuid)
         if slot is None:
             raise SlotNotFoundException(slot_uuid)
         return slot
 
-    def get_free_slots(self, teacher_uuid: UUID) -> list[SlotDTO]:
-        slots = self._repository.get_free_slots(teacher_uuid)
+    async def get_free_slots(self, teacher_uuid: UUID) -> list[SlotDTO]:
+        slots = await self._repository.get_free_slots(teacher_uuid)
         if len(slots) <= 0:
             raise SlotFreeNotFoundException(teacher_uuid)
         return slots
 
-    def assign_slot(self, student_uuid: UUID, slot_uuid: UUID) -> SlotDTO:
-        slot = self.get_slot(slot_uuid)
-        self._repository.assign_slot(student_uuid, slot.uuid)
+    async def assign_slot(self, student_uuid: UUID, slot_uuid: UUID) -> SlotDTO:
+        slot = await self.get_slot(slot_uuid)
+        await self._repository.assign_slot(student_uuid, slot.uuid)
         return slot
 
     @staticmethod
     async def parse_slots(message_text: str, uuid_teacher: UUID) -> list[SlotDTO]:
-        raw_mt = [word.strip(string.punctuation) for word in message_text.split()]  # разбиваем сообщение на День и Время
+        raw_mt = [word.strip(string.punctuation) for word in
+                  message_text.split()]  # разбиваем сообщение на День и Время
         slots = list[SlotDTO]()
         weekday_index = None
         for word in raw_mt:

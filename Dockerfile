@@ -6,6 +6,6 @@ WORKDIR /bot
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app ./app
+ENV PYTHONPATH=/bot
 
-CMD ["python3", "-m", "app.main"]
+COPY app ./app
