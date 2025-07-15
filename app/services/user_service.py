@@ -1,9 +1,10 @@
 from uuid import UUID
 
+from pydantic.v1.class_validators import Validator
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.enums.bot_values import UserRoles
-from app.exceptions.user_exceptions import UserNotFoundException, UserChangeStatusException
+from app.exceptions.user_exceptions import UserNotFoundException, UserChangeRoleException, UserUnknownRoleException
 from app.repositories.user_repository import UserRepository
 from app.schemas.user_dto import UserDTO
 from app.utils.bot_strings import bot_strings as bt
@@ -41,13 +42,23 @@ class UserService:
             raise UserNotFoundException(username, role)
 
         if not initiator.is_admin:
-            raise UserChangeStatusException(user.username, UserRoles.ADMIN, initiator_username)
-        await self._repository.edit_role(user.uuid, role, True)
+            raise UserChangeRoleException(user.username, UserRoles.ADMIN, initiator_username)
+
+        try:
+            await self._repository.edit_role(user.uuid, role, True)
+        except ValueError:
+            raise UserUnknownRoleException(username, role)
 
     async def get_user_info(self, username: str) -> str:
         user = await self._repository.get_user(username)
         res = self.make_user_info_response(user)
         return res
+
+    async def get_user(self, username: str) -> UserDTO:
+        user = await self._repository.get_user(username)
+        if user is None:
+            raise UserNotFoundException(username, None)
+        return user
 
     @staticmethod
     def make_user_info_response(user: UserDTO) -> str:
