@@ -3,7 +3,7 @@ from aiogram.filters import Command
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.enums.bot_values import UserRoles
+from app.utils.enums import UserRoles
 from app.services.user_service import UserService
 from app.utils.bot_strings import bot_strings as bt
 

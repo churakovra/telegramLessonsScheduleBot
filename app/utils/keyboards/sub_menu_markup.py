@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from app.config.logger import setup_logger
+from app.utils.config.logger import setup_logger
 from app.utils.bot_strings import BotStrings
 
 logger = setup_logger()

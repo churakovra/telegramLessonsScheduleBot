@@ -3,10 +3,10 @@ from aiogram.filters import Command
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config.logger import setup_logger
-from app.enums.bot_values import UserRoles
-from app.exceptions.user_exceptions import UserNotFoundException, UserUnknownRoleException
-from app.keyboards.menu_markup import get_menu_markup
+from app.utils.config.logger import setup_logger
+from app.utils.enums import UserRoles
+from app.utils.exceptions.user_exceptions import UserNotFoundException, UserUnknownRoleException
+from app.utils.keyboards import get_menu_markup
 from app.services.user_service import UserService
 from app.utils.bot_strings import BotStrings
 

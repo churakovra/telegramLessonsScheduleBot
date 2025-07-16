@@ -1,7 +1,7 @@
 from aiogram import Router
 from aiogram.types import CallbackQuery
 
-from app.keyboards.sub_menu_markup import SubMenuCallback
+from app.utils.keyboards.sub_menu_markup import SubMenuCallback
 
 router = Router()
 @router.callback_query(SubMenuCallback.filter())

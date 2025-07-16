@@ -2,9 +2,9 @@ from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from app.config.logger import setup_logger
-from app.enums.bot_values import UserRoles
-from app.exceptions.user_exceptions import UserUnknownRoleException
+from app.utils.config.logger import setup_logger
+from app.utils.enums.bot_values import UserRoles
+from app.utils.exceptions.user_exceptions import UserUnknownRoleException
 from app.utils.bot_strings import bot_strings as bt
 
 logger = setup_logger()

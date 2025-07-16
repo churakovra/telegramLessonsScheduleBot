@@ -5,8 +5,7 @@ from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.orm.user import User
-from app.db.orm.lesson import Lesson
-from app.enums.bot_values import UserRoles
+from app.utils.enums import UserRoles
 from app.schemas.user_dto import UserDTO
 
 

@@ -1,9 +1,9 @@
 from aiogram import Router
 from aiogram.types import CallbackQuery
 
-from app.config.logger import setup_logger
-from app.keyboards.main_menu_markup import MainMenuCallback
-from app.keyboards.sub_menu_markup import get_sub_menu_markup
+from app.utils.config.logger import setup_logger
+from app.utils.keyboards.main_menu_markup import MainMenuCallback
+from app.utils.keyboards.sub_menu_markup import get_sub_menu_markup
 from app.utils.bot_strings import BotStrings
 
 router = Router()
