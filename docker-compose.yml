@@ -14,7 +14,7 @@ services:
       scheduler-pg:
         condition: service_healthy
 
-    command: python -m app.main
+    command: uv run python -m app.main
 
   scheduler-pg:
     image: postgres:15-alpine
