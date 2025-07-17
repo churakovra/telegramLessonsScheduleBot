@@ -5,7 +5,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.utils.exceptions import SlotFreeNotFoundException, SlotNotFoundException
+from app.utils.exceptions.slot_exceptions import SlotFreeNotFoundException, SlotNotFoundException
 from app.repositories.slot_repository import SlotRepository
 from app.schemas.slot_dto import SlotDTO
 from app.utils.datetime_utils import WEEKDAYS

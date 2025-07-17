@@ -2,7 +2,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.utils.enums import UserRoles
+from app.utils.enums.bot_values import UserRoles
 from app.utils.exceptions.user_exceptions import UserNotFoundException, UserChangeRoleException, UserUnknownRoleException
 from app.repositories.user_repository import UserRepository
 from app.schemas.user_dto import UserDTO
