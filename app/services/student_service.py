@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.enums.bot_values import UserRoles
-from app.exceptions.user_exceptions import UserNotFoundException
+from app.utils.enums import UserRoles
+from app.utils.exceptions.user_exceptions import UserNotFoundException
 from app.repositories.student_repository import StudentRepository
 from app.schemas.user_dto import UserDTO
 

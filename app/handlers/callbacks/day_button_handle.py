@@ -1,8 +1,8 @@
 from aiogram import Router
 from aiogram.types import CallbackQuery
 
-from app.keyboards.days_for_students_markup import DaysForStudents
-from app.keyboards.slots_for_students_markup import get_slots_for_students_markup
+from app.utils.keyboards.days_for_students_markup import DaysForStudents
+from app.utils.keyboards.slots_for_students_markup import get_slots_for_students_markup
 
 router = Router()
 

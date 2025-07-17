@@ -1,10 +1,9 @@
 from uuid import UUID
 
-from pydantic.v1.class_validators import Validator
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.enums.bot_values import UserRoles
-from app.exceptions.user_exceptions import UserNotFoundException, UserChangeRoleException, UserUnknownRoleException
+from app.utils.enums import UserRoles
+from app.utils.exceptions.user_exceptions import UserNotFoundException, UserChangeRoleException, UserUnknownRoleException
 from app.repositories.user_repository import UserRepository
 from app.schemas.user_dto import UserDTO
 from app.utils.bot_strings import bot_strings as bt
