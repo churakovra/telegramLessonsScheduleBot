@@ -1,7 +1,6 @@
 from aiogram import Router, F
 from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Session
 
 from app.services.user_service import UserService
 from app.utils.bot_strings import bot_strings as bt

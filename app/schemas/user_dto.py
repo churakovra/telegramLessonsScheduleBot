@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel
 
-from app.enums.bot_values import UserRoles
+from app.utils.enums.bot_values import UserRoles
 
 
 class UserDTO(BaseModel):

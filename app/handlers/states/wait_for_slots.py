@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.keyboards.is_slots_correct import get_is_slots_correct_markup
+from app.utils.keyboards.is_slots_correct import get_is_slots_correct_markup
 from app.services.slot_service import SlotService
 from app.services.teacher_service import TeacherService
 from app.states.schedule_states import ScheduleStates

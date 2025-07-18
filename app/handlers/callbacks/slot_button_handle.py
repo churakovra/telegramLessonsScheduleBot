@@ -2,8 +2,8 @@ from aiogram import Router
 from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.exceptions.user_exceptions import UserNotFoundException
-from app.keyboards.slots_for_students_markup import SlotsForStudents
+from app.utils.exceptions.user_exceptions import UserNotFoundException
+from app.utils.keyboards.slots_for_students_markup import SlotsForStudents
 from app.services.slot_service import SlotService
 from app.services.student_service import StudentService
 from app.utils.bot_strings import bot_strings as bt
