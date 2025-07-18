@@ -2,7 +2,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.utils.enums import UserRoles
+from app.utils.enums.bot_values import UserRoles
 from app.utils.exceptions.teacher_exceptions import TeacherStudentsNotFound
 from app.utils.exceptions.user_exceptions import UserNotFoundException
 from app.repositories.teacher_repository import TeacherRepository

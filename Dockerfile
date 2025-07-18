@@ -3,9 +3,11 @@ LABEL authors="churakovra"
 
 WORKDIR /bot
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install uv
 
-ENV PYTHONPATH=/bot
+COPY pyproject.toml uv.lock ./
+RUN uv sync
 
 COPY app ./app
+
+CMD ["uv","run", "python", "-m", "app.main"]
