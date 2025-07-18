@@ -39,8 +39,11 @@ class BotStrings(str):
     CALLBACK_GROUP_TEACHER_LESSON_DELETE = "cg-t-lesson_delete"
 
     CALLBACK_GROUP_STUDENT = "cg-s"
+    CALLBACK_GROUP_STUDENT_TEACHER = "cg-s-teacher"
     CALLBACK_GROUP_STUDENT_TEACHER_LIST = "cg-s-teacher_list"
+    CALLBACK_GROUP_STUDENT_SLOT = "cg-s-slot"
     CALLBACK_GROUP_STUDENT_SLOT_LIST = "cg-s-slot_list"
+    CALLBACK_GROUP_STUDENT_LESSON = "cg-s-lesson"
     CALLBACK_GROUP_STUDENT_LESSON_LIST = "cg-s-lesson_list"
 
     SLOTS_PROCESSING_SUCCESS_ANSWER: str = "Отлично! Отправил окошки ученикам 🤝"

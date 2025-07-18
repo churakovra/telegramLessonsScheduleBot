@@ -1,3 +1,4 @@
+from .back_button import router as back_button_router
 from .day_button_handle import router as day_button_handle_router
 from .main_menu import router as main_menu_router
 from .slot_button_handle import router as slot_button_handle_router
@@ -7,6 +8,7 @@ from .sub_menu import router as sub_menu_router
 from .user_info import router as user_info_router
 
 callback_routers = [
+    back_button_router,
     day_button_handle_router,
     main_menu_router,
     slot_button_handle_router,

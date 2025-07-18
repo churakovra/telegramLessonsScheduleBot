@@ -19,7 +19,7 @@ async def send_menu_message(
         message: Message,
         session: AsyncSession
 ):
-    logger.debug(f"in send_menu_message def")
+    logger.debug("in send_menu_message def")
     username = message.from_user.username
     try:
         user_service = UserService(session)

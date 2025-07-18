@@ -1,46 +1,44 @@
-from aiogram.types import InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from app.utils.config.logger import setup_logger
 from app.utils.bot_strings import BotStrings
+from app.utils.keyboards.callback_factories.back import BackCallback
+from app.utils.keyboards.callback_factories.sub_menu import (
+    SubMenuCallback, 
+    teacher_student, 
+    teacher_slot, 
+    teacher_lesson,
+    student_teacher,
+    student_slot,
+    student_lesson,
+)
 
 logger = setup_logger()
 
-def get_sub_menu_markup(sub_menu_type: str):
+
+
+def get_sub_menu_markup(sub_menu_type: str) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     logger.debug(f"in get_sub_menu_markup, sub_menu_type={sub_menu_type}")
     match sub_menu_type:
         case BotStrings.CALLBACK_GROUP_TEACHER_STUDENT:
-            callbacks = {
-                "Добавить ученика": BotStrings.CALLBACK_GROUP_TEACHER_STUDENT_ADD,
-                "Изменить ученика": BotStrings.CALLBACK_GROUP_TEACHER_STUDENT_EDIT,
-                "Получить список учеников": BotStrings.CALLBACK_GROUP_TEACHER_STUDENT_LIST,
-                "Удалить ученика": BotStrings.CALLBACK_GROUP_TEACHER_STUDENT_DELETE
-            }
+            menu_type = teacher_student
         case BotStrings.CALLBACK_GROUP_TEACHER_SLOT:
-            callbacks = {
-                "Добавить окошки": BotStrings.CALLBACK_GROUP_TEACHER_SLOT_ADD,
-                "Изменить окошки": BotStrings.CALLBACK_GROUP_TEACHER_SLOT_EDIT,
-                "Записать ученика в окошко": BotStrings.CALLBACK_GROUP_TEACHER_SLOT_SPOT,
-                "Получить список окошек": BotStrings.CALLBACK_GROUP_TEACHER_SLOT_LIST,
-                "Удалить окошко": BotStrings.CALLBACK_GROUP_TEACHER_SLOT_DELETE
-            }
+            menu_type = teacher_slot
         case BotStrings.CALLBACK_GROUP_TEACHER_LESSON:
-            callbacks = {
-                "Добавить предмет": BotStrings.CALLBACK_GROUP_TEACHER_LESSON_ADD,
-                "Изменить предмет": BotStrings.CALLBACK_GROUP_TEACHER_LESSON_EDIT,
-                "Получить список предметов": BotStrings.CALLBACK_GROUP_TEACHER_LESSON_LIST,
-                "Удалить предмет": BotStrings.CALLBACK_GROUP_TEACHER_LESSON_DELETE
-            }
+            menu_type = teacher_lesson
+        case BotStrings.CALLBACK_GROUP_STUDENT_TEACHER:
+            menu_type = student_teacher
+        case BotStrings.CALLBACK_GROUP_STUDENT_SLOT:
+            menu_type = student_slot
+        case BotStrings.CALLBACK_GROUP_STUDENT_LESSON:
+            menu_type = student_lesson
         case _:
             raise ValueError(f"Wrong sub_menu_type {sub_menu_type}")
-    for name, value in callbacks.items():
-        builder.add(
-            InlineKeyboardButton(
-                text=name,
-                callback_data=value
-            )
-        )
+    for name, value in menu_type.items():
+        builder.button(text=name, callback_data=SubMenuCallback(menu_type=value))
         logger.debug(f"get_sub_menu_markup: name={name}; callback_data={value}")
+    builder.button(text="Назад", callback_data=BackCallback(current_level=sub_menu_type, parent_keyboard="menu_keyboard"))
     builder.adjust(1)
     return builder.as_markup()
