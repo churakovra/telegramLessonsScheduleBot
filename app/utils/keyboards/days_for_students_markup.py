@@ -1,19 +1,15 @@
 import calendar
+from uuid import UUID
 
-from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from app.schemas.slot_dto import SlotDTO
 from app.utils.datetime_utils import WEEKDAYS
+from app.utils.keyboards.callback_factories.days_for_students import DaysForStudents
 
 
-class DaysForStudents(CallbackData, prefix="fabday"):
-    day_num: int
-    slots: list[SlotDTO]
-
-
-def get_days_for_students_markup(slots: list[SlotDTO]) -> InlineKeyboardMarkup:
+def get_days_for_students_markup(slots: list[SlotDTO], teacher_uuid: UUID) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     day_num = slots[0].dt_start.day
     day_slots = list()
@@ -29,7 +25,7 @@ def get_days_for_students_markup(slots: list[SlotDTO]) -> InlineKeyboardMarkup:
             weekday = WEEKDAYS[weekday_num][2]
             builder.button(
                 text=weekday,
-                callback_data=DaysForStudents(day_num=day_num, slots=day_slots)
+                callback_data=DaysForStudents(day_num=day_num, slots=day_slots, teacher_uuid=teacher_uuid)
             )
 
             day_num = slot.dt_start.day

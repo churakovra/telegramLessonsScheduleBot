@@ -31,5 +31,5 @@ async def new_slots_ready(message: Message, state: FSMContext, session: AsyncSes
 
     slots = await slots_service.get_free_slots(teacher.uuid)
     message_text = await slots_service.get_slot_reply(slots)
-    markup = get_days_for_students_markup(slots)
+    markup = get_days_for_students_markup(slots, teacher.uuid)
     await message.answer(text=message_text, reply_markup=markup)

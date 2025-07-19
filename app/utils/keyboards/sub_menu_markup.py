@@ -38,6 +38,9 @@ def get_sub_menu_markup(sub_menu_type: str) -> InlineKeyboardMarkup:
     for name, value in menu_type.items():
         builder.button(text=name, callback_data=SubMenuCallback(menu_type=value))
         logger.debug(f"get_sub_menu_markup: name={name}; callback_data={value}")
-    builder.button(text="Назад", callback_data=BackCallback(current_level=sub_menu_type, parent_keyboard="menu_keyboard"))
+    builder.button(
+        text="Назад",
+        callback_data=BackCallback(current_level=sub_menu_type, parent_keyboard="menu_keyboard")
+    )
     builder.adjust(1)
     return builder.as_markup()

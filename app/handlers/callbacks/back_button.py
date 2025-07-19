@@ -1,47 +1,46 @@
-from operator import call
 from aiogram import Router
 from aiogram.types import CallbackQuery
-
-from app.utils.keyboards.callback_factories.back import BackCallback
-from app.utils.keyboards.main_menu_markup import get_main_menu_markup
-from app.services.user_service import UserService
-from app.utils.enums.bot_values import UserRoles
-from app.utils.exceptions.user_exceptions import UserNotFoundException, UserUnknownRoleException
-
-
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.services.slot_service import SlotService
+from app.services.user_service import UserService
+from app.utils.exceptions.teacher_exceptions import TeacherStudentsNotFound
+from app.utils.exceptions.user_exceptions import UserNotFoundException, UserUnknownRoleException
+from app.utils.keyboards.callback_factories.back import BackCallback
+from app.utils.keyboards.days_for_students_markup import get_days_for_students_markup
+from app.utils.keyboards.main_menu_markup import get_main_menu_markup
 
 router = Router()
 
+
 @router.callback_query(BackCallback.filter())
 async def handle_callback(
-    callback: CallbackQuery,
-    callback_data: BackCallback,
-    session: AsyncSession
+        callback: CallbackQuery,
+        callback_data: BackCallback,
+        session: AsyncSession
 ):
     parent_keyboard = callback_data.parent_keyboard
-    if parent_keyboard != "menu_keyboard": # TODO Вынести в ENUM
-        return
-        
-    username = callback.from_user.username
     try:
-        user_service = UserService(session)
-        user = await user_service.get_user(username)
-        if user.is_admin:
-            markup = get_main_menu_markup(UserRoles.ADMIN)
-        elif user.is_teacher:
-            markup = get_main_menu_markup(UserRoles.TEACHER)
-        elif user.is_student:
-            markup = get_main_menu_markup(UserRoles.STUDENT)
+        if parent_keyboard == "menu_keyboard":  # TODO Вынести в ENUM
+            username = callback.from_user.username
+            user_service = UserService(session)
+            user = await user_service.get_user(username)
+            markup = get_main_menu_markup(user)
+            await callback.message.answer(text=callback.message.text, reply_markup=markup)
+        elif parent_keyboard == "days_for_students":  # TODO Вынести в ENUM
+            if callback_data.teacher_uuid is None:
+                raise ValueError(f"callback_data.teacher_uuid is None")
+            teacher_uuid = callback_data.teacher_uuid
+            slot_service = SlotService(session)
+            slots = await slot_service.get_free_slots(teacher_uuid)
+            markup = get_days_for_students_markup(slots, teacher_uuid)
+            await callback.message.answer(text=callback.message.text, reply_markup=markup)
         else:
-            raise UserUnknownRoleException(username, None)
-        
-        await callback.message.answer(text=callback.message.text, reply_markup=markup)
-        await callback.message.delete()
-        
+            raise ValueError("Unknown parent_keyboard value")
     except (UserNotFoundException, UserUnknownRoleException) as e:
         await callback.message.answer(e.message)
-        
+    except TeacherStudentsNotFound as e:
+        await callback.message.answer(e.message)
     finally:
+        await callback.message.delete()
         await callback.answer()

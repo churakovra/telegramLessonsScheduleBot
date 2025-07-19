@@ -13,6 +13,7 @@ async def handle_day_callback(
         callback_data: DaysForStudents
 ):
     slots = callback_data.slots
-    markup = get_slots_for_students_markup(slots)
+    teacher_uuid = callback_data.teacher_uuid
+    markup = get_slots_for_students_markup(slots, teacher_uuid)
     await callback.message.edit_reply_markup(reply_markup=markup)
     await callback.answer()
