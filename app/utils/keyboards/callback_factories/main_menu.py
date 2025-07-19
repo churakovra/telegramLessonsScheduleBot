@@ -1,16 +1,20 @@
-from app.utils.bot_strings import bot_strings as bt
+from app.utils.enums.menu_type import MenuType
 from app.utils.keyboards.callback_factories.base import BaseMenuCallback
 
 teacher_menu = {
-    "Ученики": bt.CALLBACK_GROUP_TEACHER_STUDENT,
-    "Окошки": bt.CALLBACK_GROUP_TEACHER_SLOT,
-    "Уроки": bt.CALLBACK_GROUP_TEACHER_LESSON,
+    "Ученики": MenuType.TEACHER_STUDENT,
+    "Окошки": MenuType.TEACHER_SLOT,
+    "Уроки": MenuType.TEACHER_LESSON,
 }
 
 student_menu = {
-    "Учителя": bt.CALLBACK_GROUP_STUDENT_TEACHER,
-    "Занятия": bt.CALLBACK_GROUP_STUDENT_SLOT,
-    "Предметы": bt.CALLBACK_GROUP_STUDENT_LESSON,
+    "Учителя": MenuType.STUDENT_TEACHER,
+    "Занятия": MenuType.STUDENT_SLOT,
+    "Предметы": MenuType.STUDENT_LESSON,
+}
+
+admin_menu = {
+    "Пока командами": MenuType.ADMIN_TEMP
 }
 
 

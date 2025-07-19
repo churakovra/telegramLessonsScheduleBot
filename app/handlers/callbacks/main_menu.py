@@ -24,7 +24,7 @@ async def handle_callback(
     markup = get_sub_menu_markup(data)
 
     await callback.message.answer(
-        text=BotStrings.MENU.format(username),
+        text=callback.message.text,
         reply_markup=markup
     )
     await callback.message.delete()

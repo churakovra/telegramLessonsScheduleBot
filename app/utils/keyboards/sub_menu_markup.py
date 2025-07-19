@@ -1,8 +1,8 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from app.utils.bot_strings import BotStrings
 from app.utils.config.logger import setup_logger
+from app.utils.enums.menu_type import MenuType
 from app.utils.keyboards.callback_factories.back import BackCallback
 from app.utils.keyboards.callback_factories.sub_menu import (
     SubMenuCallback,
@@ -21,17 +21,17 @@ def get_sub_menu_markup(sub_menu_type: str) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     logger.debug(f"in get_sub_menu_markup, sub_menu_type={sub_menu_type}")
     match sub_menu_type:
-        case BotStrings.CALLBACK_GROUP_TEACHER_STUDENT:
+        case MenuType.TEACHER_STUDENT:
             menu_type = teacher_student
-        case BotStrings.CALLBACK_GROUP_TEACHER_SLOT:
+        case MenuType.TEACHER_SLOT:
             menu_type = teacher_slot
-        case BotStrings.CALLBACK_GROUP_TEACHER_LESSON:
+        case MenuType.TEACHER_LESSON:
             menu_type = teacher_lesson
-        case BotStrings.CALLBACK_GROUP_STUDENT_TEACHER:
+        case MenuType.STUDENT_TEACHER:
             menu_type = student_teacher
-        case BotStrings.CALLBACK_GROUP_STUDENT_SLOT:
+        case MenuType.STUDENT_SLOT:
             menu_type = student_slot
-        case BotStrings.CALLBACK_GROUP_STUDENT_LESSON:
+        case MenuType.STUDENT_LESSON:
             menu_type = student_lesson
         case _:
             raise ValueError(f"Wrong sub_menu_type {sub_menu_type}")
