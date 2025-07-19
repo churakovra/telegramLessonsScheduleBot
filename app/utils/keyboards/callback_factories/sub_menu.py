@@ -1,5 +1,5 @@
-from app.utils.keyboards.callback_factories.base import BaseMenuCallback
 from app.utils.bot_strings import bot_strings as bt
+from app.utils.keyboards.callback_factories.base import BaseMenuCallback
 
 teacher_student = {
     "Добавить ученика": bt.CALLBACK_GROUP_TEACHER_STUDENT_ADD,

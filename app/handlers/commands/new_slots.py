@@ -4,10 +4,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.utils.exceptions.user_exceptions import UserNotFoundException
 from app.services.teacher_service import TeacherService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import bot_strings as bt
+from app.utils.exceptions.user_exceptions import UserNotFoundException
 
 router = Router()
 

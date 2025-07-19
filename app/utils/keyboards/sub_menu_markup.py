@@ -1,13 +1,13 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from app.utils.config.logger import setup_logger
 from app.utils.bot_strings import BotStrings
+from app.utils.config.logger import setup_logger
 from app.utils.keyboards.callback_factories.back import BackCallback
 from app.utils.keyboards.callback_factories.sub_menu import (
-    SubMenuCallback, 
-    teacher_student, 
-    teacher_slot, 
+    SubMenuCallback,
+    teacher_student,
+    teacher_slot,
     teacher_lesson,
     student_teacher,
     student_slot,
@@ -15,7 +15,6 @@ from app.utils.keyboards.callback_factories.sub_menu import (
 )
 
 logger = setup_logger()
-
 
 
 def get_sub_menu_markup(sub_menu_type: str) -> InlineKeyboardMarkup:

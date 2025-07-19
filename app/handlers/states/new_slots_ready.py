@@ -3,12 +3,12 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.utils.exceptions.teacher_exceptions import TeacherStudentsNotFound
-from app.utils.exceptions.user_exceptions import UserNotFoundException
-from app.utils.keyboards.days_for_students_markup import get_days_for_students_markup
 from app.services.slot_service import SlotService
 from app.services.teacher_service import TeacherService
 from app.states.schedule_states import ScheduleStates
+from app.utils.exceptions.teacher_exceptions import TeacherStudentsNotFound
+from app.utils.exceptions.user_exceptions import UserNotFoundException
+from app.utils.keyboards.days_for_students_markup import get_days_for_students_markup
 
 router = Router()
 
