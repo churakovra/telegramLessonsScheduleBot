@@ -1,9 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.utils.enums.bot_values import UserRoles
-from app.utils.exceptions.user_exceptions import UserNotFoundException
 from app.repositories.student_repository import StudentRepository
 from app.schemas.user_dto import UserDTO
+from app.utils.enums.bot_values import UserRoles
+from app.utils.exceptions.user_exceptions import UserNotFoundException
 
 
 class StudentService:
@@ -15,3 +15,13 @@ class StudentService:
         if student is None:
             raise UserNotFoundException(username, UserRoles.STUDENT)
         return student
+
+    async def parse_students(self, students_raw: str) -> tuple[list[UserDTO], list[str]]:
+        students = list[UserDTO]()
+        unknown_students = list[str]()
+        for username in students_raw.split(" "):
+            try:
+                students.append(await self.get_student(username.strip()))
+            except UserNotFoundException:
+                unknown_students.append(username.strip())
+        return students, unknown_students

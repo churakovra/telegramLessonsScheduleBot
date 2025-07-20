@@ -4,10 +4,9 @@ from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.services.user_service import UserService
-from app.utils.bot_strings import BotStrings
 from app.utils.config.logger import setup_logger
 from app.utils.exceptions.user_exceptions import UserNotFoundException, UserUnknownRoleException
-from app.utils.keyboards.main_menu_markup import get_main_menu_markup
+from app.utils.message_template import MessageTemplate
 
 router = Router()
 
@@ -23,12 +22,12 @@ async def send_menu_message(
     username = message.from_user.username
     try:
         user_service = UserService(session)
-        user = await user_service.get_user(username)
-        markup = get_main_menu_markup(user)
+        user, markup = await user_service.get_user_menu(username)
         logger.debug(f"Got markup, {str(markup)}")
+        bot_message = MessageTemplate.get_menu_message(user.firstname, markup)
         await message.answer(
-            text=BotStrings.MENU.format(username),
-            reply_markup=markup
+            text=bot_message.message_text,
+            reply_markup=bot_message.reply_markup
         )
     except (UserNotFoundException, UserUnknownRoleException) as e:
         await message.answer(e.message)

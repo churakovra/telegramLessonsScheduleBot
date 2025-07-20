@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from sqlalchemy import select, and_, update, func, not_
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.orm.slot import Slot
@@ -64,12 +65,15 @@ class TeacherRepository:
         await self._db.execute(stmt)
         await self._db.commit()
 
-    async def attach_student(self, teacher_uuid: UUID, student_uuid: UUID):
-        teacher_student = TeacherStudent.new_instance(teacher_uuid, student_uuid)
-        self._db.add(teacher_student)
-        await self._db.commit()
-        await self._db.refresh(teacher_student)
-        return teacher_student.uuid
+    async def attach_student(self, teacher_uuid: UUID, student_uuid: UUID, uuid_lesson: UUID | None) -> UUID:
+        try:
+            teacher_student = TeacherStudent.new_instance(teacher_uuid, student_uuid, uuid_lesson)
+            self._db.add(teacher_student)
+            await self._db.commit()
+            await self._db.refresh(teacher_student)
+            return teacher_student.uuid
+        except IntegrityError as e:
+            raise ValueError(str(e)) from e
 
     async def get_students(self, teacher_uuid: UUID) -> list[UserDTO]:
         users = list()
@@ -96,7 +100,7 @@ class TeacherRepository:
 
         return users
 
-    async def get_unsigned_students(self, teacher_uuid: UUID):
+    async def get_unsigned_students(self, teacher_uuid: UUID) -> list[UserDTO]:
         users = list()
         ts_subquery = (
             select(TeacherStudent.uuid_student)
