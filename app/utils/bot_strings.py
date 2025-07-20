@@ -31,5 +31,15 @@ class BotStrings(str):
     MAKE_TEACHER_SUCCESS = 'Пользователю {} успешно добавлен статус "Преподаватель"'
     MAKE_TEACHER_FAILURE = "Ошибка. Не получилось сделать пользователя преподавателем"
 
+    TEACHER_ADD_STUDENT = ("Отправь логин ученика без @, например `kdianitta`\n"
+                           "Либо, если хочешь добавить несколько учеников, отправь их через пробел: `kdianitta1 kdianitta2...`")
+    TEACHER_ADD_STUDENT_UNKNOWN_STUDENTS = ("Смогу прикрепить всех кроме {}. Их не смог найти :(\n"
+                                            f"Проверь, правильно ли указаны их логины")
+    TEACHER_ADD_STUDENT_SUCCESS = "Успешно добавил студента(-ов) {}. Теперь они будут получать сообщения о новых окошках"
+    TEACHER_ADD_LESSON_LABEL = "Как называется предмет?"
+    TEACHER_ADD_LESSON_DURATION = "Какая продолжительность в минутах? 45, 60, 90...?"
+    TEACHER_ADD_LESSON_PRICE = "Стоимость?"
+    TEACHER_ADD_LESSON_SUCCESS = "Предмет {} успешно добавлен"
+
 
 bot_strings = BotStrings()

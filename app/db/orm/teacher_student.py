@@ -14,13 +14,11 @@ if TYPE_CHECKING:
 class TeacherStudent(Base):
     __tablename__ = "teacher_student"
 
+    uuid: Mapped[UUID] = mapped_column(primary_key=True)
     uuid_teacher: Mapped[UUID] = mapped_column(ForeignKey("users.uuid"))
     uuid_student: Mapped[UUID] = mapped_column(ForeignKey("users.uuid"))
-    uuid_lesson: Mapped[UUID] = mapped_column(ForeignKey("lessons.uuid"))
+    uuid_lesson: Mapped[UUID] = mapped_column(ForeignKey("lessons.uuid"), nullable=True)
 
-    __table_args__ = (
-        PrimaryKeyConstraint("uuid_teacher", "uuid_student", "uuid_lesson"),
-    )
 
     teacher: Mapped["User"] = relationship(
         argument="User",
@@ -38,9 +36,9 @@ class TeacherStudent(Base):
     )
 
     @classmethod
-    def new_instance(cls, uuid_teacher: UUID, uuid_student: UUID):
+    def new_instance(cls, uuid_teacher: UUID, uuid_student: UUID, uuid_lesson: UUID | None):
         return cls(
-            uuid=uuid4(),
             uuid_teacher=uuid_teacher,
-            uuid_student=uuid_student
+            uuid_student=uuid_student,
+            uuid_lesson=uuid_lesson
         )
