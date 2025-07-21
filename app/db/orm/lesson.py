@@ -14,9 +14,9 @@ class Lesson(Base):
 
     uuid: Mapped[UUID] = mapped_column(primary_key=True)
     label: Mapped[str] = mapped_column(nullable=False)
-    duration: Mapped[int]
-    uuid_teacher: Mapped[UUID] = mapped_column(ForeignKey("users.uuid"))
-    price: Mapped[int]
+    duration: Mapped[int] = mapped_column(nullable=False)
+    uuid_teacher: Mapped[UUID] = mapped_column(ForeignKey("users.uuid"), nullable=False)
+    price: Mapped[int] = mapped_column(nullable=False)
 
     teacher: Mapped["User"] = relationship(argument="User", back_populates="lessons")
     lessons: Mapped[List["TeacherStudent"]] = relationship(argument="TeacherStudent", back_populates="lesson")
