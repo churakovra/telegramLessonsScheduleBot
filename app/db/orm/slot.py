@@ -1,11 +1,12 @@
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import ForeignKey, DateTime
+from sqlalchemy import ForeignKey, DateTime, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.orm.base import Base
 from app.db.orm.user import User
+from app.schemas.slot_dto import SlotDTO
 
 
 class Slot(Base):
@@ -18,7 +19,20 @@ class Slot(Base):
     uuid_student: Mapped[UUID] = mapped_column(ForeignKey("users.uuid"), nullable=True)
     dt_spot: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    teacher: Mapped["User"] = relationship(back_populates="slots")
+    __table_args__ = (
+        UniqueConstraint('uuid_teacher', 'dt_start', name='_teacher_dt_start_uc'),
+    )
+
+    teacher: Mapped["User"] = relationship(
+        argument="User",
+        foreign_keys=[uuid_teacher],
+        back_populates="teacher_slots"
+    )
+    student: Mapped["User"] = relationship(
+        argument="User",
+        foreign_keys=[uuid_student],
+        back_populates="student_slots"
+    )
 
     @classmethod
     def new_instance(cls, slot_dto: SlotDTO):

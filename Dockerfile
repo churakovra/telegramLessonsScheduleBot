@@ -3,9 +3,11 @@ LABEL authors="churakovra"
 
 WORKDIR /bot
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install uv
+
+COPY pyproject.toml uv.lock ./
+RUN uv sync
 
 COPY app ./app
 
-CMD ["python3", "-m", "app.main"]
+CMD ["uv","run", "python", "-m", "app.main"]

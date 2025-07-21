@@ -11,15 +11,17 @@ services:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
     depends_on:
-      scheduler_pg:
+      scheduler-pg:
         condition: service_healthy
 
-    command: python -m app.main
+    command: uv run python -m app.main
 
-  scheduler_pg:
+  scheduler-pg:
     image: postgres:15-alpine
-    container_name: scheduler_pg
+    container_name: scheduler-pg
     restart: always
+    volumes:
+      - scheduler-pg-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
@@ -27,8 +29,10 @@ services:
     ports:
       - "5432:5432"
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "scheduler_bt", "-d", "scheduler_db" ]
+      test: [ "CMD", "pg_isready", "-U", "$DB_USER", "-d", "$DB_NAME" ]
       interval: 10s
       timeout: 5s
       retries: 5
+volumes:
+  scheduler-pg-data:
 

@@ -1,20 +1,23 @@
+from pickletools import markobject
 from uuid import UUID
 
-from sqlalchemy.orm import Session
+from aiogram.types import InlineKeyboardMarkup
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.enums.bot_values import UserRoles
-from app.exceptions.user_exceptions import UserNotFoundException, UserChangeStatusException
+from app.utils.enums.bot_values import UserRoles
+from app.utils.exceptions.user_exceptions import UserNotFoundException, UserChangeRoleException, UserUnknownRoleException
 from app.repositories.user_repository import UserRepository
 from app.schemas.user_dto import UserDTO
 from app.utils.bot_strings import bot_strings as bt
 from app.utils.datetime_utils import day_format
+from app.utils.keyboards.main_menu_markup import get_main_menu_markup
 
 
 class UserService:
-    def __init__(self, session: Session):
+    def __init__(self, session: AsyncSession):
         self._repository = UserRepository(session)
 
-    def register_user(
+    async def register_user(
             self,
             username: str,
             firstname: str,
@@ -29,24 +32,40 @@ class UserService:
             role=role,
             chat_id=chat_id
         )
-        self._repository.add_user(new_user)
+        await self._repository.add_user(new_user)
         return new_user.uuid
 
-    def add_role(self, initiator: str, username: str, role: UserRoles):
-        initiator = self._repository.get_user(initiator)
-        user = self._repository.get_user(username)
-        if user or initiator is None:
+    async def add_role(self, initiator_username: str, username: str, role: UserRoles):
+        initiator = await self._repository.get_user(initiator_username.strip())
+        user = await self._repository.get_user(username.strip())
+        if not initiator:
+            raise UserNotFoundException(initiator_username, UserRoles.ADMIN)
+        elif not user:
             raise UserNotFoundException(username, role)
 
-        i_student, i_teacher, i_admin = self.get_user_role(UserRoles.ADMIN)
-        if not i_admin:
-            raise UserChangeStatusException(user.username, UserRoles.ADMIN)
-        self._repository.add_role(user.uuid, role)
+        if not initiator.is_admin:
+            raise UserChangeRoleException(user.username, UserRoles.ADMIN, initiator_username)
 
-    def get_user_info(self, username: str) -> str:
-        user = self._repository.get_user(username)
+        try:
+            await self._repository.edit_role(user.uuid, role, True)
+        except ValueError:
+            raise UserUnknownRoleException(username, role)
+
+    async def get_user_info(self, username: str) -> str:
+        user = await self._repository.get_user(username)
         res = self.make_user_info_response(user)
         return res
+
+    async def get_user(self, username: str) -> UserDTO:
+        user = await self._repository.get_user(username)
+        if user is None:
+            raise UserNotFoundException(username, None)
+        return user
+
+    async def get_user_menu(self, username: str) -> tuple[UserDTO, InlineKeyboardMarkup]:
+        user = await self.get_user(username)
+        markup = get_main_menu_markup(user)
+        return user, markup
 
     @staticmethod
     def make_user_info_response(user: UserDTO) -> str:
