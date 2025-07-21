@@ -13,8 +13,8 @@ class Slot(Base):
     __tablename__ = "slots"
 
     uuid: Mapped[UUID] = mapped_column(primary_key=True)
-    uuid_teacher: Mapped[UUID] = mapped_column(ForeignKey("users.uuid"))
-    dt_start: Mapped[datetime] = mapped_column(nullable=False)
+    uuid_teacher: Mapped[UUID] = mapped_column(ForeignKey("users.uuid"), nullable=False)
+    dt_start: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     dt_add: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     uuid_student: Mapped[UUID] = mapped_column(ForeignKey("users.uuid"), nullable=True)
     dt_spot: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)

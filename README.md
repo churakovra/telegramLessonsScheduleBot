@@ -53,6 +53,7 @@ scheduler/
 |      |--message_template.py     # Класс, содержащий темплейты сообщений бота
 |  |--main.py                     # Точка входа
 |--tests/                         # Автотесты pytest
+|--alembic/                       # Миграции БД
 |--.env.example                   # Пример .env
 |--.python-version                # Требуемая версия python
 |--docker-compose.yml             # Собирает и запускает сервис
@@ -88,6 +89,9 @@ docker-compose up --build
 
 ___
 ### Changelog
+___
+_Version 0.0.4_
+- Добавлены миграции БД, подключен Alembic
 ___
 _Version 0.0.3_
 - Добавлена автогенерируемая клавиатура /menu для всех типов пользователей
