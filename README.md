@@ -24,7 +24,7 @@ ___
 |       **APP**        | aiogram  <br>async  <br>pydantic  <br>python-dotenv <br>colorlog   |
 |        **DB**        | asyncpg  <br>greenlet  <br>pg  <br>psycopg2-binary  <br>sqlalchemy |
 |       **TEST**       | pytest                                                             |
-| **DEPLOY & PROJECT** | docker; docker-compose; uv                                         |
+| **DEPLOY & <br>PROJECT** | docker <br>docker-compose <br>uv <br>alembic                   |
 ___
 ## Структура 
 ```
