@@ -24,12 +24,17 @@ class TeacherRepository:
         await self._db.execute(stmt)
         await self._db.commit()
 
-    async def _get_teacher(self, username: str) -> User | None:
+    async def _get_teacher(self, data: str | UUID) -> User | None:
+        if isinstance(data, UUID):
+            condition = User.uuid == data
+        else:
+            condition = User.username == data
+
         stmt = (
             select(User)
             .where(
                 and_(
-                    User.username == username,
+                    condition,
                     User.is_teacher == True
 
                 )
@@ -38,8 +43,8 @@ class TeacherRepository:
         teacher = await self._db.scalar(stmt)
         return teacher
 
-    async def get_teacher(self, username: str) -> UserDTO | None:
-        teacher = await self._get_teacher(username)
+    async def get_teacher(self, data: str | UUID) -> UserDTO | None:
+        teacher = await self._get_teacher(data)
         if teacher is None:
             return teacher
         return UserDTO(
@@ -104,7 +109,12 @@ class TeacherRepository:
         users = list()
         ts_subquery = (
             select(TeacherStudent.uuid_student)
-            .where(TeacherStudent.uuid_teacher == teacher_uuid)
+            .where(
+                and_(
+                    TeacherStudent.uuid_teacher == teacher_uuid,
+                    TeacherStudent.lesson != None
+                )
+            )
             .scalar_subquery()
         )
         slots_subquery = (

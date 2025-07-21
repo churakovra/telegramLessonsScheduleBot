@@ -22,6 +22,12 @@ class TeacherService:
             raise UserNotFoundException(username, UserRoles.TEACHER)
         return teacher
 
+    async def get_teacher_by_uuid(self, teacher_uuid: UUID) -> UserDTO:
+        teacher = await self._repository.get_teacher(teacher_uuid)
+        if teacher is None:
+            raise UserNotFoundException(teacher_uuid, UserRoles.TEACHER)
+        return teacher
+
     async def _attach_student(self, teacher_uuid: UUID, student_uuid: UUID, uuid_lesson: UUID | None):
         try:
             await self._repository.attach_student(teacher_uuid, student_uuid, uuid_lesson)

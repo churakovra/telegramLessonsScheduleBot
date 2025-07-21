@@ -5,10 +5,13 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.utils.exceptions.slot_exceptions import SlotFreeNotFoundException, SlotNotFoundException
 from app.repositories.slot_repository import SlotRepository
 from app.schemas.slot_dto import SlotDTO
+from app.utils.config.logger import setup_logger
 from app.utils.datetime_utils import WEEKDAYS
+from app.utils.exceptions.slot_exceptions import SlotFreeNotFoundException, SlotNotFoundException
+
+logger = setup_logger("SlotService")
 
 
 class SlotService:
@@ -17,7 +20,11 @@ class SlotService:
 
     async def add_slots(self, slots: list[SlotDTO]):
         for slot in slots:
-            await self._repository.add_slot(slot)
+            try:
+                await self._repository.add_slot(slot)
+            except ValueError as e:
+                logger.error(e)
+                pass
 
     async def get_slot(self, slot_uuid: UUID) -> SlotDTO:
         slot = await self._repository.get_slot(slot_uuid)
@@ -27,6 +34,12 @@ class SlotService:
 
     async def get_free_slots(self, teacher_uuid: UUID) -> list[SlotDTO]:
         slots = await self._repository.get_free_slots(teacher_uuid)
+        if len(slots) <= 0:
+            raise SlotFreeNotFoundException(teacher_uuid)
+        return slots
+
+    async def get_day_slots(self, day: datetime, teacher_uuid: UUID) -> list[SlotDTO]:
+        slots = await self._repository.get_day_slots(day, teacher_uuid)
         if len(slots) <= 0:
             raise SlotFreeNotFoundException(teacher_uuid)
         return slots
@@ -46,9 +59,7 @@ class SlotService:
             try:
                 time = datetime.strptime(word, "%H:%M")  # Если word - время, то создаем SlotDTO, иначе кидается ошибка
                 today = datetime.today()
-                slot_date = (
-                        today + timedelta(days=7 - today.weekday() + weekday_index)
-                ).date()  # Считаем дату слота
+                slot_date = (today + timedelta(days=7 - today.weekday() + weekday_index)).date()  # Считаем дату слота
                 slot_dt = datetime(
                     day=slot_date.day,
                     month=slot_date.month,

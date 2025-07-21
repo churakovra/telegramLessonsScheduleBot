@@ -39,6 +39,7 @@ async def handle_state(
         await lesson_service.create_lesson(**lesson)
 
         await message.answer(str.format(BotStrings.TEACHER_ADD_LESSON_SUCCESS, lesson["label"]))
+
         user_service = UserService(session)
         user, markup = await user_service.get_user_menu(message.from_user.username)
         bot_message = MessageTemplate.get_menu_message(user.username, markup)

@@ -15,12 +15,11 @@ def get_slots_for_students_markup(slots: list[SlotDTO], teacher_uuid: UUID) -> I
         time_str = slot.dt_start.strftime(time_format_HM)
         builder.button(
             text=time_str,
-            callback_data=SlotsForStudents(uuid_slot=slot.uuid_slot)
+            callback_data=SlotsForStudents(uuid_slot=slot.uuid)
         )
     builder.button(
         text="Назад",
         callback_data=BackCallback(
-            current_level="slots_for_students",
             parent_keyboard="days_for_students",
             teacher_uuid=teacher_uuid
         )

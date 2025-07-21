@@ -3,6 +3,5 @@ from uuid import UUID
 from aiogram.filters.callback_data import CallbackData
 
 
-class DaysForStudentsCallback(CallbackData, prefix="days-for-students"):
-    day: str
+class SendSlotsCallback(CallbackData, prefix="send-slots-to-students"):
     teacher_uuid: UUID

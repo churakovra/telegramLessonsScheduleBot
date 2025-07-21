@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from app.utils.enums.bot_values import UserRoles
 
 
@@ -20,8 +22,8 @@ class UserChangeRoleException(Exception):
 
 
 class UserNotFoundException(Exception):
-    def __init__(self, username: str, role: UserRoles | None):
-        self.message = f"{username} {role} were not found"
+    def __init__(self, data: str | UUID, role: UserRoles | None):
+        self.message = f"{data} {role} were not found"
 
 
 class UserUnknownRoleException(Exception):
