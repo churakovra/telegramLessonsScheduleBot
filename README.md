@@ -1,6 +1,6 @@
 # Инглиш пинглиш бот
 ___
-`@EnglishPinglish_bot` _Version: 0.0.3_
+`@EnglishPinglish_bot` _Version: 0.0.4_
 ___
 ## Возможности
 ### Преподаватель:
