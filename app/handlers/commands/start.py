@@ -12,6 +12,7 @@ from app.utils.enums.bot_values import UserRoles
 router = Router()
 logger = setup_logger("start")
 
+
 @router.message(Command("start"))
 async def add_new_user(message: Message, session: AsyncSession):
     new_user = {

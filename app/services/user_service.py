@@ -1,5 +1,7 @@
+from pickletools import markobject
 from uuid import UUID
 
+from aiogram.types import InlineKeyboardMarkup
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.utils.enums.bot_values import UserRoles
@@ -8,6 +10,7 @@ from app.repositories.user_repository import UserRepository
 from app.schemas.user_dto import UserDTO
 from app.utils.bot_strings import bot_strings as bt
 from app.utils.datetime_utils import day_format
+from app.utils.keyboards.main_menu_markup import get_main_menu_markup
 
 
 class UserService:
@@ -58,6 +61,11 @@ class UserService:
         if user is None:
             raise UserNotFoundException(username, None)
         return user
+
+    async def get_user_menu(self, username: str) -> tuple[UserDTO, InlineKeyboardMarkup]:
+        user = await self.get_user(username)
+        markup = get_main_menu_markup(user)
+        return user, markup
 
     @staticmethod
     def make_user_info_response(user: UserDTO) -> str:

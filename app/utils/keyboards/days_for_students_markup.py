@@ -1,39 +1,27 @@
 import calendar
+from uuid import UUID
 
-from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from app.schemas.slot_dto import SlotDTO
-from app.utils.datetime_utils import WEEKDAYS
+from app.utils.datetime_utils import WEEKDAYS, day_format
+from app.utils.keyboards.callback_factories.days_for_students import DaysForStudentsCallback
 
 
-class DaysForStudents(CallbackData, prefix="fabday"):
-    day_num: int
-    slots: list[SlotDTO]
-
-
-def get_days_for_students_markup(slots: list[SlotDTO]) -> InlineKeyboardMarkup:
+def get_days_for_students_markup(slots: list[SlotDTO], teacher_uuid: UUID) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    day_num = slots[0].dt_start.day
-    day_slots = list()
+    prev_slot_date = None
     for slot in slots:
-        if slot.dt_start.day == day_num:
-            day_slots.append(slot.uuid)
-        else:
-            weekday_num = calendar.weekday(
-                slot.dt_start.year,
-                slot.dt_start.month,
-                slot.dt_start.day
-            )  # Получаем номер дня недели в зависимости от даты
-            weekday = WEEKDAYS[weekday_num][2]
+        slot_date = slot.dt_start.date()
+        if slot_date != prev_slot_date:
+            day_number = calendar.weekday(slot_date.year, slot_date.month, slot_date.day)
+            day_name = WEEKDAYS[day_number][2]
             builder.button(
-                text=weekday,
-                callback_data=DaysForStudents(day_num=day_num, slots=day_slots)
+                text=day_name,
+                callback_data=DaysForStudentsCallback(day=slot_date.strftime(day_format), teacher_uuid=teacher_uuid)
             )
-
-            day_num = slot.dt_start.day
-            day_slots.clear()
+            prev_slot_date = slot_date
 
     builder.adjust(1)
     return builder.as_markup()

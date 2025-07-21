@@ -1,10 +1,10 @@
 from aiogram import Router
 from aiogram.types import CallbackQuery
 
+from app.utils.bot_strings import BotStrings
 from app.utils.config.logger import setup_logger
 from app.utils.keyboards.callback_factories.main_menu import MainMenuCallback
 from app.utils.keyboards.sub_menu_markup import get_sub_menu_markup
-from app.utils.bot_strings import BotStrings
 
 router = Router()
 
@@ -24,7 +24,7 @@ async def handle_callback(
     markup = get_sub_menu_markup(data)
 
     await callback.message.answer(
-        text=BotStrings.MENU.format(username),
+        text=callback.message.text,
         reply_markup=markup
     )
     await callback.message.delete()

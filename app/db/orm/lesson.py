@@ -14,7 +14,7 @@ class Lesson(Base):
 
     uuid: Mapped[UUID] = mapped_column(primary_key=True)
     label: Mapped[str] = mapped_column(nullable=False)
-    duration: Mapped[float]
+    duration: Mapped[int]
     uuid_teacher: Mapped[UUID] = mapped_column(ForeignKey("users.uuid"))
     price: Mapped[int]
 

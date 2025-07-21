@@ -12,4 +12,5 @@ router = Router()
 async def retry_send_slots(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer(bt.SLOTS_FAILURE_ANSWER)
     await state.set_state(ScheduleStates.wait_for_slots)
+    await callback.message.delete()
     await callback.answer()
