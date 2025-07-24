@@ -33,6 +33,15 @@ class BotStrings:
     TEACHER_STUDENTS_ADD_SUCCESS = "Успешно добавил студентов {}. Теперь они будут получать сообщения о новых окошках"
     TEACHER_STUDENT_ADD_SUCCESS = "Успешно добавил студента {}. Теперь он будут получать сообщения о новых окошках"
 
+    TEACHER_STUDENT_DELETE = ("Отправь логин ученика без @, например `kdianitta`\n"
+                           "Либо, если хочешь открепить несколько учеников, отправь их через пробел: `kdianitta1 kdianitta2...`")
+    TEACHER_STUDENT_DELETE_UNKNOWN_STUDENTS = ("Смогу удалить всех кроме {username}. Их не смог найти :(\n"
+                                            f"Проверь, правильно ли указаны логины")
+    TEACHER_STUDENT_DELETE_UNKNOWN_STUDENT = ("Смогу удалить всех кроме {username}. Его не смог найти :(\n"
+                                           f"Проверь, правильно ли указан логин")
+
+    TEACHER_STUDENTS_NOT_FOUND = "Студентов не нашел :(\n Проверь, правильно ли указаны данные"
+
     TEACHER_LESSON_ADD_LABEL = "Как называется предмет?"
     TEACHER_LESSON_ADD_DURATION = "Какая продолжительность в минутах?"
     TEACHER_LESSON_ADD_DURATION_ERROR = "Неверный формат. Укажи пожалуйста в минутах:  45, 60, 90..."
