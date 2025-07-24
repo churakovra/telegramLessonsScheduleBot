@@ -4,7 +4,7 @@ from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.services.user_service import UserService
-from app.utils.bot_strings import bot_strings as bt
+from app.utils.bot_strings import BotStrings
 from app.utils.enums.bot_values import UserRoles
 from app.utils.exceptions.user_exceptions import UserNotFoundException, UserChangeRoleException
 
@@ -16,7 +16,7 @@ async def make_teacher_from_student(message: Message, command: CommandObject, se
     # Проверяем, передали ли аргументы с командой
     if command.args is None:
         await message.answer(
-            text=bt.MAKE_TEACHER_COMMAND_IS_EMPTY
+            text=BotStrings.MAKE_TEACHER_COMMAND_IS_EMPTY
         )
         return
 
@@ -28,6 +28,6 @@ async def make_teacher_from_student(message: Message, command: CommandObject, se
     try:
         user_service = UserService(session)
         await user_service.add_role(initiator_user, teacher_username, UserRoles.TEACHER)
-        await message.answer(bt.MAKE_TEACHER_SUCCESS.format(teacher_username))
+        await message.answer(BotStrings.MAKE_TEACHER_SUCCESS.format(teacher_username))
     except (UserNotFoundException, UserChangeRoleException) as e:
-        await message.answer(f"{bt.MAKE_TEACHER_FAILURE}; {e.message}")
+        await message.answer(f"{BotStrings.MAKE_TEACHER_FAILURE}; {e.message}")

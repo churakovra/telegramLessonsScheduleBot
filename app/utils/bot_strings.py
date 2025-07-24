@@ -1,8 +1,4 @@
-from dataclasses import dataclass
-
-
-@dataclass
-class BotStrings(str):
+class BotStrings:
     GREETING = "Привет, {}! Я буду сообщать тебе когда у твоего преподавателя появятся окошки для занятий"
     MENU = "Привет, {}! Ты в главном меню. Жми кнопочки с умом и помни: С большой силой приходит большая ответственность!"
 
@@ -33,7 +29,7 @@ class BotStrings(str):
     TEACHER_ADD_STUDENT_UNKNOWN_STUDENTS = ("Смогу прикрепить всех кроме {}. Их не смог найти :(\n"
                                             f"Проверь, правильно ли указаны логины")
     TEACHER_ADD_STUDENT_UNKNOWN_STUDENT = ("Смогу прикрепить всех кроме {}. Его не смог найти :(\n"
-                                            f"Проверь, правильно ли указан логин")
+                                           f"Проверь, правильно ли указан логин")
     TEACHER_ADD_STUDENTS_SUCCESS = "Успешно добавил студентов {}. Теперь они будут получать сообщения о новых окошках"
     TEACHER_ADD_STUDENT_SUCCESS = "Успешно добавил студента {}. Теперь он будут получать сообщения о новых окошках"
 
@@ -43,6 +39,3 @@ class BotStrings(str):
     TEACHER_ADD_LESSON_PRICE = "Стоимость?"
     TEACHER_ADD_LESSON_PRICE_ERROR = "Неверный формат. Укажи пожалуйста сумму: 500, 800, 1500..."
     TEACHER_ADD_LESSON_SUCCESS = "Предмет {} успешно добавлен"
-
-
-bot_strings = BotStrings()

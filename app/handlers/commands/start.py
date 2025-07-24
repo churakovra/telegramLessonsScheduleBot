@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.services.user_service import UserService
-from app.utils.bot_strings import bot_strings as bt
+from app.utils.bot_strings import BotStrings
 from app.utils.config.logger import setup_logger
 from app.utils.enums.bot_values import UserRoles
 
@@ -29,4 +29,4 @@ async def add_new_user(message: Message, session: AsyncSession):
     except IntegrityError as e:
         logger.error(e)
     finally:
-        await message.answer(text=bt.GREETING.format(new_user["firstname"]))
+        await message.answer(text=BotStrings.GREETING.format(new_user["firstname"]))
