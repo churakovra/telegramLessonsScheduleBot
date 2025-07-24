@@ -27,10 +27,10 @@ async def handle_callback(
     try:
         teacher = await teacher_service.get_teacher(username)
         students = await teacher_service.get_students(teacher.uuid)
-        student_usernames = [student.username for student in students]
+        student_usernames = [f'@{student.username}' for student in students]
 
         await callback.message.answer(
-            text=f"Вот список твоих студентов: \n{"@".join(student_usernames)}"
+            text=f"Вот список твоих студентов: \n{"\n".join(student_usernames)}"
         )
     except UserNotFoundException as e:
         await callback.message.answer(f"Not enough rights. User {e.data} must have Teacher role, but has {e.role}")
