@@ -25,5 +25,5 @@ async def handle_state(
     await message.chat.delete_message(previous_message_id)
     await message.delete()
 
-    message = await message.answer(BotStrings.TEACHER_ADD_LESSON_DURATION)
+    message = await message.answer(BotStrings.TEACHER_LESSON_ADD_DURATION)
     await state.update_data(previous_message_id=message.message_id)

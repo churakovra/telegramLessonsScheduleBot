@@ -24,18 +24,18 @@ class BotStrings:
     MAKE_TEACHER_SUCCESS = 'Пользователю {} успешно добавлен статус "Преподаватель"'
     MAKE_TEACHER_FAILURE = "Ошибка. Не получилось сделать пользователя преподавателем"
 
-    TEACHER_ADD_STUDENT = ("Отправь логин ученика без @, например `kdianitta`\n"
+    TEACHER_STUDENT_ADD = ("Отправь логин ученика без @, например `kdianitta`\n"
                            "Либо, если хочешь добавить несколько учеников, отправь их через пробел: `kdianitta1 kdianitta2...`")
-    TEACHER_ADD_STUDENT_UNKNOWN_STUDENTS = ("Смогу прикрепить всех кроме {}. Их не смог найти :(\n"
+    TEACHER_STUDENT_ADD_UNKNOWN_STUDENTS = ("Смогу прикрепить всех кроме {}. Их не смог найти :(\n"
                                             f"Проверь, правильно ли указаны логины")
-    TEACHER_ADD_STUDENT_UNKNOWN_STUDENT = ("Смогу прикрепить всех кроме {}. Его не смог найти :(\n"
+    TEACHER_STUDENT_ADD_UNKNOWN_STUDENT = ("Смогу прикрепить всех кроме {}. Его не смог найти :(\n"
                                            f"Проверь, правильно ли указан логин")
-    TEACHER_ADD_STUDENTS_SUCCESS = "Успешно добавил студентов {}. Теперь они будут получать сообщения о новых окошках"
-    TEACHER_ADD_STUDENT_SUCCESS = "Успешно добавил студента {}. Теперь он будут получать сообщения о новых окошках"
+    TEACHER_STUDENTS_ADD_SUCCESS = "Успешно добавил студентов {}. Теперь они будут получать сообщения о новых окошках"
+    TEACHER_STUDENT_ADD_SUCCESS = "Успешно добавил студента {}. Теперь он будут получать сообщения о новых окошках"
 
-    TEACHER_ADD_LESSON_LABEL = "Как называется предмет?"
-    TEACHER_ADD_LESSON_DURATION = "Какая продолжительность в минутах?"
-    TEACHER_ADD_LESSON_DURATION_ERROR = "Неверный формат. Укажи пожалуйста в минутах:  45, 60, 90..."
-    TEACHER_ADD_LESSON_PRICE = "Стоимость?"
-    TEACHER_ADD_LESSON_PRICE_ERROR = "Неверный формат. Укажи пожалуйста сумму: 500, 800, 1500..."
-    TEACHER_ADD_LESSON_SUCCESS = "Предмет {} успешно добавлен"
+    TEACHER_LESSON_ADD_LABEL = "Как называется предмет?"
+    TEACHER_LESSON_ADD_DURATION = "Какая продолжительность в минутах?"
+    TEACHER_LESSON_ADD_DURATION_ERROR = "Неверный формат. Укажи пожалуйста в минутах:  45, 60, 90..."
+    TEACHER_LESSON_ADD_PRICE = "Стоимость?"
+    TEACHER_LESSON_ADD_PRICE_ERROR = "Неверный формат. Укажи пожалуйста сумму: 500, 800, 1500..."
+    TEACHER_LESSON_ADD_SUCCESS = "Предмет {} успешно добавлен"
