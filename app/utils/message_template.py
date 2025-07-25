@@ -8,6 +8,6 @@ class MessageTemplate:
     @staticmethod
     def get_menu_message(username: str, markup: InlineKeyboardMarkup):
         return BotMessage(
-            message_text=BotStrings.MENU.format(username, markup),
+            message_text=BotStrings.MENU.format(username),
             reply_markup=markup
         )

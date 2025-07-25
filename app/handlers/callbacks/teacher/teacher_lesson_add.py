@@ -26,7 +26,7 @@ async def handle_callback(
         await state.set_state(ScheduleStates.wait_for_teacher_lesson_label)
 
         await callback.message.delete()
-        message = await callback.message.answer(BotStrings.TEACHER_ADD_LESSON_LABEL)
+        message = await callback.message.answer(BotStrings.TEACHER_LESSON_ADD_LABEL)
         await state.update_data(previous_message_id=message.message_id)
 
     except UserNotFoundException:

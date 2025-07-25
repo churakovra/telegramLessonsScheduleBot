@@ -32,9 +32,9 @@ async def handle_state(
     if len(unknown_students) > 0:
 
         if len(unknown_students) <= 1:
-            message_text = BotStrings.TEACHER_ADD_STUDENT_UNKNOWN_STUDENT
+            message_text = BotStrings.TEACHER_STUDENT_ADD_UNKNOWN_STUDENT
         else:
-            message_text = BotStrings.TEACHER_ADD_STUDENT_UNKNOWN_STUDENTS
+            message_text = BotStrings.TEACHER_STUDENT_ADD_UNKNOWN_STUDENTS
         await message.answer(str.format(message_text, ", ".join(unknown_students)))
 
     if len(students) > 0:
@@ -47,9 +47,9 @@ async def handle_state(
             return
 
         if len(success_students_usernames) <= 1:
-            message_text = BotStrings.TEACHER_ADD_STUDENT_SUCCESS
+            message_text = BotStrings.TEACHER_STUDENT_ADD_SUCCESS
         else:
-            message_text = BotStrings.TEACHER_ADD_STUDENTS_SUCCESS
+            message_text = BotStrings.TEACHER_STUDENTS_ADD_SUCCESS
         await message.answer(str.format(message_text, ", ".join(success_students_usernames)))
 
     user_service = UserService(session)
