@@ -4,7 +4,6 @@ from uuid import UUID
 from sqlalchemy import select, func, and_, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.util import await_only
 
 from app.db.orm.slot import Slot
 from app.schemas.slot_dto import SlotDTO
