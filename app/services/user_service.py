@@ -1,4 +1,3 @@
-from pickletools import markobject
 from uuid import UUID
 
 from aiogram.types import InlineKeyboardMarkup
@@ -8,7 +7,7 @@ from app.utils.enums.bot_values import UserRoles
 from app.utils.exceptions.user_exceptions import UserNotFoundException, UserChangeRoleException, UserUnknownRoleException
 from app.repositories.user_repository import UserRepository
 from app.schemas.user_dto import UserDTO
-from app.utils.bot_strings import bot_strings as bt
+from app.utils.bot_strings import BotStrings
 from app.utils.datetime_utils import day_format
 from app.utils.keyboards.main_menu_markup import get_main_menu_markup
 
@@ -76,7 +75,7 @@ class UserService:
                 f"Дата регистрации {user.dt_reg.strftime(day_format)}\n"
             )
         except Exception:
-            result = bt.USER_INFO_ERROR
+            result = BotStrings.USER_INFO_ERROR
 
         return result
 

@@ -5,13 +5,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.services.slot_service import SlotService
 from app.states.schedule_states import ScheduleStates
-from app.utils.bot_strings import bot_strings as bt
+from app.utils.bot_strings import BotStrings
 from app.utils.keyboards.send_slots_markup import get_send_slots_markup
 
 router = Router()
 
 
-@router.callback_query(F.data == bt.CALLBACK_SLOTS_CORRECT, ScheduleStates.wait_for_confirmation)
+@router.callback_query(F.data == BotStrings.CALLBACK_SLOTS_CORRECT, ScheduleStates.wait_for_confirmation)
 async def reply_and_save_to_db(
         callback: CallbackQuery,
         state: FSMContext,
@@ -25,7 +25,7 @@ async def reply_and_save_to_db(
     slot_service = SlotService(session)
     await slot_service.add_slots(slots)
     await callback.message.answer(
-        text=bt.SLOTS_PROCESSING_SUCCESS_ANSWER,
+        text=BotStrings.SLOTS_PROCESSING_SUCCESS_ANSWER,
         reply_markup=get_send_slots_markup(teacher_uuid)
     )
 

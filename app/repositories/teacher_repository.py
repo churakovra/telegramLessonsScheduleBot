@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import select, and_, update, func, not_
+from sqlalchemy import select, and_, update, func, not_, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -147,3 +147,16 @@ class TeacherRepository:
                 )
             )
         return users
+
+    async def delete_students(self, students_uuid: list[UUID], teacher_uuid: UUID):
+        stmt = (
+            delete(TeacherStudent)
+            .where(
+                and_(
+                    TeacherStudent.uuid_teacher == teacher_uuid,
+                    TeacherStudent.uuid_student.in_(students_uuid)
+                )
+            )
+        )
+        await self._db.execute(stmt)
+        await self._db.commit()

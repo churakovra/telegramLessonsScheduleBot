@@ -7,7 +7,7 @@ from app.services.slot_service import SlotService
 from app.services.student_service import StudentService
 from app.services.teacher_service import TeacherService
 from app.services.user_service import UserService
-from app.utils.bot_strings import bot_strings as bt
+from app.utils.bot_strings import BotStrings
 from app.utils.datetime_utils import full_format_no_sec
 from app.utils.exceptions.user_exceptions import UserNotFoundException
 from app.utils.keyboards.slots_for_students_markup import SlotsForStudents
@@ -38,7 +38,7 @@ async def handle_callback(
     teacher_username = await teacher_service.get_teacher_by_uuid(assigned_slot.uuid_teacher)
 
     await callback.message.answer(
-        bt.SLOTS_ASSIGN_SUCCESS_ANSWER.format(
+        BotStrings.SLOTS_ASSIGN_SUCCESS_ANSWER.format(
             teacher_username.username,
             assigned_slot.dt_start.strftime(full_format_no_sec)
         )

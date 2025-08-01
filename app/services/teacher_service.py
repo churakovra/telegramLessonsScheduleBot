@@ -50,3 +50,7 @@ class TeacherService:
         if len(students) <= 0:
             raise TeacherStudentsNotFound(teacher_uuid)
         return students
+
+    async def delete_students(self, students: list[UserDTO], teacher: UserDTO):
+        students_uuid = [student.uuid for student in students]
+        await self._repository.delete_students(students_uuid, teacher.uuid)
