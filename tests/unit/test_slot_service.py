@@ -6,25 +6,33 @@ import pytest
 
 from app.schemas.slot_dto import SlotDTO
 from app.services.slot_service import SlotService
+from app.utils.exceptions.slot_exceptions import SlotNotFoundException
 
 
 @pytest.fixture
-def fake_session():
+def session_mock():
     return MagicMock()
 
 
-@pytest.fixture
-def service(fake_session):
-    return SlotService(fake_session)
+class TestGetSlot:
+    @pytest.fixture(autouse=True)
+    def service(self, session_mock):
+        self.service = SlotService(session_mock)
 
+    async def test_get_slot_success(self):
+        slot_uuid = uuid4()
+        slot = SlotDTO.new_dto(uuid_teacher=uuid4(), dt_start=datetime.now(), uuid_student=None, dt_spot=None)
 
-@pytest.mark.asyncio
-async def test_get_slot_success(service):
-    slot_uuid = uuid4()
-    slot = SlotDTO.new_dto(uuid_teacher=uuid4(), dt_start=datetime.now(), uuid_student=None, dt_spot=None)
+        self.service._repository.get_slot = AsyncMock(return_value=slot)
 
-    service._repository.get_slot = AsyncMock(return_value=slot)
+        result = await self.service.get_slot(slot_uuid)
+        assert result == slot
+        self.service._repository.get_slot.assert_awaited_once_with(slot_uuid)
 
-    result = await service.get_slot(slot_uuid)
-    assert result == slot
-    service._repository.get_slot.assert_awaited_once_with(slot_uuid)
+    async def test_get_slot_raising_SlotNotFoundException(self):
+        slot_uuid = uuid4()
+
+        self.service._repository.get_slot = AsyncMock(return_value=None)
+
+        with pytest.raises(SlotNotFoundException):
+            result = await self.service.get_slot(slot_uuid)
