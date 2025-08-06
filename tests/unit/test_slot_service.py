@@ -35,7 +35,7 @@ class TestGetSlot:
         self.service._repository.get_slot = AsyncMock(return_value=None)
 
         with pytest.raises(SlotNotFoundException):
-            result = await self.service.get_slot(slot_uuid)
+            await self.service.get_slot(slot_uuid)
 
 
 class TestAddSlot:
@@ -81,4 +81,13 @@ class TestAddSlot:
         await self.service.add_slots(valid_slots)
 
         assert logger_mock.error.called
-
+        
+    async def test_empty_slots_list_not_use_repository(self):
+        empty_slots_list: list[SlotDTO] = []
+        
+        self.service._repository.add_slot = AsyncMock()
+        
+        await self.service.add_slots(empty_slots_list)
+        
+        self.service._repository.add_slot.assert_not_called
+        
