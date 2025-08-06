@@ -29,10 +29,56 @@ class TestGetSlot:
         assert result == slot
         self.service._repository.get_slot.assert_awaited_once_with(slot_uuid)
 
-    async def test_get_slot_raising_SlotNotFoundException(self):
+    async def test_get_slot_raises_slot_not_found_exception(self):
         slot_uuid = uuid4()
 
         self.service._repository.get_slot = AsyncMock(return_value=None)
 
         with pytest.raises(SlotNotFoundException):
             result = await self.service.get_slot(slot_uuid)
+
+
+class TestAddSlot:
+
+    @pytest.fixture(autouse=True)
+    def service(self, session_mock):
+        self.service = SlotService(session_mock)
+
+    @pytest.fixture
+    def valid_slots(self):
+        slots: list[SlotDTO] = []
+        for _ in range(3):
+            slots.append(
+                SlotDTO.new_dto(
+                    uuid_teacher=uuid4(),
+                    dt_start=datetime.now(),
+                    uuid_student=None,
+                    dt_spot=None
+                )
+            )
+        return slots
+
+    async def test_all_valid_slots_added(self, valid_slots):
+        self.service._repository.add_slot = AsyncMock()
+
+        await self.service.add_slots(valid_slots)
+
+        assert self.service._repository.add_slot.call_count == 3
+
+    async def test_handle_value_error(self, valid_slots):
+        self.service._repository.add_slot = AsyncMock(side_effect=[None, ValueError, None])
+
+        await self.service.add_slots(valid_slots)
+
+        assert self.service._repository.add_slot.call_count == 3
+
+    async def test_logging_value_error(self, valid_slots, monkeypatch):
+        logger_mock = MagicMock()
+        monkeypatch.setattr("app.services.slot_service.logger", logger_mock)
+
+        self.service._repository.add_slot = AsyncMock(side_effect=[None, ValueError, None])
+
+        await self.service.add_slots(valid_slots)
+
+        assert logger_mock.error.called
+
