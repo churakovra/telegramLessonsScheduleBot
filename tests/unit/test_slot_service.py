@@ -1,4 +1,5 @@
 from datetime import datetime
+from unittest import result
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 
@@ -144,4 +145,13 @@ class TestGetDaySlots:
         self.service = SlotService(session_mock)
 
     async def test_get_day_slots_success(self, slots_single_element):
-        assert 1 == 1
+        dt = datetime.now()
+        teacher_uuid = uuid4()
+
+        self.service._repository.get_day_slots = AsyncMock(return_value=slots_single_element)
+
+        slots = await self.service.get_day_slots(dt, teacher_uuid)
+
+        assert slots == slots_single_element
+        self.service._repository.get_day_slots.assert_awaited_once_with(dt, teacher_uuid)
+
