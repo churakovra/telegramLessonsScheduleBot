@@ -4,8 +4,6 @@ from uuid import uuid4
 
 import pytest
 
-from contextlib import nullcontext as does_not_raise
-
 from app.schemas.slot_dto import SlotDTO
 from app.services.slot_service import SlotService
 from app.utils.exceptions.slot_exceptions import (
@@ -88,7 +86,7 @@ class TestAddSlot:
 
         await self.service.add_slots(empty_slots_list)
 
-        self.service._repository.add_slot.assert_not_called
+        self.service._repository.add_slot.assert_not_called()
 
 
 class TestGetSlot:
