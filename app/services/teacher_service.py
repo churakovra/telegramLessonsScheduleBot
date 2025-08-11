@@ -6,7 +6,10 @@ from app.repositories.teacher_repository import TeacherRepository
 from app.schemas.user_dto import UserDTO
 from app.utils.config.logger import setup_logger
 from app.utils.enums.bot_values import UserRoles
-from app.utils.exceptions.teacher_exceptions import TeacherStudentsNotFound, TeacherAlreadyHasStudentException
+from app.utils.exceptions.teacher_exceptions import (
+    TeacherAlreadyHasStudentException,
+    TeacherStudentsNotFound,
+)
 from app.utils.exceptions.user_exceptions import UserNotFoundException
 
 logger = setup_logger("teacher-service")
