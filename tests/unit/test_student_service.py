@@ -1,3 +1,4 @@
+from curses import raw
 from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
@@ -55,3 +56,22 @@ class TestGetStudent:
 
         with pytest.raises(UserNotFoundException):
             await self.service.get_student(username)
+
+
+class TestParseStudents:
+    @pytest.fixture(autouse=True)
+    def service(self, session_mock):
+        self.service = StudentService(session_mock)
+
+    async def test_parse_students(self, test_student):
+        raw_students = "test-student test-student-unknown"
+
+        self.service._repository.parse_students = AsyncMock(
+            return_value=([test_student], ["test-student-unknown"])
+        )
+
+        students, unknown_students = await self.service.parse_students(raw_students)
+
+        self.service._repository.parse_students.assert_called_once_with(raw_students)
+        assert students[0].username == raw_students.split()[0]
+        assert unknown_students[0] == raw_students.split()[1]
