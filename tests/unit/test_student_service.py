@@ -1,4 +1,3 @@
-from curses import raw
 from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
@@ -6,7 +5,9 @@ from uuid import uuid4
 import pytest
 
 from app.schemas.student_dto import StudentDTO
+from app.schemas.user_dto import UserDTO
 from app.services.student_service import StudentService
+from app.utils.enums.bot_values import UserRoles
 from app.utils.exceptions.user_exceptions import UserNotFoundException
 
 
@@ -59,19 +60,66 @@ class TestGetStudent:
 
 
 class TestParseStudents:
-    @pytest.fixture(autouse=True)
-    def service(self, session_mock):
-        self.service = StudentService(session_mock)
+    async def test_parse_students_success(self):
+        mock_repo = AsyncMock()
 
-    async def test_parse_students(self, test_student):
-        raw_students = "test-student test-student-unknown"
+        async def get_student_side_effect(username):
+            if username in ["student1", "student2"]:
+                return StudentDTO(
+                    uuid=uuid4(),
+                    username=username,
+                    firstname="firstname",
+                    lastname="lastname",
+                    is_student=True,
+                    is_teacher=False,
+                    is_admin=False,
+                    chat_id=123456789456,
+                    dt_reg=datetime.now(),
+                    dt_edit=datetime.now(),
+                )
+            raise UserNotFoundException(username, "STUDENT")
 
-        self.service._repository.parse_students = AsyncMock(
-            return_value=([test_student], ["test-student-unknown"])
-        )
+        mock_repo.get_student.side_effect = get_student_side_effect
 
-        students, unknown_students = await self.service.parse_students(raw_students)
+        service = StudentService.__new__(StudentService)
+        service._repository = mock_repo
 
-        self.service._repository.parse_students.assert_called_once_with(raw_students)
-        assert students[0].username == raw_students.split()[0]
-        assert unknown_students[0] == raw_students.split()[1]
+        students_raw = "student1 student2"
+
+        students, unknown_students = await service.parse_students(students_raw)
+
+        assert len(students) == 2
+        assert {s.username for s in students} == {"student1", "student2"}
+        assert unknown_students == []
+
+    async def test_parse_students_with_unknown(self):
+        mock_repo = AsyncMock()
+
+        async def get_student_side_effect(username):
+            if username == "known_student":
+                return StudentDTO(
+                    uuid=uuid4(),
+                    username=username,
+                    firstname="firstname",
+                    lastname="lastname",
+                    is_student=True,
+                    is_teacher=False,
+                    is_admin=False,
+                    chat_id=123456789456,
+                    dt_reg=datetime.now(),
+                    dt_edit=datetime.now(),
+                )
+            raise UserNotFoundException(username, "STUDENT")
+
+        mock_repo.get_student.side_effect = get_student_side_effect
+
+        service = StudentService.__new__(StudentService)
+        service._repository = mock_repo
+
+        students_raw = "known_student unknown_student"
+
+        students, unknown_students = await service.parse_students(students_raw)
+
+        assert len(students) == 1
+        assert students[0].username == "known_student"
+        assert unknown_students == ["unknown_student"]
