@@ -33,10 +33,11 @@ def get_sub_menu_markup(sub_menu_type: MenuType) -> InlineKeyboardMarkup:
             raise ValueError(f"Wrong sub_menu_type {sub_menu_type}")
     for menu in menu_type:
         builder.button(text=menu.text, callback_data=menu.callback_data)
-        logger.debug(f"get_sub_menu_markup: name={menu.text}; callback_data={menu.callback_data}")
+        logger.debug(
+            f"get_sub_menu_markup: name={menu.text}; callback_data={menu.callback_data}"
+        )
     builder.button(
-        text="Назад",
-        callback_data=BackCallback(parent_keyboard="menu_keyboard")
+        text="Назад", callback_data=BackCallback(parent_keyboard="menu_keyboard")
     )
     builder.adjust(1)
     return builder.as_markup()
