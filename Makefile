@@ -13,5 +13,13 @@ venv: init install
 rmvenv:
 	rm -rf .venv
 
-pytest:
-	PYTHONPATH="." pytest . -vv
+.PHONY: tests new-tests failed-tests
+
+tests:
+	PYTHONPATH="." pytest -vv
+
+new-tests:
+	PYTHONPATH="." pytest -vv --nf
+
+failed-tests:
+	PYTHONPATH="." pytest -vv --lf --lfnf=none
