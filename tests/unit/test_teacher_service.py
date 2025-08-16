@@ -1,29 +1,11 @@
-from datetime import datetime
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, call
 from uuid import uuid4
 
 import pytest
 
-from app.handlers.callbacks import teacher
 from app.schemas.user_dto import UserDTO
 from app.services.teacher_service import TeacherService
 from app.utils.exceptions.user_exceptions import UserNotFoundException
-
-
-@pytest.fixture
-def valid_teacher():
-    return UserDTO(
-        uuid=uuid4(),
-        username="test-username",
-        firstname="test-firstname",
-        lastname="test-lastname",
-        is_student=False,
-        is_teacher=True,
-        is_admin=False,
-        chat_id=1234567898765,
-        dt_reg=datetime.now(),
-        dt_edit=datetime.now(),
-    )
 
 
 @pytest.fixture
@@ -86,3 +68,25 @@ class TestGetTeacherByUUID(Base):
 
         assert exc.value.data == teacher_uuid
         assert str(teacher_uuid) in str(exc.value)
+
+
+class TestAttachStudents(Base):
+    async def test_attach_students_success(self, monkeypatch, valid_student):
+        teacher_uuid = uuid4()
+        students_to_attach = [valid_student, valid_student, valid_student]
+        uuid_lesson = uuid4()
+
+        monkeypatch.setattr(self.service, "_attach_student", AsyncMock())
+
+        await self.service.attach_students(
+            teacher_uuid=teacher_uuid,
+            students=students_to_attach,
+            uuid_lesson=uuid_lesson,
+        )
+
+        expected_calls = [
+            call(teacher_uuid, s.uuid, uuid_lesson) for s in students_to_attach
+        ]
+
+        self.service._attach_student.assert_has_calls(expected_calls)
+        assert self.service._attach_student.call_count == len(students_to_attach)
