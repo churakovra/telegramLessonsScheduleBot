@@ -1,19 +1,12 @@
 from datetime import datetime
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import pytest
 
 from app.schemas.student_dto import StudentDTO
-from app.schemas.user_dto import UserDTO
 from app.services.student_service import StudentService
-from app.utils.enums.bot_values import UserRoles
 from app.utils.exceptions.user_exceptions import UserNotFoundException
-
-
-@pytest.fixture
-def session_mock():
-    return MagicMock()
 
 
 @pytest.fixture
