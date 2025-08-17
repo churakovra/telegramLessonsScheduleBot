@@ -18,13 +18,14 @@ router = Router()
 
 @router.callback_query(SlotsForStudents.filter())
 async def handle_callback(
-        callback: CallbackQuery,
-        callback_data: SlotsForStudents,
-        session: AsyncSession,
-        notifier: TelegramNotifier):
+    callback: CallbackQuery,
+    callback_data: SlotsForStudents,
+    session: AsyncSession,
+    notifier: TelegramNotifier,
+):
     slot_uuid = callback_data.uuid_slot
     student_service = StudentService(session)
-    student_username = callback.from_user.username
+    student_username = getattr(callback.from_user, "username", "") or ""
 
     try:
         student = await student_service.get_student(student_username)
@@ -35,21 +36,23 @@ async def handle_callback(
     assigned_slot = await slot_service.assign_slot(student.uuid, slot_uuid)
 
     teacher_service = TeacherService(session)
-    teacher_username = await teacher_service.get_teacher_by_uuid(assigned_slot.uuid_teacher)
-
-    await callback.message.answer(
-        BotStrings.SLOTS_ASSIGN_SUCCESS_ANSWER.format(
-            teacher_username.username,
-            assigned_slot.dt_start.strftime(full_format_no_sec)
-        )
+    teacher_username = await teacher_service.get_teacher_by_uuid(
+        assigned_slot.uuid_teacher
     )
 
+    if callback.message:
+        await callback.message.answer(
+            BotStrings.SLOTS_ASSIGN_SUCCESS_ANSWER.format(
+                teacher_username.username,
+                assigned_slot.dt_start.strftime(full_format_no_sec),
+            )
+        )
+
     user_service = UserService(session)
-    user, markup = await user_service.get_user_menu(callback.from_user.username)
+    user, markup = await user_service.get_user_menu(student_username)
     bot_message = MessageTemplate.get_menu_message(user.username, markup)
     await notifier.send_message(
-        bot_message=bot_message,
-        receiver_chat_id=callback.message.chat.id
+        bot_message=bot_message, receiver_chat_id=callback.message.chat.id
     )
 
     await callback.message.delete()

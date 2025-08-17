@@ -15,18 +15,21 @@ logger = setup_logger("start")
 
 @router.message(Command("start"))
 async def add_new_user(message: Message, session: AsyncSession):
-    new_user = {
-        "username": message.from_user.username,
-        "firstname": message.from_user.first_name,
-        "lastname": message.from_user.last_name,
-        "role": UserRoles.STUDENT,
-        "chat_id": message.from_user.id
-    }
+    username = getattr(message.from_user, "username", "") or ""
+    first_name = getattr(message.from_user, "first_name", "") or ""
+    last_name = getattr(message.from_user, "last_name", None) or None
+    id = getattr(message.from_user, "id", 0) or 0
 
     user_service = UserService(session)
     try:
-        await user_service.register_user(**new_user)
+        await user_service.register_user(
+            username=username,
+            firstname=first_name,
+            lastname=last_name,
+            role=UserRoles.STUDENT,
+            chat_id=id,
+        )
     except IntegrityError as e:
         logger.error(e)
     finally:
-        await message.answer(text=BotStrings.GREETING.format(new_user["firstname"]))
+        await message.answer(text=BotStrings.GREETING.format(first_name))
