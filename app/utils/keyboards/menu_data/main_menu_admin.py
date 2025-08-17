@@ -7,9 +7,9 @@ from app.utils.keyboards.callback_factories.main_menu import MainMenuCallback
 
 @dataclass
 class MainMenuDataAdmin:
-    admin_menu = (
+    admin_menu = [
         ButtonDTO(
             text="Пока командами",
-            callback_data=MainMenuCallback(menu_type=MenuType.ADMIN_TEMP)
+            callback_data=MainMenuCallback(menu_type=MenuType.ADMIN_TEMP),
         )
-    )
+    ]
