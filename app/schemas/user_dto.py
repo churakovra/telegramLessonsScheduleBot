@@ -7,7 +7,7 @@ from app.utils.enums.bot_values import UserRoles
 
 
 class UserDTO(BaseModel):
-    uuid: UUID | None = None
+    uuid: UUID
     username: str
     firstname: str
     lastname: str | None
