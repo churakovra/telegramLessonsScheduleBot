@@ -12,14 +12,11 @@ from app.utils.message_template import MessageTemplate
 
 router = Router()
 
+
 @router.message(ScheduleStates.wait_for_student_to_delete)
-async def handle_state(
-        message: Message,
-        session: AsyncSession,
-        state: FSMContext
-):
-    teacher_username = message.from_user.username
-    raw_msg = message.text
+async def handle_state(message: Message, session: AsyncSession, state: FSMContext):
+    teacher_username = getattr(message.from_user, "username", "") or ""
+    raw_msg = getattr(message, "text", "")
 
     student_service = StudentService(session)
     students, unknown_students = await student_service.parse_students(raw_msg)
@@ -28,9 +25,7 @@ async def handle_state(
         await message.answer(BotStrings.TEACHER_STUDENTS_NOT_FOUND)
         await state.set_state(ScheduleStates.wait_for_student_to_delete)
 
-
     if len(unknown_students) > 0:
-
         if len(unknown_students) <= 1:
             message_text = BotStrings.TEACHER_STUDENT_ADD_UNKNOWN_STUDENT
         else:
@@ -43,12 +38,9 @@ async def handle_state(
 
     await message.delete()
     user_service = UserService(session)
-    user, markup = await user_service.get_user_menu(message.from_user.username)
+    user, markup = await user_service.get_user_menu(teacher_username)
     bot_message = MessageTemplate.get_menu_message(user.username, markup)
     await message.answer(
-        text=bot_message.message_text,
-        reply_markup=bot_message.reply_markup
+        text=bot_message.message_text, reply_markup=bot_message.reply_markup
     )
-    await state.clear()
-
     await state.clear()
