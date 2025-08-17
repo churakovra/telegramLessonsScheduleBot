@@ -1,10 +1,11 @@
-from unittest.mock import AsyncMock, call
+from unittest.mock import AsyncMock, MagicMock, call
 from uuid import uuid4
 
 import pytest
 
 from app.schemas.user_dto import UserDTO
 from app.services.teacher_service import TeacherService
+from app.utils.exceptions.teacher_exceptions import TeacherAlreadyHasStudentException
 from app.utils.exceptions.user_exceptions import UserNotFoundException
 
 
@@ -20,6 +21,7 @@ class Base:
     @pytest.fixture(autouse=True)
     def service(self, session_mock):
         self.service = TeacherService(session_mock)
+        return self.service
 
 
 class TestGetTeacher(Base):
@@ -90,3 +92,44 @@ class TestAttachStudents(Base):
 
         self.service._attach_student.assert_has_calls(expected_calls)
         assert self.service._attach_student.call_count == len(students_to_attach)
+
+
+class TestAttachStudent(Base):
+    @pytest.fixture()
+    def repository_mock(self, service):
+        def _mock(side_effect):
+            service._repository.attach_student = AsyncMock(side_effect=side_effect)
+
+        return _mock
+
+    async def test_attach_student_success(self, valid_student, repository_mock):
+        teacher_uuid = uuid4()
+        uuid_lesson = None
+
+        repository_mock(side_effect=None)
+
+        await self.service._attach_student(
+            teacher_uuid, valid_student.uuid, uuid_lesson
+        )
+
+        self.service._repository.attach_student.assert_awaited_once_with(
+            teacher_uuid, valid_student.uuid, uuid_lesson
+        )
+
+    async def test_attach_student_raises_teacher_already_has_student_exception(
+        self, repository_mock, monkeypatch
+    ):
+        teacher_uuid = uuid4()
+        already_attached_student_uuid = uuid4()
+        uuid_lesson = None
+
+        repository_mock(side_effect=ValueError)
+        logger_mock = MagicMock()
+        monkeypatch.setattr("app.services.teacher_service.logger.error", logger_mock)
+
+        with pytest.raises(TeacherAlreadyHasStudentException) as e:
+            await self.service._attach_student(
+                teacher_uuid, already_attached_student_uuid, uuid_lesson
+            )
+
+        logger_mock.assert_called_once()
