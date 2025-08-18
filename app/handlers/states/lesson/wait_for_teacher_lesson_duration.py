@@ -17,8 +17,9 @@ async def handle_state(
 ):
     data = await state.get_data()
     previous_message_id = data["previous_message_id"]
+    raw_mt = getattr(message, "text", "")
     try:
-        duration = int(message.text.strip())
+        duration = int(raw_mt.strip())
         await state.update_data(lesson_duration=duration)
         await state.set_state(ScheduleStates.wait_for_teacher_lesson_price)
 

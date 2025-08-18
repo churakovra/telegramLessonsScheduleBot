@@ -14,8 +14,8 @@ class UserRepository:
     def __init__(self, session: AsyncSession):
         self._db = session
 
-    async def add_user(self, user: UserDTO):
-        user = User(**user.model_dump())
+    async def add_user(self, user_dto: UserDTO):
+        user = User(**user_dto.model_dump())
         self._db.add(user)
         await self._db.commit()
         await self._db.refresh(user)
