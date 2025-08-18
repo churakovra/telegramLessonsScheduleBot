@@ -58,7 +58,7 @@ class SlotService:
             word.strip(string.punctuation) for word in message_text.split()
         ]  # разбиваем сообщение на День и Время
         slots = list[SlotDTO]()
-        weekday_index = None
+        weekday_index = 0
         for word in raw_mt:
             try:
                 time = datetime.strptime(

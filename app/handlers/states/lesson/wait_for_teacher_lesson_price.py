@@ -24,8 +24,10 @@ async def handle_state(
 ):
     data = await state.get_data()
     previous_message_id = data["previous_message_id"]
+    raw_mt = getattr(message, "text", "")
+    username = getattr(message.from_user, "username", "") or ""
     try:
-        price = int(message.text.strip())
+        price = int(raw_mt.strip())
 
         lesson = {
             "label": data["lesson_label"],
@@ -41,7 +43,7 @@ async def handle_state(
         await message.answer(str.format(BotStrings.TEACHER_LESSON_ADD_SUCCESS, lesson["label"]))
 
         user_service = UserService(session)
-        user, markup = await user_service.get_user_menu(message.from_user.username)
+        user, markup = await user_service.get_user_menu(username)
         bot_message = MessageTemplate.get_menu_message(user.username, markup)
         await notifier.send_message(
             bot_message=bot_message,

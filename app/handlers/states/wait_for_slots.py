@@ -16,7 +16,7 @@ async def wait_for_slots(message: Message, state: FSMContext, session: AsyncSess
     teacher_uuid = data["teacher_uuid"]
     previous_message_id = data["previous_message_id"]
 
-    slots_raw = message.text
+    slots_raw = getattr(message, "text", "")
 
     slot_service = SlotService(session)
     slots = await slot_service.parse_slots(slots_raw, teacher_uuid)
