@@ -19,7 +19,7 @@ async def send_menu_message(
         session: AsyncSession
 ):
     logger.debug("in send_menu_message def")
-    username = message.from_user.username
+    username = getattr(message.from_user, "username", "")
     try:
         user_service = UserService(session)
         user, markup = await user_service.get_user_menu(username)

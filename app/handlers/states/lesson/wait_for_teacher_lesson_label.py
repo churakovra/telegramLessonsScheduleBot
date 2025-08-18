@@ -15,7 +15,8 @@ async def handle_state(
         message: Message,
         state: FSMContext
 ):
-    lesson_label = message.text.strip()
+    raw_mt = getattr(message, "text", "")
+    lesson_label = raw_mt.strip()
     await state.update_data(lesson_label=lesson_label)
     await state.set_state(ScheduleStates.wait_for_teacher_lesson_duration)
 

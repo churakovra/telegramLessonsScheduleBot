@@ -21,7 +21,7 @@ async def make_teacher_from_student(message: Message, command: CommandObject, se
         return
 
     # Получаем username инициатора, username нового преподавателя, проверяем статусы
-    initiator_user = message.from_user.username
+    initiator_user = getattr(message.from_user, "username", "") or ""
     teacher_username = command.args.strip()
 
     # Меняем статус пользователю

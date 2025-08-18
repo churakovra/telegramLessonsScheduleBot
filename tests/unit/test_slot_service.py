@@ -13,11 +13,6 @@ from app.utils.exceptions.slot_exceptions import (
 
 
 @pytest.fixture
-def session_mock():
-    return MagicMock()
-
-
-@pytest.fixture
 def slots_single_element():
     return [
         SlotDTO(
