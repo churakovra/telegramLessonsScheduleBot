@@ -1,4 +1,4 @@
-from aiogram import Router, F
+from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,11 +11,11 @@ from app.utils.keyboards.send_slots_markup import get_send_slots_markup
 router = Router()
 
 
-@router.callback_query(F.data == BotStrings.CALLBACK_SLOTS_CORRECT, ScheduleStates.wait_for_confirmation)
+@router.callback_query(
+    F.data == BotStrings.CALLBACK_SLOTS_CORRECT, ScheduleStates.wait_for_confirmation
+)
 async def reply_and_save_to_db(
-        callback: CallbackQuery,
-        state: FSMContext,
-        session: AsyncSession
+    callback: CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     data = await state.get_data()
     slots = data["slots"]
@@ -26,7 +26,7 @@ async def reply_and_save_to_db(
     await slot_service.add_slots(slots)
     await callback.message.answer(
         text=BotStrings.SLOTS_PROCESSING_SUCCESS_ANSWER,
-        reply_markup=get_send_slots_markup(teacher_uuid)
+        reply_markup=get_send_slots_markup(teacher_uuid),
     )
 
     await callback.message.chat.delete_message(previous_message_id)
