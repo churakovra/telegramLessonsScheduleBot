@@ -4,17 +4,9 @@ from uuid import uuid4
 import pytest
 
 from app.schemas.user_dto import UserDTO
-from app.services.teacher_service import TeacherService
+from app.services.teacher_service import TeacherService, logger
 from app.utils.exceptions.teacher_exceptions import TeacherAlreadyHasStudentException
 from app.utils.exceptions.user_exceptions import UserNotFoundException
-
-
-@pytest.fixture
-def get_teacher_mock():
-    def _mock(service, return_value: UserDTO | None):
-        service._repository.get_teacher = AsyncMock(return_value=return_value)
-
-    return _mock
 
 
 class Base:
@@ -25,20 +17,28 @@ class Base:
 
 
 class TestGetTeacher(Base):
-    async def test_get_teacher_success(self, valid_teacher, get_teacher_mock):
+    async def test_get_teacher_success(self, valid_teacher, func_mock):
         teacher_username = "test-username"
 
-        get_teacher_mock(self.service, valid_teacher)
+        func_mock(
+            service=self.service._repository,
+            mock_method="get_teacher",
+            return_value=valid_teacher,
+        )
 
         teacher = await self.service.get_teacher(teacher_username)
 
         self.service._repository.get_teacher.assert_awaited_once_with(teacher_username)
         assert isinstance(teacher, UserDTO)
 
-    async def test_get_teacher_raising_UserNotFoundException(self, get_teacher_mock):
+    async def test_get_teacher_raising_UserNotFoundException(self, func_mock):
         teacher_username = "unknown-username"
 
-        get_teacher_mock(self.service, None)
+        func_mock(
+            service=self.service._repository,
+            mock_method="get_teacher",
+            return_value=None,
+        )
 
         with pytest.raises(UserNotFoundException) as exc:
             await self.service.get_teacher(teacher_username)
@@ -48,10 +48,14 @@ class TestGetTeacher(Base):
 
 
 class TestGetTeacherByUUID(Base):
-    async def test_get_teacher_by_uuid_success(self, valid_teacher, get_teacher_mock):
+    async def test_get_teacher_by_uuid_success(self, valid_teacher, func_mock):
         teacher_uuid = uuid4()
 
-        get_teacher_mock(self.service, valid_teacher)
+        func_mock(
+            service=self.service._repository,
+            mock_method="get_teacher",
+            return_value=valid_teacher,
+        )
 
         teacher = await self.service.get_teacher(teacher_uuid)
 
@@ -59,11 +63,15 @@ class TestGetTeacherByUUID(Base):
         assert isinstance(teacher, UserDTO)
 
     async def test_get_teacher_by_uuid_raising_user_not_found_exception(
-        self, get_teacher_mock
+        self, func_mock
     ):
         teacher_uuid = uuid4()
 
-        get_teacher_mock(self.service, None)
+        func_mock(
+            service=self.service._repository,
+            mock_method="get_teacher",
+            return_value=None,
+        )
 
         with pytest.raises(UserNotFoundException) as exc:
             await self.service.get_teacher(teacher_uuid)
@@ -73,12 +81,12 @@ class TestGetTeacherByUUID(Base):
 
 
 class TestAttachStudents(Base):
-    async def test_attach_students_success(self, monkeypatch, valid_student):
+    async def test_attach_students_success(self, valid_student, func_mock):
         teacher_uuid = uuid4()
         students_to_attach = [valid_student, valid_student, valid_student]
         uuid_lesson = uuid4()
 
-        monkeypatch.setattr(self.service, "_attach_student", AsyncMock())
+        func_mock(service=self.service, mock_method="_attach_student")
 
         await self.service.attach_students(
             teacher_uuid=teacher_uuid,
@@ -95,18 +103,14 @@ class TestAttachStudents(Base):
 
 
 class TestAttachStudent(Base):
-    @pytest.fixture()
-    def repository_mock(self, service):
-        def _mock(side_effect):
-            service._repository.attach_student = AsyncMock(side_effect=side_effect)
-
-        return _mock
-
-    async def test_attach_student_success(self, valid_student, repository_mock):
+    async def test_attach_student_success(self, valid_student, func_mock):
         teacher_uuid = uuid4()
         uuid_lesson = None
 
-        repository_mock(side_effect=None)
+        func_mock(
+            service=self.service._repository,
+            mock_method="attach_student",
+        )
 
         await self.service._attach_student(
             teacher_uuid, valid_student.uuid, uuid_lesson
@@ -117,19 +121,30 @@ class TestAttachStudent(Base):
         )
 
     async def test_attach_student_raises_teacher_already_has_student_exception(
-        self, repository_mock, monkeypatch
+        self, func_mock
     ):
         teacher_uuid = uuid4()
         already_attached_student_uuid = uuid4()
         uuid_lesson = None
 
-        repository_mock(side_effect=ValueError)
-        logger_mock = MagicMock()
-        monkeypatch.setattr("app.services.teacher_service.logger.error", logger_mock)
+        func_mock(
+            service=self.service._repository,
+            mock_method="attach_student",
+            side_effect=ValueError,
+        )
 
-        with pytest.raises(TeacherAlreadyHasStudentException) as e:
+        logger_mock = func_mock(
+            service=logger,
+            mock_method="error",
+            async_mode=False,
+        )
+
+        with pytest.raises(TeacherAlreadyHasStudentException):
             await self.service._attach_student(
                 teacher_uuid, already_attached_student_uuid, uuid_lesson
             )
 
         logger_mock.assert_called_once()
+
+
+# class TestGetStudents(Base):
