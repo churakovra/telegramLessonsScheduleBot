@@ -1,8 +1,9 @@
-from unittest.mock import AsyncMock, MagicMock, call
+from unittest.mock import call
 from uuid import uuid4
 
 import pytest
 
+from app.handlers.callbacks import teacher
 from app.schemas.user_dto import UserDTO
 from app.services.teacher_service import TeacherService, logger
 from app.utils.exceptions.teacher_exceptions import TeacherAlreadyHasStudentException
@@ -147,4 +148,19 @@ class TestAttachStudent(Base):
         logger_mock.assert_called_once()
 
 
-# class TestGetStudents(Base):
+class TestGetStudents(Base):
+    async def test_get_students_success(self, valid_student, func_mock):
+        teacher_uuid = uuid4()
+
+        mock = func_mock(
+            service=self.service._repository,
+            mock_method="get_students",
+            return_value=[valid_student],
+        )
+
+        students = await self.service.get_students(teacher_uuid)
+
+        assert students[0] == valid_student
+        mock.assert_awaited_once_with(teacher_uuid)
+
+    async def get_students_raises_teacher_student_not_found(self, func_mock): ...
