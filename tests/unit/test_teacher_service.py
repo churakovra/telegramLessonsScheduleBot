@@ -6,7 +6,7 @@ import pytest
 from app.handlers.callbacks import teacher
 from app.schemas.user_dto import UserDTO
 from app.services.teacher_service import TeacherService, logger
-from app.utils.exceptions.teacher_exceptions import TeacherAlreadyHasStudentException
+from app.utils.exceptions.teacher_exceptions import TeacherAlreadyHasStudentException, TeacherStudentsNotFound
 from app.utils.exceptions.user_exceptions import UserNotFoundException
 
 
@@ -163,4 +163,18 @@ class TestGetStudents(Base):
         assert students[0] == valid_student
         mock.assert_awaited_once_with(teacher_uuid)
 
-    async def get_students_raises_teacher_student_not_found(self, func_mock): ...
+    async def test_get_students_raises_teacher_student_not_found(self, func_mock):
+        teacher_uuid = uuid4()
+
+        func_mock(
+            service=self.service._repository,
+            mock_method="get_students",
+            return_value=[]
+        )
+
+        with pytest.raises(TeacherStudentsNotFound) as exc:
+            students = await self.service.get_students(teacher_uuid)
+            assert len(students) == 0
+        assert exc.value.teacher_uuid == teacher_uuid
+        assert exc.value.message == f"Teacher {teacher_uuid} has no students"
+
