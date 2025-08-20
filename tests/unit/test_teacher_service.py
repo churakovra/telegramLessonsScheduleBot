@@ -1,12 +1,15 @@
+from contextlib import nullcontext
 from unittest.mock import call
 from uuid import uuid4
 
 import pytest
 
-from app.handlers.callbacks import teacher
 from app.schemas.user_dto import UserDTO
 from app.services.teacher_service import TeacherService, logger
-from app.utils.exceptions.teacher_exceptions import TeacherAlreadyHasStudentException, TeacherStudentsNotFound
+from app.utils.exceptions.teacher_exceptions import (
+    TeacherAlreadyHasStudentException,
+    TeacherStudentsNotFound,
+)
 from app.utils.exceptions.user_exceptions import UserNotFoundException
 
 
@@ -155,7 +158,7 @@ class TestGetStudents(Base):
         mock = func_mock(
             service=self.service._repository,
             mock_method="get_students",
-            return_value=[valid_student]
+            return_value=[valid_student],
         )
 
         students = await self.service.get_students(teacher_uuid)
@@ -169,7 +172,7 @@ class TestGetStudents(Base):
         func_mock(
             service=self.service._repository,
             mock_method="get_students",
-            return_value=[]
+            return_value=[],
         )
 
         with pytest.raises(TeacherStudentsNotFound) as exc:
@@ -178,6 +181,7 @@ class TestGetStudents(Base):
         assert exc.value.teacher_uuid == teacher_uuid
         assert exc.value.message == f"Teacher {teacher_uuid} has no students"
 
+
 class TestGetUnsignedStudents(Base):
     async def test_get_unsigned_students_success(self, valid_student, func_mock):
         teacher_uuid = uuid4()
@@ -185,7 +189,7 @@ class TestGetUnsignedStudents(Base):
         mock = func_mock(
             service=self.service._repository,
             mock_method="get_unsigned_students",
-            return_value=[valid_student]
+            return_value=[valid_student],
         )
 
         students = await self.service.get_unsigned_students(teacher_uuid)
@@ -193,13 +197,15 @@ class TestGetUnsignedStudents(Base):
         assert students[0] == valid_student
         mock.assert_awaited_once_with(teacher_uuid)
 
-    async def test_get_unsigned_students_raises_teacher_student_not_found(self, func_mock):
+    async def test_get_unsigned_students_raises_teacher_student_not_found(
+        self, func_mock
+    ):
         teacher_uuid = uuid4()
 
         func_mock(
             service=self.service._repository,
             mock_method="get_unsigned_students",
-            return_value=[]
+            return_value=[],
         )
 
         with pytest.raises(TeacherStudentsNotFound) as exc:
@@ -207,3 +213,13 @@ class TestGetUnsignedStudents(Base):
             assert len(students) == 0
         assert exc.value.teacher_uuid == teacher_uuid
         assert exc.value.message == f"Teacher {teacher_uuid} has no students"
+
+
+class TestDeleteStudents(Base):
+    async def test_delete_students_do_not_fail_with_empty_list(self, valid_teacher, func_mock):
+        students = list()
+        condition = nullcontext()
+        func_mock(service=self.service._repository, mock_method="delete_students")
+
+        with condition as expected_condition:
+            assert (await self.service.delete_students(students, valid_teacher)) == expected_condition
