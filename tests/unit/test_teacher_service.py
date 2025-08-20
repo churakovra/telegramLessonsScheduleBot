@@ -155,7 +155,7 @@ class TestGetStudents(Base):
         mock = func_mock(
             service=self.service._repository,
             mock_method="get_students",
-            return_value=[valid_student],
+            return_value=[valid_student]
         )
 
         students = await self.service.get_students(teacher_uuid)
@@ -178,3 +178,32 @@ class TestGetStudents(Base):
         assert exc.value.teacher_uuid == teacher_uuid
         assert exc.value.message == f"Teacher {teacher_uuid} has no students"
 
+class TestGetUnsignedStudents(Base):
+    async def test_get_unsigned_students_success(self, valid_student, func_mock):
+        teacher_uuid = uuid4()
+
+        mock = func_mock(
+            service=self.service._repository,
+            mock_method="get_unsigned_students",
+            return_value=[valid_student]
+        )
+
+        students = await self.service.get_unsigned_students(teacher_uuid)
+
+        assert students[0] == valid_student
+        mock.assert_awaited_once_with(teacher_uuid)
+
+    async def test_get_unsigned_students_raises_teacher_student_not_found(self, func_mock):
+        teacher_uuid = uuid4()
+
+        func_mock(
+            service=self.service._repository,
+            mock_method="get_unsigned_students",
+            return_value=[]
+        )
+
+        with pytest.raises(TeacherStudentsNotFound) as exc:
+            students = await self.service.get_unsigned_students(teacher_uuid)
+            assert len(students) == 0
+        assert exc.value.teacher_uuid == teacher_uuid
+        assert exc.value.message == f"Teacher {teacher_uuid} has no students"
