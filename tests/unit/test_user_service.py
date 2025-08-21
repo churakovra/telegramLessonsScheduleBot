@@ -1,9 +1,23 @@
 import datetime
+from uuid import UUID
 
+from pydantic import ValidationError
 import pytest
 
+from app.schemas.user_dto import UserDTO
 from app.services.user_service import UserService
 from app.utils.enums.bot_values import UserRoles
+
+
+@pytest.fixture
+def valid_user():
+    return UserDTO.new_dto(
+        username="test-username",
+        firstname="test-firstname",
+        lastname="test-lastname",
+        role=UserRoles.STUDENT,
+        chat_id=123456789,
+    )
 
 
 class Base:
@@ -14,17 +28,24 @@ class Base:
 
 
 class TestRegisterUser(Base):
-    async def register_user_success(self, func_mock):
-        user_data = {
-            "username": "test-username",
-            "firstname": "test-firstname",
-            "role": UserRoles.STUDENT,
-            "chat_id": 123456789,
-        }
-
+    @pytest.mark.parametrize(
+        "username, firstname, lastname, role, chat_id, expectation",
+        [
+            ("test-username", "test-firstname", "test-lastname", UserRoles.STUDENT, 123456789, None),
+            ("test-username", "test-firstname", None, UserRoles.STUDENT, 123456789, None),
+            (None, "test-firstname", "test-lastname", UserRoles.STUDENT, 123456789, ValidationError),
+            ("test-username", None, "test-lastname", UserRoles.STUDENT, 123456789, ValidationError),
+            ("test-username", "test-firstname", "test-lastname", UserRoles.STUDENT, None, ValidationError),
+        ],
+    )
+    async def test_register_user_success(self, func_mock, username, firstname, lastname, role, chat_id, expectation):
         mock = func_mock(service=self.service._repository, mock_method="add_user")
 
-        new_user = self.service.register_user(**user_data)
-        assert new_user.uuid
-        assert new_user.dt_reg.date() == datetime.now().date()
-        mock.assert_awaited_once()
+
+        if expectation:
+            with pytest.raises(expectation):
+                await self.service.register_user(username, firstname, lastname, role, chat_id)
+        else:
+            new_user_uuid = await self.service.register_user(username, firstname, lastname, role, chat_id)
+            assert isinstance(new_user_uuid, UUID)
+            mock.assert_awaited_once()
