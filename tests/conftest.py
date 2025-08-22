@@ -12,6 +12,7 @@ from app.schemas.user_dto import UserDTO
 async def session_mock():
     return MagicMock()
 
+
 @pytest.fixture()
 def func_mock(monkeypatch):
     def _mock(
