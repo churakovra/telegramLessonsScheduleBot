@@ -97,3 +97,14 @@ class TestGetUser(Base):
             await self.service.get_user(username)
             assert get_user_mock.assert_awaited_once_with(username)
             assert exc.value.username == username
+
+
+class TestGetUserInfo(Base):
+    async def test_get_user_info_success(self, func_mock):
+        func_mock(service=self.service, mock_method="get_user", return_value=valid_user)
+        
+        info = await self.service.get_user_info(valid_user.username)
+        
+        assert info
+        fields_to_check = ["username", "firstname", "lastname"]
+        assert all(str(getattr(valid_user, f)) in info for f in fields_to_check)
