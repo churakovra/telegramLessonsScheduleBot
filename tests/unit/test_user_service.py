@@ -53,7 +53,6 @@ class TestRegisterUser(Base):
             mock.assert_awaited_once()
 
 class TestAddRole(Base):
-
     async def test_add_role_success(self, func_mock):
         func_mock(service=self.service._repository, mock_method="get_user", return_value=valid_admin)
         edit_role_mock = func_mock(service=self.service._repository, mock_method="edit_role")
@@ -78,3 +77,23 @@ class TestAddRole(Base):
         with pytest.raises(expectation):
             await self.service.add_role(valid_admin.username, valid_user.username, UserRoles.TEACHER)
 
+
+class TestGetUser(Base):
+    async def test_get_user_success(self, func_mock):
+        username = "test-username"
+        get_user_mock = func_mock(service=self.service._repository, mock_method="get_user", return_value=valid_user)
+        
+        user = await self.service.get_user(username)
+        
+        assert user
+        assert user.username == username
+        get_user_mock.assert_awaited_once_with(username)
+
+    async def test_get_user_raises_user_not_found_exception(self, func_mock):
+        username = "unknown_username"
+        get_user_mock = func_mock(service=self.service._repository, mock_method="get_user", return_value=None)
+        
+        with pytest.raises(UserNotFoundException) as exc:
+            await self.service.get_user(username)
+            assert get_user_mock.assert_awaited_once_with(username)
+            assert exc.value.username == username
