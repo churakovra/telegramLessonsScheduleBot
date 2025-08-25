@@ -7,3 +7,4 @@ app/utils/config/__p*
 app/controllers/__p*
 .DS*
 *__pycache__*
+.coverage

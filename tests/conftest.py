@@ -1,5 +1,5 @@
 from datetime import datetime
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 
 import pytest
@@ -11,6 +11,19 @@ from app.schemas.user_dto import UserDTO
 @pytest.fixture
 async def session_mock():
     return MagicMock()
+
+
+@pytest.fixture()
+def func_mock(monkeypatch):
+    def _mock(
+        *, service, mock_method, async_mode=True, side_effect=None, return_value=None
+    ):
+        mock = AsyncMock if async_mode else MagicMock
+        internal_mock = mock(side_effect=side_effect, return_value=return_value)
+        monkeypatch.setattr(service, mock_method, internal_mock)
+        return internal_mock
+
+    return _mock
 
 
 @pytest.fixture
