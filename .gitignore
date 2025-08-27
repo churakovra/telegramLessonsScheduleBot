@@ -1,7 +1,7 @@
 .venv/*
 .idea/*
 .vscode/*
-.env
+*.env
 app/__p*
 app/utils/config/__p*
 app/controllers/__p*
