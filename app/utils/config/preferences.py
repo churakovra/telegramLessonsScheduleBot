@@ -2,7 +2,7 @@ from os import getenv
 
 from dotenv import load_dotenv
 
-APP_VERSION = getenv("APP_VERSION")
+APP_VERSION = getenv("APP_VERSION", "dev")
 
 if APP_VERSION == "qa":
     load_dotenv("qa.env")
