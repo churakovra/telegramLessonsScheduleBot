@@ -1,14 +1,18 @@
-import os
+from os import getenv
 
 from dotenv import load_dotenv
 
-load_dotenv()
+APP_VERSION = getenv("APP_VERSION", "dev")
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+if APP_VERSION == "qa":
+    load_dotenv("qa.env")
+else:
+    load_dotenv("dev.env")
 
-DB_NAME = os.getenv("DB_NAME")
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_HOST = os.getenv("DB_HOST")
-DB_HOST_LOCAL = "localhost"
-DB_PORT = os.getenv("DB_PORT") or "5432"
+BOT_TOKEN = getenv("BOT_TOKEN")
+
+DB_PORT = int(getenv("DB_PORT") or "5432")
+DB_USER = getenv("DB_USER")
+DB_PASSWORD = getenv("DB_PASSWORD")
+DB_HOST = getenv("DB_HOST_LOCAL")
+DB_NAME = getenv("DB_NAME")
