@@ -4,6 +4,7 @@ services:
     container_name: scheduler
     restart: unless-stopped
     environment:
+      - APP_VERSION=dev
       - BOT_TOKEN=${BOT_TOKEN}
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}

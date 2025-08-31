@@ -5,9 +5,9 @@ from dotenv import load_dotenv
 APP_VERSION = getenv("APP_VERSION", "dev")
 
 if APP_VERSION == "qa":
-    load_dotenv("qa.env")
+    load_dotenv("/tests/.env")
 else:
-    load_dotenv("dev.env")
+    load_dotenv(".env")
 
 BOT_TOKEN = getenv("BOT_TOKEN")
 
