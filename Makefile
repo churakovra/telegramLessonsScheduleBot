@@ -18,12 +18,11 @@ venv: init install
 rmvenv:
 	rm -rf .venv
 
+up-db-test:
+	docker compose -f tests/docker-compose-test.yml up -d
 
-create_db_test:
-	createdb -U scheduler-bt_test $(DATABASE_TEST)
-
-drop_db_test:
-	...
+down-db-test:
+	docker compose -f tests/docker-compose-test.yml down
 
 .PHONY: tests
 
@@ -33,8 +32,8 @@ tests:
 
 new-tests:
 	$(EXPORT_APP_VERSION_QA) \
-	pytest -vv --nf
+	$(RUN) pytest -vv --nf
 
 failed-tests:
 	$(EXPORT_APP_VERSION_QA) \
-	pytest -vv --lf --lfnf=none
+	$(RUN) pytest -vv --lf --lfnf=none
