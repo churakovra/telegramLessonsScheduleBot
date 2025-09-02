@@ -1,12 +1,11 @@
 import asyncio
 from logging.config import fileConfig
 
-from alembic import context
-from sqlalchemy import URL
 from sqlalchemy.ext.asyncio import create_async_engine
 
+from alembic import context
+from app.db.database import url
 from app.db.orm.base import Base
-from app.utils.config.preferences import DB_USER, DB_PASSWORD, DB_HOST_LOCAL, DB_PORT, DB_NAME
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -27,15 +26,6 @@ target_metadata = Base.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-
-url = URL.create(
-    drivername="postgresql+asyncpg",
-    username=DB_USER,
-    password=DB_PASSWORD,
-    host=DB_HOST_LOCAL,
-    port=DB_PORT,
-    database=DB_NAME,
-)
 
 
 def run_migrations_offline() -> None:
@@ -65,6 +55,7 @@ async def run_migrations_online():
     connectable = create_async_engine(url, future=True)
 
     async with connectable.begin() as conn:
+
         def do_run_migrations(connection):
             context.configure(
                 connection=connection,

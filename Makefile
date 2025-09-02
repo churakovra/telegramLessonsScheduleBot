@@ -18,22 +18,28 @@ venv: init install
 rmvenv:
 	rm -rf .venv
 
-up-db-test:
-	docker compose -f tests/docker-compose-test.yml up -d
 
-down-db-test:
-	docker compose -f tests/docker-compose-test.yml down
-
+### Start of test section ###
 .PHONY: tests
 
-tests:
-	$(EXPORT_APP_VERSION_QA) \
+export APP_VERSION=qa
+
+tests: up_db_test run_migrations_test run_tests down_db_test
+
+up_db_test: down_db_test
+	docker compose -f tests/docker-compose-test.yml up -d
+
+down_db_test:
+	docker compose -f tests/docker-compose-test.yml down
+
+run_migrations_test:
+	alembic upgrade head
+
+run_tests:
 	pytest -vv
 
-new-tests:
-	$(EXPORT_APP_VERSION_QA) \
-	$(RUN) pytest -vv --nf
+new_tests:
+	pytest -vv --nf
 
-failed-tests:
-	$(EXPORT_APP_VERSION_QA) \
-	$(RUN) pytest -vv --lf --lfnf=none
+failed_tests:
+	pytest -vv --lf --lfnf=none
