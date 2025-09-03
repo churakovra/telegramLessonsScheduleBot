@@ -24,22 +24,35 @@ rmvenv:
 
 export APP_VERSION=qa
 
-tests: up_db_test run_migrations_test run_tests down_db_test
+tests: utests itests
 
+utests: run_utests
+
+utests_new: run_new_utests
+
+utests_failed: run_failed_utests
+
+itests: up_db_test run_test_migrations run_itests down_db_test
+
+run_utests:
+	pytest -vv tests/unit
+
+run_new_utests:
+	pytest -vv --nf tests/unit
+
+run_failed_utests:
+	pytest -vv --lf --lfnf=none tests/unit
+
+run_itests:
+	pytest -vv tests/integration
+
+# infra for integration tests
 up_db_test: down_db_test
 	docker compose -f tests/docker-compose-test.yml up -d
 
 down_db_test:
 	docker compose -f tests/docker-compose-test.yml down
 
-run_migrations_test:
+run_test_migrations:
 	alembic upgrade head
-
-run_tests:
-	pytest -vv
-
-new_tests:
-	pytest -vv --nf
-
-failed_tests:
-	pytest -vv --lf --lfnf=none
+	
