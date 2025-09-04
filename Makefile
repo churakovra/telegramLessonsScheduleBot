@@ -19,22 +19,40 @@ rmvenv:
 	rm -rf .venv
 
 
-create_db_test:
-	createdb -U scheduler-bt_test $(DATABASE_TEST)
-
-drop_db_test:
-	...
-
+### Start of test section ###
 .PHONY: tests
 
-tests:
-	$(EXPORT_APP_VERSION_QA) \
-	pytest -vv
+export APP_VERSION=qa
 
-new-tests:
-	$(EXPORT_APP_VERSION_QA) \
-	pytest -vv --nf
+tests: utests itests
 
-failed-tests:
-	$(EXPORT_APP_VERSION_QA) \
-	pytest -vv --lf --lfnf=none
+utests: run_utests
+
+utests_new: run_new_utests
+
+utests_failed: run_failed_utests
+
+itests: up_db_test run_test_migrations run_itests down_db_test
+
+run_utests:
+	pytest -vv tests/unit
+
+run_new_utests:
+	pytest -vv --nf tests/unit
+
+run_failed_utests:
+	pytest -vv --lf --lfnf=none tests/unit
+
+run_itests:
+	pytest -vv tests/integration
+
+# infra for integration tests
+up_db_test: down_db_test
+	docker compose -f tests/docker-compose-test.yml up -d
+
+down_db_test:
+	docker compose -f tests/docker-compose-test.yml down
+
+run_test_migrations:
+	alembic upgrade head
+	
