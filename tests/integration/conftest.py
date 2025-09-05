@@ -1,18 +1,24 @@
 import pytest
-
-import pytest_asyncio
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from app.db.database import url
+from app.repositories.user_repository import UserRepository
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 async def setup_engine():
     engine = create_async_engine(url)
     yield engine
 
-@pytest_asyncio.fixture(loop_scope="session", scope="session", autouse=True)
+
+@pytest.fixture
 async def setup_session(setup_engine):
-    async_session_factory = async_sessionmaker(setup_engine) 
-    async with async_session_factory()  as session:
+    async_session_factory = async_sessionmaker(setup_engine)
+    async with async_session_factory() as session:
         yield session
+
+
+class Base:
+    @pytest.fixture(autouse=True)
+    def init_repo(self, setup_session):
+        self.repository = UserRepository(setup_session)
