@@ -48,7 +48,8 @@ run_itests:
 
 # infra for integration tests
 up_db_test: down_db_test
-	docker compose -f tests/docker-compose-test.yml up -d
+	docker compose -f tests/docker-compose-test.yml up -d \
+	&& sleep 2;
 
 down_db_test:
 	docker compose -f tests/docker-compose-test.yml down
