@@ -1,8 +1,8 @@
 import pytest
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
 
 from app.db.database import url
-from app.repositories.user_repository import UserRepository
 
 
 @pytest.fixture(scope="session")
@@ -19,7 +19,9 @@ async def setup_session(setup_engine):
         yield session
 
 
-class Base:
-    @pytest.fixture(autouse=True)
-    def init_repo(self, setup_session):
-        self.repository = UserRepository(setup_session)
+@pytest.fixture(autouse=True)
+async def clear_tables(setup_engine: AsyncEngine):
+    query = "truncate table users restart identity cascade;"
+    yield
+    async with setup_engine.begin() as conn:
+        await conn.execute(text(query))
