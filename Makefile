@@ -32,7 +32,8 @@ utests_new: run_new_utests
 
 utests_failed: run_failed_utests
 
-itests: up_db_test run_test_migrations run_itests down_db_test
+itests: up_db_test run_test_migrations run_itests
+	docker compose -f tests/docker-compose-test.yml down
 
 run_utests:
 	pytest -vv tests/unit
@@ -49,7 +50,7 @@ run_itests:
 # infra for integration tests
 up_db_test: down_db_test
 	docker compose -f tests/docker-compose-test.yml up -d \
-	&& sleep 2;
+	&& sleep 1
 
 down_db_test:
 	docker compose -f tests/docker-compose-test.yml down
