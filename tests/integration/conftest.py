@@ -9,6 +9,7 @@ from app.repositories.user_repository import UserRepository
 async def setup_engine():
     engine = create_async_engine(url)
     yield engine
+    await engine.dispose()
 
 
 @pytest.fixture
