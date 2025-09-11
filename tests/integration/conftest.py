@@ -1,4 +1,5 @@
 import pytest
+import pytest_asyncio
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
 
@@ -12,14 +13,14 @@ async def setup_engine():
     await engine.dispose()
 
 
-@pytest.fixture
+@pytest_asyncio.fixture(loop_scope="session")
 async def setup_session(setup_engine):
     async_session_factory = async_sessionmaker(setup_engine)
     async with async_session_factory() as session:
         yield session
 
 
-@pytest.fixture(autouse=True)
+@pytest_asyncio.fixture(loop_scope="session", autouse=True)
 async def clear_tables(setup_engine: AsyncEngine):
     query = "truncate table users restart identity cascade;"
     yield
