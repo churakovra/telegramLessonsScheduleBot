@@ -22,25 +22,22 @@ class TestAddUser(Base):
         assert user
 
 
+@pytest.mark.parametrize("insert_user", [{"username": "test_username"}], indirect=True)
 class TestGetUser(Base):
-    @pytest.mark.parametrize(
-        "insert_user", [{"username": "itest-username"}], indirect=True
-    )
     async def test_get_user_success(self, insert_user):
-        user = await self.repo.get_user("itest-username")
+        user = await self.repo.get_user("test_username")
 
         assert user
         assert isinstance(user, UserDTO)
 
-    async def test_get_user_returns_none(self):
-        user = await self.repo.get_user("unknown-username")
-
-        assert not user
-
-    @pytest.mark.parametrize(
-        "insert_user", [{"username": "test_username"}], indirect=True
-    )
     async def test_get_user_returns_userdto(self, insert_user):
         user = await self.repo.get_user("test_username")
 
         assert isinstance(user, UserDTO)
+
+    async def test_get_user_returns_none(self, insert_user):
+        user = await self.repo.get_user("unknown-username")
+
+        assert not user
+
+
