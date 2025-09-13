@@ -5,6 +5,7 @@ from app.db.orm.slot import Slot
 from app.db.orm.user import User
 from app.repositories.user_repository import UserRepository
 from app.schemas.user_dto import UserDTO
+from app.utils.enums.bot_values import UserRoles
 
 pytestmark = pytest.mark.asyncio(loop_scope="session")
 
@@ -48,3 +49,33 @@ class TestGetUser(Base):
         assert not user
 
 
+class TestEditRole(Base):
+    @pytest.mark.parametrize(
+        "is_admin, is_student, is_teacher",
+        [
+            (False, False, False),
+            (True, False, False),
+            (False, True, False),
+            (False, False, True),
+            (True, True, False),
+            (True, False, True),
+            (False, True, True),
+            (True, True, True),
+        ],
+    )
+    async def test_edit_role_success(
+        self,
+        prepare_student,
+        is_admin,
+        is_student,
+        is_teacher,
+    ):
+        await self.repo.edit_role(prepare_student.uuid, UserRoles.ADMIN, is_admin)
+        await self.repo.edit_role(prepare_student.uuid, UserRoles.STUDENT, is_student)
+        await self.repo.edit_role(prepare_student.uuid, UserRoles.TEACHER, is_teacher)
+
+        user = await self.repo.get_user(prepare_student.username)
+
+        assert user.is_admin == is_admin
+        assert user.is_student == is_student
+        assert user.is_teacher == is_teacher
