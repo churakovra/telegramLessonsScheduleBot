@@ -79,3 +79,11 @@ class TestEditRole(Base):
         assert user.is_admin == is_admin
         assert user.is_student == is_student
         assert user.is_teacher == is_teacher
+
+    async def test_edit_role_raises_value_error_with_unknown_role(
+        self,
+        prepare_student,
+        func_mock,
+    ):
+        with pytest.raises(ValueError):
+            await self.repo.edit_role(prepare_student.uuid, UserRoles.NOT_DEFINED, True)
