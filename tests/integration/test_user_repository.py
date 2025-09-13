@@ -1,4 +1,5 @@
 import pytest
+import pytest_asyncio
 
 from app.db.orm.slot import Slot
 from app.db.orm.user import User
@@ -6,6 +7,12 @@ from app.repositories.user_repository import UserRepository
 from app.schemas.user_dto import UserDTO
 
 pytestmark = pytest.mark.asyncio(loop_scope="session")
+
+
+@pytest_asyncio.fixture(loop_scope="session", autouse=True)
+async def prepare_student(insert_user):
+    student = await insert_user(username="test_username")
+    return student[0]
 
 
 class Base:
@@ -16,26 +23,26 @@ class Base:
 
 class TestAddUser(Base):
     async def test_add_user_success(self, new_user):
-        await self.repo.add_user(new_user(username="test_username"))
-        user = await self.repo.get_user("test_username")
+        new_user = new_user(username="test_username")
+        await self.repo.add_user(new_user)
+        user = await self.repo.get_user(new_user.username)
 
         assert user
 
 
-@pytest.mark.parametrize("insert_user", [{"username": "test_username"}], indirect=True)
 class TestGetUser(Base):
-    async def test_get_user_success(self, insert_user):
-        user = await self.repo.get_user("test_username")
+    async def test_get_user_success(self, prepare_student):
+        user = await self.repo.get_user(prepare_student.username)
 
         assert user
         assert isinstance(user, UserDTO)
 
-    async def test_get_user_returns_userdto(self, insert_user):
-        user = await self.repo.get_user("test_username")
+    async def test_get_user_returns_userdto(self, prepare_student):
+        user = await self.repo.get_user(prepare_student.username)
 
         assert isinstance(user, UserDTO)
 
-    async def test_get_user_returns_none(self, insert_user):
+    async def test_get_user_returns_none(self):
         user = await self.repo.get_user("unknown-username")
 
         assert not user

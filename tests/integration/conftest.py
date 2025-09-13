@@ -40,7 +40,7 @@ def new_user():
         cnt: int = 1,
     ):
         return UserDTO.new_dto(
-            username=username,
+            username=f"username_{cnt}",
             firstname=f"firstname_{cnt}",
             lastname=f"lastname_{cnt}",
             role=role,
@@ -52,17 +52,16 @@ def new_user():
 
 @pytest_asyncio.fixture(loop_scope="session")
 async def insert_user(
-    request,
     setup_session,
     new_user,
 ):
-    params = request.param
-    cnt = params.get("cnt", 1)
-    role = params.get("role", UserRoles.STUDENT)
-    username = params.get("username", None)
+    async def wrap(username: str, cnt: int = 1, role: UserRoles = UserRoles.STUDENT):
+        inserted_users = []
+        repo = UserRepository(setup_session)
+        for i in range(cnt):
+            user = new_user(username=username, role=role, cnt=i)
+            inserted_users.append(user)
+            await repo.add_user(user)
+        return inserted_users
 
-    repo = UserRepository(setup_session)
-
-    for i in range(cnt):
-        user = new_user(username=username, role=role, cnt=i)
-        await repo.add_user(user)
+    return wrap
