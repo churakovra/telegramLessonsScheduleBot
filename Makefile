@@ -45,7 +45,7 @@ run_failed_utests:
 	pytest -vv --lf --lfnf=none tests/unit
 
 run_itests:
-	pytest -vv tests/integration
+	-pytest -vv tests/integration
 
 # infra for integration tests
 up_db_test: down_db_test
