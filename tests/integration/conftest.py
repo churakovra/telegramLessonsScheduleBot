@@ -35,12 +35,12 @@ async def clear_tables(setup_engine: AsyncEngine):
 def new_user():
     def wrap(
         *,
-        username: str,
+        username: str = "test_username",
         role: UserRoles = UserRoles.STUDENT,
         cnt: int = 1,
     ):
         return UserDTO.new_dto(
-            username=f"username_{cnt}",
+            username=f"{username}_{cnt}",
             firstname=f"firstname_{cnt}",
             lastname=f"lastname_{cnt}",
             role=role,
@@ -55,7 +55,11 @@ async def insert_user(
     setup_session,
     new_user,
 ):
-    async def wrap(username: str, cnt: int = 1, role: UserRoles = UserRoles.STUDENT):
+    async def wrap(
+        username: str = "test_username",
+        cnt: int = 1,
+        role: UserRoles = UserRoles.STUDENT,
+    ):
         inserted_users = []
         repo = UserRepository(setup_session)
         for i in range(cnt):
