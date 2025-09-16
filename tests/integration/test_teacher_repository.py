@@ -2,6 +2,7 @@ import pytest
 import pytest_asyncio
 
 from app.repositories.teacher_repository import TeacherRepository
+from app.utils.enums.bot_values import UserRoles
 
 pytestmark = pytest.mark.asyncio(loop_scope="session")
 
@@ -26,3 +27,13 @@ class TestAddTeacher(Base):
 
         assert teacher.is_teacher
         assert not teacher.is_student
+
+
+class TestGetTeacher(Base):
+    async def test_get_teacher_success(self, insert_user):
+        users = await insert_user(role=UserRoles.TEACHER)
+        user = users[0]
+
+        teacher = await self.repo.get_teacher(user.uuid)
+
+        assert teacher
