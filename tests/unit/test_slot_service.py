@@ -28,7 +28,7 @@ def slots_single_element():
 
 @pytest.fixture
 def slots_multiple_elements():
-    slots: list[SlotDTO] = []
+    slots = []
     for _ in range(3):
         slots.append(
             SlotDTO.new_dto(
@@ -75,7 +75,7 @@ class TestAddSlot:
         assert logger_mock.error.called
 
     async def test_empty_slots_list_not_use_repository(self):
-        empty_slots_list: list[SlotDTO] = []
+        empty_slots_list = []
 
         self.service._repository.add_slot = AsyncMock()
 
