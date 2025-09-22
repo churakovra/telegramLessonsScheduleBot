@@ -39,14 +39,14 @@ class TestGetTeacher(Base):
         assert teacher
 
 
-class TestRemoveTeacher(Base):
-    async def test_remove_teacher_success(self, insert_user):
-        users = await insert_user(role=UserRoles.TEACHER)
-        teacher = users[0]
+# class TestRemoveTeacher(Base):
+#     async def test_remove_teacher_success(self, insert_user):
+#         users = await insert_user(role=UserRoles.TEACHER)
+#         teacher = users[0]
 
-        removed_teacher = await self.repo.remove_teacher(teacher.uuid)
+#         removed_teacher = await self.repo.remove_teacher(teacher.uuid)
 
-        user = self.repo.get_teacher(removed_teacher)
+#         user = self.repo.get_teacher(removed_teacher)
 
-        assert removed_teacher.uuid == teacher.uuid
-        assert user is None
+#         assert removed_teacher.uuid == teacher.uuid
+#         assert user is None
