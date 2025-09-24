@@ -29,14 +29,14 @@ class TestAddTeacher(Base):
         assert not teacher.is_student
 
 
-# class TestGetTeacher(Base):
-#     async def test_get_teacher_success(self, insert_user):
-#         users = await insert_user(role=UserRoles.TEACHER)
-#         user = users[0]
+class TestGetTeacher(Base):
+    async def test_get_teacher_success(self, insert_user):
+        users = await insert_user(role=UserRoles.TEACHER)
+        user = users[0]
 
-#         teacher = await self.repo.get_teacher(user.uuid)
+        teacher = await self.repo.get_teacher(user.uuid)
 
-#         assert teacher
+        assert teacher
 
 
 # class TestRemoveTeacher(Base):
