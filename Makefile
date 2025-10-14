@@ -1,10 +1,12 @@
 PYTHON_VERSION := $(shell cat .python-version)
 RUN := . .venv/bin/activate ;
 DATABASE = scheduler-db
+DB_USER = chloc
+DB_HOST = localhost
+DB_PORT = 5432
+DB_NAME = $(DATABASE)
 
 
-DATABASE_TEST = $(DATABASE)_test
-EXPORT_APP_VERSION_QA = export APP_VERSION=qa;
 
 
 init:
@@ -15,14 +17,25 @@ install:
 
 venv: init install
 
-rmvenv:
+clear:
 	rm -rf .venv
+
+create_db:
+	docker exec -it postgres createdb -U $(DB_USER) -h $(DB_HOST) -p $(DB_PORT) $(DB_NAME)
+
+drop_db:
+	docker exec -it postgres dropdb $(DB_NAME) -U $(DB_USER)
+
+run_migrations:
+	alembic upgrade head
 
 
 ### Start of test section ###
-.PHONY: tests
+DATABASE_TEST = $(DATABASE)_test
+EXPORT_APP_VERSION_QA = export APP_VERSION=qa;
 
-export APP_VERSION=qa
+
+.PHONY: tests
 
 tests: utests itests
 
@@ -36,16 +49,16 @@ itests: up_db_test run_test_migrations run_itests
 	docker compose -f tests/docker-compose-test.yml down
 
 run_utests:
-	pytest -vv tests/unit
+	$(EXPORT_APP_VERSION_QA) pytest -vv tests/unit
 
 run_new_utests:
-	pytest -vv --nf tests/unit
+	$(EXPORT_APP_VERSION_QA) pytest -vv --nf tests/unit
 
 run_failed_utests:
-	pytest -vv --lf --lfnf=none tests/unit
+	$(EXPORT_APP_VERSION_QA) pytest -vv --lf --lfnf=none tests/unit
 
 run_itests:
-	-pytest -vv tests/integration
+	$(EXPORT_APP_VERSION_QA) -pytest -vv tests/integration
 
 # infra for integration tests
 up_db_test: down_db_test
@@ -56,5 +69,5 @@ down_db_test:
 	docker compose -f tests/docker-compose-test.yml down
 
 run_test_migrations:
-	alembic upgrade head
+	$(EXPORT_APP_VERSION_QA) alembic upgrade head
 	
