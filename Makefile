@@ -27,6 +27,7 @@ drop_db:
 	docker exec -it postgres dropdb $(DB_NAME) -U $(DB_USER)
 
 run_migrations:
+	export DB_HOST=localhost && \
 	alembic upgrade head
 
 

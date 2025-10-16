@@ -2,6 +2,8 @@ services:
   scheduler:
     build: .
     container_name: scheduler
+    networks:
+      - scheduler_network
     restart: unless-stopped
     environment:
       - APP_VERSION=dev
@@ -11,29 +13,16 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
-    depends_on:
-      scheduler-pg:
-        condition: service_healthy
+    volumes:
+      - ./app:/bot/app
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 2
 
     command: uv run python -m app.main
 
-  scheduler-pg:
-    image: postgres:15-alpine
-    container_name: scheduler-pg
-    restart: always
-    volumes:
-      - scheduler-pg-data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "$DB_USER", "-d", "$DB_NAME" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-volumes:
-  scheduler-pg-data:
 
+networks:
+  scheduler_network:
+    external: true
