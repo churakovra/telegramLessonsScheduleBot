@@ -8,7 +8,7 @@ from app.services.lesson_service import LessonService
 from app.services.user_service import UserService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
-from app.utils.config.logger import setup_logger
+from app.config.logger import setup_logger
 from app.utils.message_template import MessageTemplate
 
 router = Router()

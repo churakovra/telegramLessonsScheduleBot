@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.teacher_repository import TeacherRepository
 from app.schemas.user_dto import UserDTO
-from app.utils.config.logger import setup_logger
+from app.config.logger import setup_logger
 from app.utils.enums.bot_values import UserRoles
 from app.utils.exceptions.teacher_exceptions import (
     TeacherAlreadyHasStudentException,

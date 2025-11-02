@@ -1,13 +1,8 @@
 PYTHON_VERSION := $(shell cat .python-version)
-RUN := . .venv/bin/activate ;
+RUN = . .venv/bin/activate;
 DATABASE = scheduler-db
-DB_USER = chloc
-DB_HOST = localhost
-DB_PORT = 5432
-DB_NAME = $(DATABASE)
-
-
-
+ENV_FILE = .env
+include $(ENV_FILE)
 
 init:
 	uv venv -nv -p $(PYTHON_VERSION) .venv
@@ -17,24 +12,25 @@ install:
 
 venv: init install
 
-clear:
+clean:
 	rm -rf .venv
 
 create_db:
 	docker exec -it postgres createdb -U $(DB_USER) -h $(DB_HOST) -p $(DB_PORT) $(DB_NAME)
 
 drop_db:
-	docker exec -it postgres dropdb $(DB_NAME) -U $(DB_USER)
+	-docker exec -it postgres dropdb $(DB_NAME) -U $(DB_USER) && \
+	echo 'DB $(DB_NAME) dropped successfully'
 
 run_migrations:
-	export DB_HOST=localhost && \
-	alembic upgrade head
+	export $(APP_VERSION) && \
+	$(RUN) alembic upgrade head
 
 
 ### Start of test section ###
 DATABASE_TEST = $(DATABASE)_test
-EXPORT_APP_VERSION_QA = export APP_VERSION=qa;
-
+ENV_FILE_TEST = tests/.env
+include $(ENV_FILE_TEST)
 
 .PHONY: tests
 
@@ -50,25 +46,32 @@ itests: up_db_test run_test_migrations run_itests
 	docker compose -f tests/docker-compose-test.yml down
 
 run_utests:
-	$(EXPORT_APP_VERSION_QA) pytest -vv tests/unit
+	export $(APP_VERSION) && \
+	pytest -vv tests/unit
 
 run_new_utests:
-	$(EXPORT_APP_VERSION_QA) pytest -vv --nf tests/unit
+	export $(APP_VERSION) && \
+	pytest -vv --nf tests/unit
 
 run_failed_utests:
-	$(EXPORT_APP_VERSION_QA) pytest -vv --lf --lfnf=none tests/unit
+	export $(APP_VERSION) && \
+	pytest -vv --lf --lfnf=none tests/unit
 
 run_itests:
-	$(EXPORT_APP_VERSION_QA) -pytest -vv tests/integration
+	export $(APP_VERSION) && \
+	-pytest -vv tests/integration
 
 # infra for integration tests
 up_db_test: down_db_test
-	docker compose -f tests/docker-compose-test.yml up -d \
-	&& sleep 1
+	export $(POSTGRES_DB) && \
+	export $(POSTGRES_USER) && \
+	export $(POSTGRES_PASSWORD) && \
+	docker compose -f tests/docker-compose-test.yml up -d; sleep 1
 
 down_db_test:
-	docker compose -f tests/docker-compose-test.yml down
+	-docker compose -f tests/docker-compose-test.yml down
 
 run_test_migrations:
-	$(EXPORT_APP_VERSION_QA) alembic upgrade head
+	export $(APP_VERSION) && \
+	$(RUN) alembic upgrade head
 	

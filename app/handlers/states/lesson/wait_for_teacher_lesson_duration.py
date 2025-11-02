@@ -4,7 +4,7 @@ from aiogram.types import Message
 
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
-from app.utils.config.logger import setup_logger
+from app.config.logger import setup_logger
 
 router = Router()
 logger = setup_logger("teacher-lesson-duration")

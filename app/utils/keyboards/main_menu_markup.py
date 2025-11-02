@@ -2,7 +2,7 @@ from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from app.schemas.user_dto import UserDTO
-from app.utils.config.logger import setup_logger
+from app.config.logger import setup_logger
 from app.utils.exceptions.user_exceptions import UserUnknownRoleException
 from app.utils.keyboards.menu_data.main_menu_admin import MainMenuDataAdmin
 from app.utils.keyboards.menu_data.main_menu_student import MainMenuDataStudent

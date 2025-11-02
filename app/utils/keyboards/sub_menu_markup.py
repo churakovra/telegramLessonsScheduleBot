@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from app.utils.config.logger import setup_logger
+from app.config.logger import setup_logger
 from app.utils.enums.menu_type import MenuType
 from app.utils.keyboards.callback_factories.back import BackCallback
 from app.utils.keyboards.menu_data.sub_menu_admin import SubMenuDataAdmin
