@@ -30,7 +30,7 @@ async def handle_callback(
                 await callback.message.answer(text=callback.message.text, reply_markup=markup)
             case "days_for_students":  # TODO Вынести в ENUM
                 if callback_data.teacher_uuid is None:
-                    raise ValueError(f"callback_data.teacher_uuid is None")
+                    raise ValueError("callback_data.teacher_uuid is None")
                 teacher_uuid = callback_data.teacher_uuid
                 slot_service = SlotService(session)
                 slots = await slot_service.get_free_slots(teacher_uuid)

@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from sqlalchemy import URL
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
-from app.utils.config.preferences import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER
+from app.utils.config.settings import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER
 
 url = URL.create(
     drivername="postgresql+asyncpg",
