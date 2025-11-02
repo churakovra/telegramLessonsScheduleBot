@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.user_service import UserService
 from app.utils.bot_strings import BotStrings
 from app.config.logger import setup_logger
-from app.utils.enums.bot_values import UserRoles
+from app.utils.enums.bot_values import UserRole
 
 router = Router()
 logger = setup_logger("start")
@@ -26,7 +26,7 @@ async def add_new_user(message: Message, session: AsyncSession):
             username=username,
             firstname=first_name,
             lastname=last_name,
-            role=UserRoles.STUDENT,
+            role=UserRole.STUDENT,
             chat_id=id,
         )
     except IntegrityError as e:

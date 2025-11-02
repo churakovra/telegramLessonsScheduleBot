@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async
 from app.db.database import url
 from app.repositories.user_repository import UserRepository
 from app.schemas.user_dto import UserDTO
-from app.utils.enums.bot_values import UserRoles
+from app.utils.enums.bot_values import UserRole
 
 
 @pytest.fixture(scope="session")
@@ -36,7 +36,7 @@ def new_user():
     def wrap(
         *,
         username: str = "test_username",
-        role: UserRoles = UserRoles.STUDENT,
+        role: UserRole = UserRole.STUDENT,
         cnt: int = 1,
     ):
         return UserDTO.new_dto(
@@ -58,7 +58,7 @@ async def insert_user(
     async def wrap(
         username: str = "test_username",
         cnt: int = 1,
-        role: UserRoles = UserRoles.STUDENT,
+        role: UserRole = UserRole.STUDENT,
     ):
         inserted_users = []
         repo = UserRepository(setup_session)

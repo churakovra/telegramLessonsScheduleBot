@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel
 
-from app.utils.enums.bot_values import UserRoles
+from app.utils.enums.bot_values import UserRole
 
 
 class UserDTO(BaseModel):
@@ -17,6 +17,18 @@ class UserDTO(BaseModel):
     chat_id: int
     dt_reg: datetime
     dt_edit: datetime
+    
+    @property
+    def role(self) -> UserRole:
+        if self.is_admin:
+            role = UserRole.ADMIN
+        elif self.is_teacher:
+            role = UserRole.TEACHER
+        elif self.is_student:
+            role = UserRole.STUDENT
+        else:
+            role = UserRole.NOT_DEFINED
+        return role
 
     @classmethod
     def new_dto(
@@ -24,13 +36,13 @@ class UserDTO(BaseModel):
             username: str,
             firstname: str,
             lastname: str | None,
-            role: UserRoles,
+            role: UserRole,
             chat_id: int,
     ):
         is_student, is_teacher, is_admin = (
-            role == UserRoles.STUDENT,
-            role == UserRoles.TEACHER,
-            role == UserRoles.ADMIN,
+            role == UserRole.STUDENT,
+            role == UserRole.TEACHER,
+            role == UserRole.ADMIN,
         )
         return cls(
             uuid=uuid4(),

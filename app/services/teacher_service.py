@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.repositories.teacher_repository import TeacherRepository
 from app.schemas.user_dto import UserDTO
 from app.config.logger import setup_logger
-from app.utils.enums.bot_values import UserRoles
+from app.utils.enums.bot_values import UserRole
 from app.utils.exceptions.teacher_exceptions import (
     TeacherAlreadyHasStudentException,
     TeacherStudentsNotFound,
@@ -22,13 +22,13 @@ class TeacherService:
     async def get_teacher(self, username: str) -> UserDTO:
         teacher = await self._repository.get_teacher(username)
         if teacher is None:
-            raise UserNotFoundException(username, UserRoles.TEACHER)
+            raise UserNotFoundException(username, UserRole.TEACHER)
         return teacher
 
     async def get_teacher_by_uuid(self, teacher_uuid: UUID) -> UserDTO:
         teacher = await self._repository.get_teacher(teacher_uuid)
         if teacher is None:
-            raise UserNotFoundException(teacher_uuid, UserRoles.TEACHER)
+            raise UserNotFoundException(teacher_uuid, UserRole.TEACHER)
         return teacher
 
     async def _attach_student(self, teacher_uuid: UUID, student_uuid: UUID, uuid_lesson: UUID | None):

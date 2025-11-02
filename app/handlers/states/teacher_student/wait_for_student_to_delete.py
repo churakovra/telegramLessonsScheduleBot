@@ -30,7 +30,7 @@ async def handle_state(message: Message, session: AsyncSession, state: FSMContex
             message_text = BotStrings.Teacher.TEACHER_STUDENT_ADD_UNKNOWN_STUDENT
         else:
             message_text = BotStrings.Teacher.TEACHER_STUDENT_ADD_UNKNOWN_STUDENTS
-        await message.answer(str.format(message_text, ", ".join(student=unknown_students)))
+        await message.answer(str.format(message_text, student=", ".join(unknown_students)))
 
     teacher_service = TeacherService(session)
     teacher = await teacher_service.get_teacher(teacher_username)

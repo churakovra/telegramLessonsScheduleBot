@@ -49,5 +49,5 @@ class BotStrings:
         
     class User:
         USER_INFO = "Информация"
-        USER_INFO = "Ошибка. Пользователь не найден"
+        USER_INFO_ERROR = "Ошибка. Пользователь не найден"
         CALLBACK_USER_INFO = "user_info"

@@ -26,7 +26,7 @@ async def handle_callback(
                 username = callback.from_user.username
                 user_service = UserService(session)
                 user = await user_service.get_user(username)
-                markup = get_main_menu_markup(user)
+                markup = get_main_menu_markup(user.role)
                 await callback.message.answer(text=callback.message.text, reply_markup=markup)
             case "days_for_students":  # TODO Вынести в ENUM
                 if callback_data.teacher_uuid is None:

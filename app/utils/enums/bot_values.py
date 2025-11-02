@@ -5,7 +5,7 @@ class BotEnum(str, Enum):
     pass
 
 
-class UserRoles(BotEnum):
+class UserRole(BotEnum):
     ADMIN = "admin"
     TEACHER = "teacher"
     STUDENT = "student"

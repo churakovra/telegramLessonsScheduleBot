@@ -5,7 +5,7 @@ from app.db.orm.slot import Slot
 from app.db.orm.user import User
 from app.repositories.user_repository import UserRepository
 from app.schemas.user_dto import UserDTO
-from app.utils.enums.bot_values import UserRoles
+from app.utils.enums.bot_values import UserRole
 
 pytestmark = pytest.mark.asyncio(loop_scope="session")
 
@@ -70,9 +70,9 @@ class TestEditRole(Base):
         is_student,
         is_teacher,
     ):
-        await self.repo.edit_role(prepare_student.uuid, UserRoles.ADMIN, is_admin)
-        await self.repo.edit_role(prepare_student.uuid, UserRoles.STUDENT, is_student)
-        await self.repo.edit_role(prepare_student.uuid, UserRoles.TEACHER, is_teacher)
+        await self.repo.edit_role(prepare_student.uuid, UserRole.ADMIN, is_admin)
+        await self.repo.edit_role(prepare_student.uuid, UserRole.STUDENT, is_student)
+        await self.repo.edit_role(prepare_student.uuid, UserRole.TEACHER, is_teacher)
 
         user = await self.repo.get_user(prepare_student.username)
 
@@ -86,4 +86,4 @@ class TestEditRole(Base):
         func_mock,
     ):
         with pytest.raises(ValueError):
-            await self.repo.edit_role(prepare_student.uuid, UserRoles.NOT_DEFINED, True)
+            await self.repo.edit_role(prepare_student.uuid, UserRole.NOT_DEFINED, True)
