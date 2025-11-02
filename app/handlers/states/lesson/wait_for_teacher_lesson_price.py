@@ -40,7 +40,7 @@ async def handle_state(
         lesson_service = LessonService(session)
         await lesson_service.create_lesson(**lesson)
 
-        await message.answer(str.format(BotStrings.TEACHER_LESSON_ADD_SUCCESS, lesson["label"]))
+        await message.answer(str.format(BotStrings.Teacher.TEACHER_LESSON_ADD_SUCCESS, lesson=lesson["label"]))
 
         user_service = UserService(session)
         user, markup = await user_service.get_user_menu(username)
@@ -54,7 +54,7 @@ async def handle_state(
     except Exception as e:
         logger.error(e)
 
-        sent_message = await message.answer(BotStrings.TEACHER_LESSON_ADD_PRICE_ERROR)
+        sent_message = await message.answer(BotStrings.Teacher.TEACHER_LESSON_ADD_PRICE_ERROR)
         await state.update_data(previous_message_id=sent_message.message_id)
         await state.set_state(ScheduleStates.wait_for_teacher_lesson_price)
 

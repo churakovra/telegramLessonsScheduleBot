@@ -83,7 +83,7 @@ class UserService:
                 f"Дата регистрации {user.dt_reg.strftime(day_format)}\n"
             )
         except Exception:
-            result = BotStrings.USER_INFO_ERROR
+            result = BotStrings.User.USER_INFO_ERROR
 
         return result
 

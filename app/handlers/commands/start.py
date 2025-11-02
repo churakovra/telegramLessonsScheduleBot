@@ -32,4 +32,4 @@ async def add_new_user(message: Message, session: AsyncSession):
     except IntegrityError as e:
         logger.error(e)
     finally:
-        await message.answer(text=BotStrings.GREETING.format(first_name))
+        await message.answer(text=BotStrings.Common.GREETING.format(user=first_name))

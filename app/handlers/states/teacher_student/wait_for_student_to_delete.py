@@ -22,15 +22,15 @@ async def handle_state(message: Message, session: AsyncSession, state: FSMContex
     students, unknown_students = await student_service.parse_students(raw_msg)
 
     if len(students) <= 0:
-        await message.answer(BotStrings.TEACHER_STUDENTS_NOT_FOUND)
+        await message.answer(BotStrings.Teacher.TEACHER_STUDENTS_NOT_FOUND)
         await state.set_state(ScheduleStates.wait_for_student_to_delete)
 
     if len(unknown_students) > 0:
         if len(unknown_students) <= 1:
-            message_text = BotStrings.TEACHER_STUDENT_ADD_UNKNOWN_STUDENT
+            message_text = BotStrings.Teacher.TEACHER_STUDENT_ADD_UNKNOWN_STUDENT
         else:
-            message_text = BotStrings.TEACHER_STUDENT_ADD_UNKNOWN_STUDENTS
-        await message.answer(str.format(message_text, ", ".join(unknown_students)))
+            message_text = BotStrings.Teacher.TEACHER_STUDENT_ADD_UNKNOWN_STUDENTS
+        await message.answer(str.format(message_text, ", ".join(student=unknown_students)))
 
     teacher_service = TeacherService(session)
     teacher = await teacher_service.get_teacher(teacher_username)

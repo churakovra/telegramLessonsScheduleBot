@@ -17,4 +17,4 @@ async def handle_callback(
 ):
     await state.set_state(ScheduleStates.wait_for_student_to_delete)
     await callback.message.delete()
-    await callback.message.answer(BotStrings.TEACHER_STUDENT_DELETE)
+    await callback.message.answer(BotStrings.Teacher.TEACHER_STUDENT_DELETE)

@@ -26,11 +26,11 @@ async def handle_callback(
         await state.update_data(teacher_uuid=teacher.uuid)
         await state.set_state(ScheduleStates.wait_for_teacher_students)
 
-        message = await callback.message.answer(BotStrings.TEACHER_STUDENT_ADD)
+        message = await callback.message.answer(BotStrings.Teacher.TEACHER_STUDENT_ADD)
         await state.update_data(previous_message_id=message.message_id)
 
     except UserNotFoundException:
-        await callback.message.answer(BotStrings.NOT_ENOUGH_RIGHTS)
+        await callback.message.answer(BotStrings.Teacher.NOT_ENOUGH_RIGHTS)
         return
     finally:
         await callback.message.delete()

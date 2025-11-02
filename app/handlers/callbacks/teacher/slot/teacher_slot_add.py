@@ -33,7 +33,7 @@ async def handle_callback(
         await state.update_data(teacher_uuid=teacher.uuid)
 
     except UserNotFoundException:
-        await callback.message.answer(BotStrings.NOT_ENOUGH_RIGHTS)
+        await callback.message.answer(BotStrings.Teacher.NOT_ENOUGH_RIGHTS)
         user_service = UserService(session)
         user, markup = await user_service.get_user_menu(callback.message.from_user.username)
         bot_message = MessageTemplate.get_menu_message(user.username, markup)

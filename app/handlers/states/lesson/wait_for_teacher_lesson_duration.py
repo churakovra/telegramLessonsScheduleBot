@@ -23,7 +23,7 @@ async def handle_state(
         await state.update_data(lesson_duration=duration)
         await state.set_state(ScheduleStates.wait_for_teacher_lesson_price)
 
-        sent_message = await message.answer(BotStrings.TEACHER_LESSON_ADD_PRICE)
+        sent_message = await message.answer(BotStrings.Teacher.TEACHER_LESSON_ADD_PRICE)
         await state.update_data(previous_message_id=sent_message.message_id)
 
     except Exception as e:
@@ -31,7 +31,7 @@ async def handle_state(
 
         await state.set_state(ScheduleStates.wait_for_teacher_lesson_duration)
 
-        sent_message = await message.answer(BotStrings.TEACHER_LESSON_ADD_DURATION_ERROR)
+        sent_message = await message.answer(BotStrings.Teacher.TEACHER_LESSON_ADD_DURATION_ERROR)
         await state.update_data(previous_message_id=sent_message.message_id)
 
     finally:
