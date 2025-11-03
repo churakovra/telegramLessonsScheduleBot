@@ -10,6 +10,7 @@ from app.services.user_service import UserService
 from app.utils.exceptions.teacher_exceptions import TeacherStudentsNotFound
 from app.utils.keyboards.callback_factories.send_slots import SendSlotsCallback
 from app.utils.keyboards.days_for_students_markup import get_days_for_students_markup
+from app.utils.keyboards.menu_builder import MarkupBuilder
 from app.utils.message_template import MessageTemplate
 
 router = Router()
@@ -17,10 +18,10 @@ router = Router()
 
 @router.callback_query(SendSlotsCallback.filter())
 async def handle_callback(
-        callback: CallbackQuery,
-        callback_data: SendSlotsCallback,
-        session: AsyncSession,
-        notifier: TelegramNotifier
+    callback: CallbackQuery,
+    callback_data: SendSlotsCallback,
+    session: AsyncSession,
+    notifier: TelegramNotifier,
 ):
     teacher_uuid = callback_data.teacher_uuid
     teacher_service = TeacherService(session)
@@ -33,10 +34,7 @@ async def handle_callback(
         message_text = await slots_service.get_slot_reply(slots)
         markup = get_days_for_students_markup(slots, teacher_uuid)
 
-        message = BotMessage(
-            message_text=message_text,
-            reply_markup=markup
-        )
+        message = BotMessage(message_text=message_text, reply_markup=markup)
         await notifier.send_message_to_users(message, students)
         await callback.message.delete()
 
@@ -44,11 +42,11 @@ async def handle_callback(
         await callback.message.answer(e.message)
     finally:
         user_service = UserService(session)
-        user, markup = await user_service.get_user_menu(callback.from_user.username)
-        bot_message = MessageTemplate.get_menu_message(user.username, markup)
+        user = await user_service.get_user(callback.from_user.username)
+        markup = MarkupBuilder.main_menu_markup(user.role)
+        bot_message = MessageTemplate.main_menu_message(user.username, markup)
         await notifier.send_message(
-            bot_message=bot_message,
-            receiver_chat_id=callback.message.chat.id
+            bot_message=bot_message, receiver_chat_id=callback.message.chat.id
         )
 
         await callback.answer()

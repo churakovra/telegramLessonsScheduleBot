@@ -1,15 +1,18 @@
+from uuid import UUID
+
 from aiogram import Router
 from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.notifiers.telegram_notifier import TelegramNotifier
+from app.schemas.slot_dto import SlotDTO
+from app.schemas.user_dto import UserDTO
 from app.services.slot_service import SlotService
 from app.services.student_service import StudentService
 from app.services.teacher_service import TeacherService
-from app.services.user_service import UserService
-from app.utils.bot_strings import BotStrings
 from app.utils.datetime_utils import full_format_no_sec
 from app.utils.exceptions.user_exceptions import UserNotFoundException
+from app.utils.keyboards.menu_builder import MarkupBuilder
 from app.utils.keyboards.slots_for_students_markup import SlotsForStudents
 from app.utils.message_template import MessageTemplate
 
@@ -29,35 +32,62 @@ async def handle_callback(
     try:
         student_service = StudentService(session)
         student = await student_service.get_student(student_username)
+
+        assigned_slot = await assign_slot(
+            session=session, student=student, slot_uuid=slot_uuid
+        )
+
+        teacher_service = TeacherService(session)
+        teacher = await teacher_service.get_teacher_by_uuid(assigned_slot.uuid_teacher)
     except UserNotFoundException:
         raise ValueError()
 
-    slot_service = SlotService(session)
-    assigned_slot = await slot_service.assign_slot(student.uuid, slot_uuid)
     slot_time = assigned_slot.dt_start.strftime(full_format_no_sec)
 
-    teacher_service = TeacherService(session)
-    teacher = await teacher_service.get_teacher_by_uuid(assigned_slot.uuid_teacher)
-
-    await callback.message.answer(
-        BotStrings.Student.SLOTS_ASSIGN_SUCCESS_ANSWER.format(
-            teacher=teacher.username,
-            slot_time=slot_time,
-        )
+    await notify_student(
+        teacher=teacher, student=student, slot_time=slot_time, notifier=notifier
     )
-
-    user_service = UserService(session)
-    user, markup = await user_service.get_user_menu(student_username)
-    bot_message = MessageTemplate.get_menu_message(user.username, markup)
-    await notifier.send_message(
-        bot_message=bot_message, receiver_chat_id=callback.message.chat.id
-    )
-    notify_teacher_message = MessageTemplate.notify_teacher_new_slot(
-        student_username, slot_time
-    )
-    await notifier.send_message(
-        bot_message=notify_teacher_message, receiver_chat_id=teacher.chat_id
+    await notify_teacher(
+        teacher=teacher, student=student, slot_time=slot_time, notifier=notifier
     )
 
     await callback.message.delete()
     await callback.answer()
+
+
+async def assign_slot(
+    session: AsyncSession,
+    student: UserDTO,
+    slot_uuid: UUID,
+) -> SlotDTO:
+    slot_service = SlotService(session)
+    return await slot_service.assign_slot(student.uuid, slot_uuid)
+
+
+async def notify_student(
+    teacher: UserDTO, student: UserDTO, slot_time: str, notifier: TelegramNotifier
+):
+    markup = MarkupBuilder.success_slot_bind_markup(
+        teacher.uuid,
+        teacher.role,
+        teacher.username,
+    )
+    bot_message = MessageTemplate.success_slot_bind_message(
+        teacher.username,
+        slot_time,
+        markup,
+    )
+    await notifier.send_message(
+        bot_message=bot_message, receiver_chat_id=student.chat_id
+    )
+
+
+async def notify_teacher(
+    teacher: UserDTO, student: UserDTO, slot_time: str, notifier: TelegramNotifier
+):
+    notify_teacher_message = MessageTemplate.slot_is_taken_message(
+        student.username, slot_time
+    )
+    await notifier.send_message(
+        bot_message=notify_teacher_message, receiver_chat_id=teacher.chat_id
+    )

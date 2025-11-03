@@ -1,6 +1,5 @@
 from uuid import UUID
 
-from aiogram.types import InlineKeyboardMarkup
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.user_repository import UserRepository
@@ -13,7 +12,6 @@ from app.utils.exceptions.user_exceptions import (
     UserNotFoundException,
     UserUnknownRoleException,
 )
-from app.utils.keyboards.main_menu_markup import get_main_menu_markup
 
 
 class UserService:
@@ -66,13 +64,6 @@ class UserService:
         user = await self.get_user(username)
         res = self.make_user_info_response(user)
         return res
-
-    async def get_user_menu(
-        self, username: str
-    ) -> tuple[UserDTO, InlineKeyboardMarkup]:
-        user = await self.get_user(username)
-        markup = get_main_menu_markup(user.role)
-        return user, markup
 
     @staticmethod
     def make_user_info_response(user: UserDTO) -> str:

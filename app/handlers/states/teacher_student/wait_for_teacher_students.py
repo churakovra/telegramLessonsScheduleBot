@@ -10,6 +10,7 @@ from app.services.user_service import UserService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
 from app.utils.exceptions.teacher_exceptions import TeacherAlreadyHasStudentException
+from app.utils.keyboards.menu_builder import MarkupBuilder
 from app.utils.message_template import MessageTemplate
 
 router = Router()
@@ -34,7 +35,9 @@ async def handle_state(
             message_text = BotStrings.Teacher.TEACHER_STUDENT_ADD_UNKNOWN_STUDENT
         else:
             message_text = BotStrings.Teacher.TEACHER_STUDENT_ADD_UNKNOWN_STUDENTS
-        await message.answer(str.format(message_text, student=", ".join(unknown_students)))
+        await message.answer(
+            str.format(message_text, student=", ".join(unknown_students))
+        )
 
     if len(students) > 0:
         try:
@@ -57,8 +60,9 @@ async def handle_state(
 
     user_service = UserService(session)
     username = getattr(message.from_user, "username", "") or ""
-    user, markup = await user_service.get_user_menu(username)
-    bot_message = MessageTemplate.get_menu_message(user.username, markup)
+    user = await user_service.get_user(username)
+    markup = MarkupBuilder.main_menu_markup(user.role)
+    bot_message = MessageTemplate.main_menu_message(user.username, markup)
     await notifier.send_message(
         bot_message=bot_message, receiver_chat_id=message.chat.id
     )

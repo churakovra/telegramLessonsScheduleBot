@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class BotEnum(str, Enum):
+class BotEnum(StrEnum):
     pass
 
 

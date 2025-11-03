@@ -1,7 +1,7 @@
-from enum import Enum
+from app.utils.enums.bot_values import BotEnum
 
 
-class MenuType(str, Enum):
+class MenuType(BotEnum):
     TEACHER = "cg-t"
     TEACHER_STUDENT = "cg-t-student"
     TEACHER_STUDENT_ADD = "cg-t-student_add"
@@ -30,3 +30,5 @@ class MenuType(str, Enum):
 
     ADMIN = "cg-a"
     ADMIN_TEMP = "cg-a_temp"
+    
+    NEW = "cg-n"

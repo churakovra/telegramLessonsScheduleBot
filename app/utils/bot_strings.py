@@ -2,9 +2,8 @@ class BotStrings:
     class Common:
         GREETING = "Привет, {user}! Я буду сообщать тебе когда у твоего преподавателя появятся окошки для занятий"
         MENU = "Привет, {user}! Ты в главном меню. Жми кнопочки с умом и помни: С большой силой приходит большая ответственность!"
-        YES = "Да"
-        NO = "Нет"
-        
+
+
     class Teacher:
         #* Bind user
         TEACHER_STUDENT_ADD = "Отправь логин ученика без @, например `kdianitta`\nЛибо отправь несколько учеников через пробел: `kdianitta1 kdianitta2...`"
@@ -35,7 +34,6 @@ class BotStrings:
         SLOT_IS_TAKEN = "@{student} записался на урок {slot_time}" 
         CALLBACK_SLOTS_CORRECT = "slots_correct"
         CALLBACK_SLOTS_INCORRECT = "slots_incorrect"
-        
 
     class Student:
         SLOTS_ASSIGN_SUCCESS_ANSWER = "Отлично! Вы записаны к @{teacher}, время занятия {slot_time}"
@@ -46,8 +44,15 @@ class BotStrings:
         MAKE_TEACHER_STATUS_ERROR = "Ошибка. Вы должны быть в статусе Администратор, а пользователь в статусе Ученик"
         MAKE_TEACHER_SUCCESS = 'Пользователю {user} успешно добавлен статус "Преподаватель"'
         MAKE_TEACHER_FAILURE ="Ошибка. Не получилось сделать пользователя преподавателем"
-        
+
     class User:
         USER_INFO = "Информация"
         USER_INFO_ERROR = "Ошибка. Пользователь не найден"
         CALLBACK_USER_INFO = "user_info"
+
+    class Menu: 
+        YES = "Да"
+        NO = "Нет"
+        SEND = "Отправить"
+        BIND_ANOTHER_SLOT = "Записаться ещё"
+        MENU = "Меню"
