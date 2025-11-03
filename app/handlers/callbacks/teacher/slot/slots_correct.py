@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.slot_service import SlotService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
-from app.utils.keyboards.send_slots_markup import get_send_slots_markup
+from app.utils.keyboards.markup_builder import MarkupBuilder
 
 router = Router()
 
@@ -26,7 +26,7 @@ async def reply_and_save_to_db(
     await slot_service.add_slots(slots)
     await callback.message.answer(
         text=BotStrings.Teacher.SLOTS_PROCESSING_SUCCESS_ANSWER,
-        reply_markup=get_send_slots_markup(teacher_uuid),
+        reply_markup=MarkupBuilder.send_slots_markup(teacher_uuid),
     )
 
     await callback.message.chat.delete_message(previous_message_id)

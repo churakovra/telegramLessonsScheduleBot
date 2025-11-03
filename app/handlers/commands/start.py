@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.services.user_service import UserService
 from app.utils.bot_strings import BotStrings
-from app.config.logger import setup_logger
+from app.utils.logger import setup_logger
 from app.utils.enums.bot_values import UserRole
 
 router = Router()

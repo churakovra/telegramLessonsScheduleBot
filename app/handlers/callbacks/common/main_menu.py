@@ -1,9 +1,10 @@
 from aiogram import Router
 from aiogram.types import CallbackQuery
 
-from app.config.logger import setup_logger
-from app.utils.keyboards.callback_factories.main_menu import MainMenuCallback
-from app.utils.keyboards.sub_menu_markup import get_sub_menu_markup
+from app.utils.logger import setup_logger
+from app.utils.keyboards.callback_factories.menu import MainMenuCallback
+from app.utils.keyboards.markup_builder import MarkupBuilder
+
 
 router = Router()
 
@@ -16,7 +17,7 @@ async def handle_callback(callback: CallbackQuery, callback_data: MainMenuCallba
 
     data = callback_data.menu_type
     logger.debug(f"callback data = {data}")
-    markup = get_sub_menu_markup(data)
+    markup = MarkupBuilder.sub_menu_markup(data)
 
     await callback.message.answer(text=callback.message.text, reply_markup=markup)
     await callback.message.delete()

@@ -3,13 +3,13 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config.logger import setup_logger
+from app.utils.logger import setup_logger
 from app.notifiers.telegram_notifier import TelegramNotifier
 from app.services.lesson_service import LessonService
 from app.services.user_service import UserService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
-from app.utils.keyboards.menu_builder import MarkupBuilder
+from app.utils.keyboards.markup_builder import MarkupBuilder
 from app.utils.message_template import MessageTemplate
 
 router = Router()

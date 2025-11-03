@@ -10,8 +10,8 @@ from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
 from app.utils.enums.menu_type import MenuType
 from app.utils.exceptions.user_exceptions import UserNotFoundException
-from app.utils.keyboards.callback_factories.sub_menu import SubMenuCallback
-from app.utils.keyboards.menu_builder import MarkupBuilder
+from app.utils.keyboards.callback_factories.menu import SubMenuCallback
+from app.utils.keyboards.markup_builder import MarkupBuilder
 from app.utils.message_template import MessageTemplate
 
 router = Router()

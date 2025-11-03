@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
 from app.utils.enums.menu_type import MenuType
-from app.utils.keyboards.callback_factories.sub_menu import SubMenuCallback
+from app.utils.keyboards.callback_factories.menu import SubMenuCallback
 
 router = Router()
 

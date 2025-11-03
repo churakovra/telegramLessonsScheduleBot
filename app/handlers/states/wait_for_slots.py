@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.services.slot_service import SlotService
 from app.states.schedule_states import ScheduleStates
-from app.utils.keyboards.is_slots_correct import get_is_slots_correct_markup
+from app.utils.keyboards.markup_builder import MarkupBuilder
 
 router = Router()
 
@@ -26,7 +26,7 @@ async def wait_for_slots(message: Message, state: FSMContext, session: AsyncSess
     await message.chat.delete_message(previous_message_id)
 
     slot_reply = await slot_service.get_slot_reply(slots)
-    markup = get_is_slots_correct_markup()
+    markup = MarkupBuilder.is_slots_correct_markup()
     await message.answer(text=slot_reply, reply_markup=markup)
 
     await state.update_data(previous_message_id=message.message_id)
