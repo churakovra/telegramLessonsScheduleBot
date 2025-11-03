@@ -10,11 +10,12 @@ from app.utils.datetime_utils import WEEKDAYS, day_format, time_format_HM
 from app.utils.enums.bot_values import UserRole
 from app.utils.enums.menu_type import MenuType
 from app.utils.exceptions.user_exceptions import UserUnknownRoleException
-from app.utils.keyboards.callback_factories.back import BackCallback
-from app.utils.keyboards.callback_factories.menu import NewMainMenuCallback
+from app.utils.keyboards.callback_factories.back import Back
+from app.utils.keyboards.callback_factories.menu import NewMainMenu
 from app.utils.keyboards.callback_factories.slots import (
-    DaysForStudentsCallback,
-    SendSlotsCallback,
+    DaysForStudents,
+    ResendSlots,
+    SendSlots,
     SlotsForStudents,
 )
 from app.utils.keyboards.menu_data.main_menu import (
@@ -82,7 +83,7 @@ class MarkupBuilder:
                 f"get_sub_menu_markup: name={menu.text}; callback_data={menu.callback_data}"
             )
         builder.button(
-            text="Назад", callback_data=BackCallback(parent_keyboard="menu_keyboard")
+            text="Назад", callback_data=Back(parent_keyboard="menu_keyboard")
         )
         builder.adjust(1)
         return builder.as_markup()
@@ -106,7 +107,7 @@ class MarkupBuilder:
         builder = InlineKeyboardBuilder()
         builder.button(
             text=BotStrings.Menu.SEND,
-            callback_data=SendSlotsCallback(teacher_uuid=teacher_uuid),
+            callback_data=SendSlots(teacher_uuid=teacher_uuid),
         )
         return builder.as_markup()
 
@@ -125,7 +126,7 @@ class MarkupBuilder:
                 day_name = WEEKDAYS[day_number][2]
                 builder.button(
                     text=day_name,
-                    callback_data=DaysForStudentsCallback(
+                    callback_data=DaysForStudents(
                         day=slot_date.strftime(day_format), teacher_uuid=teacher_uuid
                     ),
                 )
@@ -146,7 +147,7 @@ class MarkupBuilder:
             )
         builder.button(
             text="Назад",
-            callback_data=BackCallback(
+            callback_data=Back(
                 parent_keyboard="days_for_students", teacher_uuid=teacher_uuid
             ),
         )
@@ -155,16 +156,18 @@ class MarkupBuilder:
 
     @staticmethod
     def success_slot_bind_markup(
-        teacher_uuid: UUID, role: UserRole, username: str
+        teacher_uuid: UUID, student_chat_id: int, role: UserRole, username: str
     ) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         builder.button(
             text=BotStrings.Menu.BIND_ANOTHER_SLOT,
-            callback_data=SendSlotsCallback(teacher_uuid=teacher_uuid),
+            callback_data=ResendSlots(
+                teacher_uuid=teacher_uuid, student_chat_id=student_chat_id
+            ),
         )
         builder.button(
             text=BotStrings.Menu.MENU,
-            callback_data=NewMainMenuCallback(
+            callback_data=NewMainMenu(
                 menu_type=MenuType.NEW, role=role, username=username
             ),
         )

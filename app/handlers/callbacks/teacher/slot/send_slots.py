@@ -3,22 +3,21 @@ from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.notifiers.telegram_notifier import TelegramNotifier
-from app.schemas.bot_message import BotMessage
 from app.services.slot_service import SlotService
 from app.services.teacher_service import TeacherService
 from app.services.user_service import UserService
 from app.utils.exceptions.teacher_exceptions import TeacherStudentsNotFound
-from app.utils.keyboards.callback_factories.slots import SendSlotsCallback
+from app.utils.keyboards.callback_factories.slots import SendSlots
 from app.utils.keyboards.markup_builder import MarkupBuilder
 from app.utils.message_template import MessageTemplate
 
 router = Router()
 
 
-@router.callback_query(SendSlotsCallback.filter())
+@router.callback_query(SendSlots.filter())
 async def handle_callback(
     callback: CallbackQuery,
-    callback_data: SendSlotsCallback,
+    callback_data: SendSlots,
     session: AsyncSession,
     notifier: TelegramNotifier,
 ):
@@ -30,11 +29,10 @@ async def handle_callback(
         students = await teacher_service.get_unsigned_students(teacher_uuid)
 
         slots = await slots_service.get_free_slots(teacher_uuid)
-        message_text = await slots_service.get_slot_reply(slots)
         markup = MarkupBuilder.days_for_students_markup(slots, teacher_uuid)
+        message = await MessageTemplate.slots_for_student_message(slots, markup)
 
-        message = BotMessage(message_text=message_text, reply_markup=markup)
-        await notifier.send_message_to_users(message, students)
+        [await notifier.send_message(message, student.chat_id) for student in students]
         await callback.message.delete()
 
     except TeacherStudentsNotFound as e:

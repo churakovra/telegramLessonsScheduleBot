@@ -7,16 +7,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.slot_service import SlotService
 from app.utils.datetime_utils import day_format
 from app.utils.exceptions.slot_exceptions import SlotFreeNotFoundException
-from app.utils.keyboards.callback_factories.slots import DaysForStudentsCallback
+from app.utils.keyboards.callback_factories.slots import DaysForStudents
 from app.utils.keyboards.markup_builder import MarkupBuilder
 
 router = Router()
 
 
-@router.callback_query(DaysForStudentsCallback.filter())
+@router.callback_query(DaysForStudents.filter())
 async def handle_callback(
         callback: CallbackQuery,
-        callback_data: DaysForStudentsCallback,
+        callback_data: DaysForStudents,
         session: AsyncSession
 ):
     day = datetime.strptime(callback_data.day, day_format)

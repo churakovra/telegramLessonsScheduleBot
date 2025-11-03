@@ -2,7 +2,7 @@ from aiogram import Router
 from aiogram.types import CallbackQuery
 
 from app.utils.logger import setup_logger
-from app.utils.keyboards.callback_factories.menu import MainMenuCallback
+from app.utils.keyboards.callback_factories.menu import MainMenu
 from app.utils.keyboards.markup_builder import MarkupBuilder
 
 
@@ -11,8 +11,8 @@ router = Router()
 logger = setup_logger()
 
 
-@router.callback_query(MainMenuCallback.filter())
-async def handle_callback(callback: CallbackQuery, callback_data: MainMenuCallback):
+@router.callback_query(MainMenu.filter())
+async def handle_callback(callback: CallbackQuery, callback_data: MainMenu):
     logger.debug("In cg-t callback handler")
 
     data = callback_data.menu_type

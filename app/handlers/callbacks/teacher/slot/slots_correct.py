@@ -25,7 +25,7 @@ async def reply_and_save_to_db(
     slot_service = SlotService(session)
     await slot_service.add_slots(slots)
     await callback.message.answer(
-        text=BotStrings.Teacher.SLOTS_PROCESSING_SUCCESS_ANSWER,
+        text=BotStrings.Teacher.SLOTS_PROCESSING_SUCCESS,
         reply_markup=MarkupBuilder.send_slots_markup(teacher_uuid),
     )
 

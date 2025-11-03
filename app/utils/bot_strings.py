@@ -28,7 +28,7 @@ class BotStrings:
         TEACHER_LESSON_ADD_SUCCESS = "Предмет {lesson} успешно добавлен"
         
         #* Slots
-        SLOTS_PROCESSING_SUCCESS_ANSWER = "Окошки добавлены🥳\nНажми кнопку, чтобы отправить их студентам"
+        SLOTS_PROCESSING_SUCCESS = "Окошки добавлены🥳\nНажми кнопку, чтобы отправить их студентам"
         SLOTS_FAILURE_ANSWER = "Отправь окошки еще раз"
         NOT_ENOUGH_RIGHTS = "Ошибка. Вы должны быть в статусе Преподаватель для выполнения данного действия"
         SLOT_IS_TAKEN = "@{student} записался на урок {slot_time}" 
@@ -36,7 +36,7 @@ class BotStrings:
         CALLBACK_SLOTS_INCORRECT = "slots_incorrect"
 
     class Student:
-        SLOTS_ASSIGN_SUCCESS_ANSWER = "Отлично! Вы записаны к @{teacher}, время занятия {slot_time}"
+        SLOTS_ASSIGN_SUCCESS = "Отлично! Вы записаны к @{teacher}, время занятия {slot_time}"
 
     class Admin:
         MAKE_TEACHER_COMMAND_IS_EMPTY = "Ошибка. Используйте команду в виде /make_teacher <username>"

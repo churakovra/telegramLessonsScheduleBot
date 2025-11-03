@@ -30,15 +30,17 @@ async def handle_callback(
     student_username = callback.from_user.username
 
     try:
-        student_service = StudentService(session)
-        student = await student_service.get_student(student_username)
+        student_service = StudentService(session=session)
+        student = await student_service.get_student(username=student_username)
 
         assigned_slot = await assign_slot(
             session=session, student=student, slot_uuid=slot_uuid
         )
 
-        teacher_service = TeacherService(session)
-        teacher = await teacher_service.get_teacher_by_uuid(assigned_slot.uuid_teacher)
+        teacher_service = TeacherService(session=session)
+        teacher = await teacher_service.get_teacher_by_uuid(
+            teacher_uuid=assigned_slot.uuid_teacher
+        )
     except UserNotFoundException:
         raise ValueError()
 
@@ -60,22 +62,25 @@ async def assign_slot(
     student: UserDTO,
     slot_uuid: UUID,
 ) -> SlotDTO:
-    slot_service = SlotService(session)
-    return await slot_service.assign_slot(student.uuid, slot_uuid)
+    slot_service = SlotService(session=session)
+    return await slot_service.assign_slot(
+        student_uuid=student.uuid, slot_uuid=slot_uuid
+    )
 
 
 async def notify_student(
     teacher: UserDTO, student: UserDTO, slot_time: str, notifier: TelegramNotifier
-):
+) -> None:
     markup = MarkupBuilder.success_slot_bind_markup(
-        teacher.uuid,
-        student.role,
-        teacher.username,
+        teacher_uuid=teacher.uuid,
+        student_chat_id=student.chat_id,
+        role=student.role,
+        username=teacher.username,
     )
     bot_message = MessageTemplate.success_slot_bind_message(
-        teacher.username,
-        slot_time,
-        markup,
+        teacher=teacher.username,
+        slot_time=slot_time,
+        markup=markup,
     )
     await notifier.send_message(
         bot_message=bot_message, receiver_chat_id=student.chat_id
@@ -84,9 +89,9 @@ async def notify_student(
 
 async def notify_teacher(
     teacher: UserDTO, student: UserDTO, slot_time: str, notifier: TelegramNotifier
-):
+) -> None:
     notify_teacher_message = MessageTemplate.slot_is_taken_message(
-        student.username, slot_time
+        student_username=student.username, slot_time=slot_time
     )
     await notifier.send_message(
         bot_message=notify_teacher_message, receiver_chat_id=teacher.chat_id

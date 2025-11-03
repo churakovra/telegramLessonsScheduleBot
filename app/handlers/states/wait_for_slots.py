@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.slot_service import SlotService
 from app.states.schedule_states import ScheduleStates
 from app.utils.keyboards.markup_builder import MarkupBuilder
+from app.utils.message_template import MessageTemplate
 
 router = Router()
 

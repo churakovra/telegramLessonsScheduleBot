@@ -9,15 +9,15 @@ from app.utils.exceptions.user_exceptions import (
     UserNotFoundException,
     UserUnknownRoleException,
 )
-from app.utils.keyboards.callback_factories.back import BackCallback
+from app.utils.keyboards.callback_factories.back import Back
 from app.utils.keyboards.markup_builder import MarkupBuilder
 
 router = Router()
 
 
-@router.callback_query(BackCallback.filter())
+@router.callback_query(Back.filter())
 async def handle_callback(
-    callback: CallbackQuery, callback_data: BackCallback, session: AsyncSession
+    callback: CallbackQuery, callback_data: Back, session: AsyncSession
 ):
     parent_keyboard = callback_data.parent_keyboard
     try:

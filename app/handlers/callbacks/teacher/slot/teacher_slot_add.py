@@ -10,14 +10,14 @@ from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
 from app.utils.enums.menu_type import MenuType
 from app.utils.exceptions.user_exceptions import UserNotFoundException
-from app.utils.keyboards.callback_factories.menu import SubMenuCallback
+from app.utils.keyboards.callback_factories.menu import SubMenu
 from app.utils.keyboards.markup_builder import MarkupBuilder
 from app.utils.message_template import MessageTemplate
 
 router = Router()
 
 
-@router.callback_query(SubMenuCallback.filter(F.menu_type == MenuType.TEACHER_SLOT_ADD))
+@router.callback_query(SubMenu.filter(F.menu_type == MenuType.TEACHER_SLOT_ADD))
 async def handle_callback(
     callback: CallbackQuery,
     session: AsyncSession,
