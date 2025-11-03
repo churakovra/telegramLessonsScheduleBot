@@ -10,11 +10,11 @@ class MainMenuDataTeacher:
             callback_data=MainMenu(menu_type=MenuType.TEACHER_STUDENT),
         ),
         ButtonDTO(
-            text="Окошки",
+            text="Расписание",
             callback_data=MainMenu(menu_type=MenuType.TEACHER_SLOT),
         ),
         ButtonDTO(
-            text="Уроки",
+            text="Предметы",
             callback_data=MainMenu(menu_type=MenuType.TEACHER_LESSON),
         ),
     ]
@@ -23,16 +23,12 @@ class MainMenuDataTeacher:
 class MainMenuDataStudent:
     student_menu = [
         ButtonDTO(
-            text="Учителя",
+            text="Преподаватели",
             callback_data=MainMenu(menu_type=MenuType.STUDENT_TEACHER),
         ),
         ButtonDTO(
             text="Занятия",
             callback_data=MainMenu(menu_type=MenuType.STUDENT_SLOT),
-        ),
-        ButtonDTO(
-            text="Предметы",
-            callback_data=MainMenu(menu_type=MenuType.STUDENT_LESSON),
         ),
     ]
 

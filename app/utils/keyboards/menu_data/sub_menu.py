@@ -9,16 +9,16 @@ from app.utils.keyboards.callback_factories.menu import SubMenu
 class SubMenuDataTeacher:
     teacher_student = [
         ButtonDTO(
+            text="Мои ученики",
+            callback_data=SubMenu(menu_type=MenuType.TEACHER_STUDENT_LIST),
+        ),
+        ButtonDTO(
             text="Добавить ученика",
             callback_data=SubMenu(menu_type=MenuType.TEACHER_STUDENT_ADD),
         ),
         ButtonDTO(
             text="Изменить ученика",
-            callback_data=SubMenu(menu_type=MenuType.TEACHER_STUDENT_EDIT),
-        ),
-        ButtonDTO(
-            text="Мои ученики",
-            callback_data=SubMenu(menu_type=MenuType.TEACHER_STUDENT_LIST),
+            callback_data=SubMenu(menu_type=MenuType.TEACHER_STUDENT_update),
         ),
         ButtonDTO(
             text="Удалить ученика",
@@ -28,39 +28,31 @@ class SubMenuDataTeacher:
 
     teacher_slot = [
         ButtonDTO(
+            text="Моё расписание",
+            callback_data=SubMenu(menu_type=MenuType.TEACHER_SLOT_LIST),
+        ),
+        ButtonDTO(
             text="Добавить окошки",
             callback_data=SubMenu(menu_type=MenuType.TEACHER_SLOT_ADD),
         ),
         ButtonDTO(
             text="Изменить окошки",
-            callback_data=SubMenu(menu_type=MenuType.TEACHER_SLOT_EDIT),
-        ),
-        ButtonDTO(
-            text="Записать ученика",
-            callback_data=SubMenu(menu_type=MenuType.TEACHER_SLOT_SPOT),
-        ),
-        ButtonDTO(
-            text="Мои окошки",
-            callback_data=SubMenu(menu_type=MenuType.TEACHER_SLOT_LIST),
-        ),
-        ButtonDTO(
-            text="Удалить окошко",
-            callback_data=SubMenu(menu_type=MenuType.TEACHER_SLOT_DELETE),
+            callback_data=SubMenu(menu_type=MenuType.TEACHER_SLOT_update),
         ),
     ]
 
     teacher_lesson = [
+        ButtonDTO(
+            text="Мои предметы",
+            callback_data=SubMenu(menu_type=MenuType.TEACHER_LESSON_LIST),
+        ),
         ButtonDTO(
             text="Добавить предмет",
             callback_data=SubMenu(menu_type=MenuType.TEACHER_LESSON_ADD),
         ),
         ButtonDTO(
             text="Изменить предмет",
-            callback_data=SubMenu(menu_type=MenuType.TEACHER_LESSON_EDIT),
-        ),
-        ButtonDTO(
-            text="Мои предметы",
-            callback_data=SubMenu(menu_type=MenuType.TEACHER_LESSON_LIST),
+            callback_data=SubMenu(menu_type=MenuType.TEACHER_LESSON_update),
         ),
         ButtonDTO(
             text="Удалить предмет",
@@ -73,22 +65,15 @@ class SubMenuDataTeacher:
 class SubMenuDataStudent:
     student_teacher = [
         ButtonDTO(
-            text="Мои учителя",
+            text="Заглушка",
             callback_data=SubMenu(menu_type=MenuType.STUDENT_TEACHER_LIST),
         ),
     ]
 
     student_slot = [
         ButtonDTO(
-            text="Мои занятия",
+            text="Заглушка",
             callback_data=SubMenu(menu_type=MenuType.STUDENT_SLOT_LIST),
-        ),
-    ]
-
-    student_lesson = [
-        ButtonDTO(
-            text="Мои предметы",
-            callback_data=SubMenu(menu_type=MenuType.STUDENT_LESSON_LIST),
         ),
     ]
 

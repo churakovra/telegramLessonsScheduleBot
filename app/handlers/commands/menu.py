@@ -32,5 +32,3 @@ async def send_menu_message(message: Message, session: AsyncSession):
         )
     except (UserNotFoundException, UserUnknownRoleException) as e:
         await message.answer(e.message)
-    finally:
-        await message.delete()

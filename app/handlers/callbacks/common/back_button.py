@@ -11,6 +11,7 @@ from app.utils.exceptions.user_exceptions import (
 )
 from app.utils.keyboards.callback_factories.back import Back
 from app.utils.keyboards.markup_builder import MarkupBuilder
+from app.utils.message_template import MessageTemplate
 
 router = Router()
 
@@ -27,8 +28,9 @@ async def handle_callback(
                 user_service = UserService(session)
                 user = await user_service.get_user(username)
                 markup = MarkupBuilder.main_menu_markup(user.role)
+                message = MessageTemplate.main_menu_message(user.username, markup)
                 await callback.message.answer(
-                    text=callback.message.text, reply_markup=markup
+                    text=message.message_text, reply_markup=message.reply_markup
                 )
             case "days_for_students":  # TODO Вынести в ENUM
                 if callback_data.teacher_uuid is None:

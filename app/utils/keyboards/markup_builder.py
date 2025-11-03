@@ -71,16 +71,14 @@ class MarkupBuilder:
                 menu_type = SubMenuDataStudent.student_teacher
             case MenuType.STUDENT_SLOT:
                 menu_type = SubMenuDataStudent.student_slot
-            case MenuType.STUDENT_LESSON:
-                menu_type = SubMenuDataStudent.student_lesson
             case MenuType.ADMIN_TEMP:
                 menu_type = SubMenuDataAdmin.admin_temp
             case _:
                 raise ValueError(f"Wrong sub_menu_type {sub_menu_type}")
-        for menu in menu_type:
-            builder.button(text=menu.text, callback_data=menu.callback_data)
+        for button in menu_type:
+            builder.button(text=button.text, callback_data=button.callback_data)
             logger.debug(
-                f"get_sub_menu_markup: name={menu.text}; callback_data={menu.callback_data}"
+                f"get_sub_menu_markup: name={button.text}; callback_data={button.callback_data}"
             )
         builder.button(
             text="Назад", callback_data=Back(parent_keyboard="menu_keyboard")
