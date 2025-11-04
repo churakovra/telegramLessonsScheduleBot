@@ -5,9 +5,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.notifiers.telegram_notifier import TelegramNotifier
 from app.services.teacher_service import TeacherService
-from app.services.user_service import UserService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
+from app.utils.enums.bot_values import OperationType, UserRole, WeekFlag
 from app.utils.enums.menu_type import MenuType
 from app.utils.exceptions.user_exceptions import UserNotFoundException
 from app.utils.keyboards.callback_factories.menu import SubMenu
@@ -24,27 +24,8 @@ async def handle_callback(
     state: FSMContext,
     notifier: TelegramNotifier,
 ):
-    teacher_service = TeacherService(session)
-    try:
-        teacher = await teacher_service.get_teacher(callback.from_user.username)
-
-        sent_message = await callback.message.answer(
-            f"Привет, {callback.from_user.first_name}, я жду твои окошки"
-        )
-        await state.set_state(ScheduleStates.wait_for_slots)
-        await state.update_data(previous_message_id=sent_message.message_id)
-        await state.update_data(teacher_uuid=teacher.uuid)
-
-    except UserNotFoundException:
-        await callback.message.answer(BotStrings.Teacher.NOT_ENOUGH_RIGHTS)
-        user_service = UserService(session)
-        user = await user_service.get_user(callback.message.from_user.username)
-        markup = MarkupBuilder.main_menu_markup(user.role)
-        bot_message = MessageTemplate.main_menu_message(user.username, markup)
-        await notifier.send_message(
-            bot_message=bot_message, receiver_chat_id=callback.message.chat.id
-        )
-        return
-    finally:
-        await callback.message.delete()
-        await callback.answer()
+    await state.set_state(ScheduleStates.wait_for_slots)
+    await state.update_data(week_flag=WeekFlag.NEXT)
+    await state.update_data(operation_type=OperationType.ADD)
+    await callback.message.answer(BotStrings.Teacher.SLOTS_ADD)
+    await callback.answer()

@@ -22,7 +22,6 @@ async def handle_state(
 
     data = await state.get_data()
     previous_message_id = data["previous_message_id"]
-    logger.debug(f"{previous_message_id}")
     await message.chat.delete_message(previous_message_id)
     await message.delete()
 

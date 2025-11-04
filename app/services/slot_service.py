@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.repositories.slot_repository import SlotRepository
 from app.schemas.slot_dto import SlotDTO
 from app.utils.datetime_utils import WEEKDAYS
+from app.utils.enums.bot_values import WeekFlag
 from app.utils.exceptions.slot_exceptions import (
     SlotFreeNotFoundException,
     SlotNotFoundException,
@@ -29,6 +30,23 @@ class SlotService:
                 logger.error(e)
                 pass
 
+    async def update_slots(self, slots: list[SlotDTO], teacher_uuid: UUID):
+        week = slots[0].dt_start.isocalendar().week
+        existing_slots = await self._repository.get_slots(
+            teacher_uuid=teacher_uuid, week=week
+        )
+        slots_dts = {slot.dt_start for slot in slots}
+        existing_slots_dts = {existing_slot.dt_start for existing_slot in existing_slots}
+
+        to_delete = existing_slots_dts - slots_dts
+        to_add = slots_dts - existing_slots_dts
+        
+        slots_to_delete = [slot for slot in existing_slots if slot.dt_start in to_delete]
+        slots_to_add = [slot for slot in slots if slot.dt_start in to_add]
+        
+        await self._repository.delete_slots(slots=slots_to_delete)
+        await self._repository.add_slots(slots=slots_to_add)
+
     async def get_slot(self, slot_uuid: UUID) -> SlotDTO:
         slot = await self._repository.get_slot(slot_uuid)
         if slot is None:
@@ -42,7 +60,7 @@ class SlotService:
         return slots
 
     async def get_day_slots(self, day: datetime, teacher_uuid: UUID) -> list[SlotDTO]:
-        slots = await self._repository.get_day_slots(day, teacher_uuid)
+        slots = await self._repository.get_day_free_slots(day, teacher_uuid)
         if len(slots) <= 0:
             raise SlotFreeNotFoundException(teacher_uuid)
         return slots
@@ -53,10 +71,13 @@ class SlotService:
         return slot
 
     @staticmethod
-    async def parse_slots(message_text: str, uuid_teacher: UUID) -> list[SlotDTO]:
+    async def parse_slots(
+        message_text: str, uuid_teacher: UUID, week_flag: WeekFlag
+    ) -> list[SlotDTO]:
         # Split message on day and time
         raw_mt = [word.strip(string.punctuation) for word in message_text.split()]
         slots = list[SlotDTO]()
+        days_delta = 0 if week_flag == WeekFlag.CURRENT else 7
         weekday_index = 0
         for word in raw_mt:
             try:
@@ -65,7 +86,7 @@ class SlotService:
                 today = datetime.today()
                 # Count slot's date
                 slot_date = (
-                    today + timedelta(days=7 - today.weekday() + weekday_index)
+                    today + timedelta(days=days_delta - today.weekday() + weekday_index)
                 ).date()
                 slot_dt = datetime(
                     day=slot_date.day,
