@@ -8,11 +8,11 @@ from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
 from app.utils.enums.menu_type import MenuType
 from app.utils.exceptions.user_exceptions import UserNotFoundException
-from app.utils.keyboards.callback_factories.sub_menu import SubMenuCallback
+from app.utils.keyboards.callback_factories.menu import SubMenu
 
 router = Router()
 
-@router.callback_query(SubMenuCallback.filter(F.menu_type == MenuType.TEACHER_LESSON_ADD))
+@router.callback_query(SubMenu.filter(F.menu_type == MenuType.TEACHER_LESSON_ADD))
 async def handle_callback(
         callback: CallbackQuery,
         session: AsyncSession,
@@ -26,11 +26,11 @@ async def handle_callback(
         await state.set_state(ScheduleStates.wait_for_teacher_lesson_label)
 
         await callback.message.delete()
-        message = await callback.message.answer(BotStrings.TEACHER_LESSON_ADD_LABEL)
+        message = await callback.message.answer(BotStrings.Teacher.TEACHER_LESSON_ADD_LABEL)
         await state.update_data(previous_message_id=message.message_id)
 
     except UserNotFoundException:
-        await callback.message.answer(BotStrings.NOT_ENOUGH_RIGHTS)
+        await callback.message.answer(BotStrings.Teacher.NOT_ENOUGH_RIGHTS)
         return
     finally:
         await callback.answer()

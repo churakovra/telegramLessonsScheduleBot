@@ -2,7 +2,7 @@ import pytest
 import pytest_asyncio
 
 from app.repositories.teacher_repository import TeacherRepository
-from app.utils.enums.bot_values import UserRoles
+from app.utils.enums.bot_values import UserRole
 
 pytestmark = pytest.mark.asyncio(loop_scope="session")
 
@@ -31,7 +31,7 @@ class TestAddTeacher(Base):
 
 class TestGetTeacher(Base):
     async def test_get_teacher_success(self, insert_user):
-        users = await insert_user(role=UserRoles.TEACHER)
+        users = await insert_user(role=UserRole.TEACHER)
         user = users[0]
 
         teacher = await self.repo.get_teacher(user.uuid)

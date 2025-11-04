@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.orm.lesson import Lesson
 from app.db.orm.user import User
-from app.utils.enums.bot_values import UserRoles
+from app.utils.enums.bot_values import UserRole
 from app.schemas.user_dto import UserDTO
 
 
@@ -38,8 +38,8 @@ class UserRepository:
             dt_edit=user.dt_edit
         )
 
-    async def edit_role(self, user_uuid: UUID, role: UserRoles, status: bool):
-        if role == UserRoles.TEACHER:
+    async def edit_role(self, user_uuid: UUID, role: UserRole, status: bool):
+        if role == UserRole.TEACHER:
             stmt = (
                 update(User)
                 .where(User.uuid == user_uuid)
@@ -48,7 +48,7 @@ class UserRepository:
                     dt_edit=datetime.now(timezone.utc).astimezone()
                 )
             )
-        elif role == UserRoles.ADMIN:
+        elif role == UserRole.ADMIN:
             stmt = (
                 update(User)
                 .where(User.uuid == user_uuid)
@@ -57,7 +57,7 @@ class UserRepository:
                     dt_edit=datetime.now(timezone.utc).astimezone()
                 )
             )
-        elif role == UserRoles.STUDENT:
+        elif role == UserRole.STUDENT:
             stmt = (
                 update(User)
                 .where(User.uuid == user_uuid)

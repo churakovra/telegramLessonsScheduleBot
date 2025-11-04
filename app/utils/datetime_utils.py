@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 full_format: str = '%d.%m.%Y %H:%M:%S'
 full_format_no_sec: str = '%d.%m.%Y %H:%M'
 day_format: str = '%d.%m.%Y'
-day_format_db: str = '_%d.%m.%Y_'
 time_format: str = '%H:%M:%S'
 time_format_HM: str = '%H:%M'
 
@@ -58,11 +57,11 @@ def get_datetime_from_weekday(weekday: int, cday: datetime) -> datetime:
     if weekday > calendar.FRIDAY or weekday < calendar.MONDAY:
         raise Exception
     if ccal <= calendar.FRIDAY:
-        # Получаем дату для дня на этой неделе
+        # get date for current week day
         day = cday + timedelta(days=weekday - ccal)
         return day
     else:
-        # Получаем дату для дня на следующей неделе
+        # get date for day on the next week
         day = cday + timedelta(weekday + 1)
         if ccal == calendar.SATURDAY:
             day += timedelta(1)

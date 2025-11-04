@@ -1,11 +1,22 @@
 import asyncio
 from logging.config import fileConfig
 
+from sqlalchemy import URL
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from alembic import context
 from app.db.database import url
 from app.db.orm.base import Base
+
+url = URL.create(
+    drivername="postgresql+asyncpg",
+    username=url.username,
+    password=url.password,
+    host="localhost",
+    port=url.port,
+    database=url.database,
+)
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

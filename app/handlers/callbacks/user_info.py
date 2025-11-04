@@ -8,7 +8,7 @@ from app.utils.bot_strings import BotStrings
 router = Router()
 
 
-@router.callback_query(F.data == BotStrings.CALLBACK_USER_INFO)
+@router.callback_query(F.data == BotStrings.User.CALLBACK_USER_INFO)
 async def send_user_info(callback: CallbackQuery, session: AsyncSession):
     username = getattr(callback.from_user, "username", "") or ""
     user_service = UserService(session)

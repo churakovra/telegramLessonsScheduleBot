@@ -5,7 +5,7 @@ from pydantic import ValidationError
 
 from app.schemas.user_dto import UserDTO
 from app.services.user_service import UserService
-from app.utils.enums.bot_values import UserRoles
+from app.utils.enums.bot_values import UserRole
 from app.utils.exceptions.user_exceptions import UserChangeRoleException, UserNotFoundException
 
 
@@ -13,7 +13,7 @@ valid_user = UserDTO.new_dto(
         username="test-username",
         firstname="test-firstname",
         lastname="test-lastname",
-        role=UserRoles.STUDENT,
+        role=UserRole.STUDENT,
         chat_id=123456789,
     )
 
@@ -34,11 +34,11 @@ class TestRegisterUser(Base):
     @pytest.mark.parametrize(
         "username, firstname, lastname, role, chat_id, expectation",
         [
-            ("test-username", "test-firstname", "test-lastname", UserRoles.STUDENT, 123456789, None),
-            ("test-username", "test-firstname", None, UserRoles.STUDENT, 123456789, None),
-            (None, "test-firstname", "test-lastname", UserRoles.STUDENT, 123456789, ValidationError),
-            ("test-username", None, "test-lastname", UserRoles.STUDENT, 123456789, ValidationError),
-            ("test-username", "test-firstname", "test-lastname", UserRoles.STUDENT, None, ValidationError),
+            ("test-username", "test-firstname", "test-lastname", UserRole.STUDENT, 123456789, None),
+            ("test-username", "test-firstname", None, UserRole.STUDENT, 123456789, None),
+            (None, "test-firstname", "test-lastname", UserRole.STUDENT, 123456789, ValidationError),
+            ("test-username", None, "test-lastname", UserRole.STUDENT, 123456789, ValidationError),
+            ("test-username", "test-firstname", "test-lastname", UserRole.STUDENT, None, ValidationError),
         ],
     )
     async def test_register_user_success(self, func_mock, username, firstname, lastname, role, chat_id, expectation):
@@ -57,9 +57,9 @@ class TestAddRole(Base):
         func_mock(service=self.service._repository, mock_method="get_user", return_value=valid_admin)
         edit_role_mock = func_mock(service=self.service._repository, mock_method="edit_role")
 
-        await self.service.add_role(valid_admin.username, valid_user.username, UserRoles.TEACHER)
+        await self.service.add_role(valid_admin.username, valid_user.username, UserRole.TEACHER)
 
-        edit_role_mock.assert_awaited_once_with(valid_user.uuid, UserRoles.TEACHER, True)
+        edit_role_mock.assert_awaited_once_with(valid_user.uuid, UserRole.TEACHER, True)
 
 
 
@@ -75,7 +75,7 @@ class TestAddRole(Base):
         func_mock(service=self.service._repository, mock_method="get_user", side_effect=side_effect)
 
         with pytest.raises(expectation):
-            await self.service.add_role(valid_admin.username, valid_user.username, UserRoles.TEACHER)
+            await self.service.add_role(valid_admin.username, valid_user.username, UserRole.TEACHER)
 
 
 class TestGetUser(Base):
