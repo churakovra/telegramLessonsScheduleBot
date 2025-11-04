@@ -10,6 +10,7 @@ from app.services.user_service import UserService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
 from app.utils.exceptions.teacher_exceptions import TeacherAlreadyHasStudentException
+from app.utils.keyboards.markup_builder import MarkupBuilder
 from app.utils.message_template import MessageTemplate
 
 router = Router()
@@ -31,10 +32,12 @@ async def handle_state(
 
     if len(unknown_students) > 0:
         if len(unknown_students) <= 1:
-            message_text = BotStrings.TEACHER_STUDENT_ADD_UNKNOWN_STUDENT
+            message_text = BotStrings.Teacher.TEACHER_STUDENT_ADD_UNKNOWN_STUDENT
         else:
-            message_text = BotStrings.TEACHER_STUDENT_ADD_UNKNOWN_STUDENTS
-        await message.answer(str.format(message_text, ", ".join(unknown_students)))
+            message_text = BotStrings.Teacher.TEACHER_STUDENT_ADD_UNKNOWN_STUDENTS
+        await message.answer(
+            str.format(message_text, student=", ".join(unknown_students))
+        )
 
     if len(students) > 0:
         try:
@@ -48,17 +51,18 @@ async def handle_state(
             return
 
         if len(success_students_usernames) <= 1:
-            message_text = BotStrings.TEACHER_STUDENT_ADD_SUCCESS
+            message_text = BotStrings.Teacher.TEACHER_STUDENT_ADD_SUCCESS
         else:
-            message_text = BotStrings.TEACHER_STUDENTS_ADD_SUCCESS
+            message_text = BotStrings.Teacher.TEACHER_STUDENTS_ADD_SUCCESS
         await message.answer(
-            str.format(message_text, ", ".join(success_students_usernames))
+            str.format(message_text, student=", ".join(success_students_usernames))
         )
 
     user_service = UserService(session)
     username = getattr(message.from_user, "username", "") or ""
-    user, markup = await user_service.get_user_menu(username)
-    bot_message = MessageTemplate.get_menu_message(user.username, markup)
+    user = await user_service.get_user(username)
+    markup = MarkupBuilder.main_menu_markup(user.role)
+    bot_message = MessageTemplate.main_menu_message(user.username, markup)
     await notifier.send_message(
         bot_message=bot_message, receiver_chat_id=message.chat.id
     )

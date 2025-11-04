@@ -3,12 +3,13 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.utils.logger import setup_logger
 from app.notifiers.telegram_notifier import TelegramNotifier
 from app.services.lesson_service import LessonService
 from app.services.user_service import UserService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
-from app.utils.config.logger import setup_logger
+from app.utils.keyboards.markup_builder import MarkupBuilder
 from app.utils.message_template import MessageTemplate
 
 router = Router()
@@ -17,10 +18,10 @@ logger = setup_logger("teacher-lesson-price")
 
 @router.message(ScheduleStates.wait_for_teacher_lesson_price)
 async def handle_state(
-        message: Message,
-        session: AsyncSession,
-        state: FSMContext,
-        notifier: TelegramNotifier
+    message: Message,
+    session: AsyncSession,
+    state: FSMContext,
+    notifier: TelegramNotifier,
 ):
     data = await state.get_data()
     previous_message_id = data["previous_message_id"]
@@ -40,21 +41,27 @@ async def handle_state(
         lesson_service = LessonService(session)
         await lesson_service.create_lesson(**lesson)
 
-        await message.answer(str.format(BotStrings.TEACHER_LESSON_ADD_SUCCESS, lesson["label"]))
+        await message.answer(
+            str.format(
+                BotStrings.Teacher.TEACHER_LESSON_ADD_SUCCESS, lesson=lesson["label"]
+            )
+        )
 
         user_service = UserService(session)
-        user, markup = await user_service.get_user_menu(username)
-        bot_message = MessageTemplate.get_menu_message(user.username, markup)
+        user = await user_service.get_user(username)
+        markup = MarkupBuilder.main_menu_markup(user.role)
+        bot_message = MessageTemplate.main_menu_message(user.username, markup)
         await notifier.send_message(
-            bot_message=bot_message,
-            receiver_chat_id=message.chat.id
+            bot_message=bot_message, receiver_chat_id=message.chat.id
         )
         await state.clear()
 
     except Exception as e:
         logger.error(e)
 
-        sent_message = await message.answer(BotStrings.TEACHER_LESSON_ADD_PRICE_ERROR)
+        sent_message = await message.answer(
+            BotStrings.Teacher.TEACHER_LESSON_ADD_PRICE_ERROR
+        )
         await state.update_data(previous_message_id=sent_message.message_id)
         await state.set_state(ScheduleStates.wait_for_teacher_lesson_price)
 

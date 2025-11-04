@@ -2,11 +2,11 @@ from aiogram.filters.state import StatesGroup, State
 
 
 class ScheduleStates(StatesGroup):
-    wait_for_teacher_username = State() # стейт для добавления юзеру статуса Teacher
-    wait_for_slots = State() # стейт для получения и обработки окошек от преподавателя
-    wait_for_confirmation = State() # стейт, ожидающий подтверждения преподавателем корректности парсинга окошек
-    wait_for_teacher_students = State() # стейт, ожидающий ввода преподавателем никнеймов студентов для привязки
-    wait_for_teacher_lesson_label = State() # стейт, ожидающий ввода преподавателем названия нового предмета
-    wait_for_teacher_lesson_duration = State() # стейт, ожидающий ввода преподавателем продолжительности нового предмета
-    wait_for_teacher_lesson_price = State() # стейт, ожидающий ввода преподавателем стоимости нового предмета
-    wait_for_student_to_delete = State() # стейт, ожидающий ввода преподавателем никнейма студента для отвязки
+    wait_for_teacher_username = State() # add Teacher status to user
+    wait_for_slots = State() # wait for teacher slots & start to process them
+    wait_for_confirmation = State() # wait for teacher confirmation is bot parsed slots correctly
+    wait_for_teacher_students = State() # wait student tg usernames for bind them to teacher
+    wait_for_student_to_delete = State() # wait student tg usernames for unbind them to teacher
+    wait_for_teacher_lesson_label = State() # wait for new lesson label
+    wait_for_teacher_lesson_duration = State() # wait for new lesson duration
+    wait_for_teacher_lesson_price = State() # wait for new lesson price

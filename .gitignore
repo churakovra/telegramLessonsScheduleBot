@@ -1,10 +1,7 @@
-.venv/*
-.idea/*
-.vscode/*
+.venv
+.idea
+.vscode
 *.env
-app/__p*
-app/utils/config/__p*
-app/controllers/__p*
-.DS*
 *__pycache__*
+.DS*
 .coverage

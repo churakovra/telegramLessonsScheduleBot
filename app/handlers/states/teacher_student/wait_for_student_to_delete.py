@@ -8,6 +8,7 @@ from app.services.teacher_service import TeacherService
 from app.services.user_service import UserService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
+from app.utils.keyboards.markup_builder import MarkupBuilder
 from app.utils.message_template import MessageTemplate
 
 router = Router()
@@ -22,15 +23,17 @@ async def handle_state(message: Message, session: AsyncSession, state: FSMContex
     students, unknown_students = await student_service.parse_students(raw_msg)
 
     if len(students) <= 0:
-        await message.answer(BotStrings.TEACHER_STUDENTS_NOT_FOUND)
+        await message.answer(BotStrings.Teacher.TEACHER_STUDENTS_NOT_FOUND)
         await state.set_state(ScheduleStates.wait_for_student_to_delete)
 
     if len(unknown_students) > 0:
         if len(unknown_students) <= 1:
-            message_text = BotStrings.TEACHER_STUDENT_ADD_UNKNOWN_STUDENT
+            message_text = BotStrings.Teacher.TEACHER_STUDENT_ADD_UNKNOWN_STUDENT
         else:
-            message_text = BotStrings.TEACHER_STUDENT_ADD_UNKNOWN_STUDENTS
-        await message.answer(str.format(message_text, ", ".join(unknown_students)))
+            message_text = BotStrings.Teacher.TEACHER_STUDENT_ADD_UNKNOWN_STUDENTS
+        await message.answer(
+            str.format(message_text, student=", ".join(unknown_students))
+        )
 
     teacher_service = TeacherService(session)
     teacher = await teacher_service.get_teacher(teacher_username)
@@ -38,8 +41,9 @@ async def handle_state(message: Message, session: AsyncSession, state: FSMContex
 
     await message.delete()
     user_service = UserService(session)
-    user, markup = await user_service.get_user_menu(teacher_username)
-    bot_message = MessageTemplate.get_menu_message(user.username, markup)
+    user = await user_service.get_user(teacher_username)
+    markup = MarkupBuilder.main_menu_markup(user.role)
+    bot_message = MessageTemplate.main_menu_message(user.username, markup)
     await message.answer(
         text=bot_message.message_text, reply_markup=bot_message.reply_markup
     )

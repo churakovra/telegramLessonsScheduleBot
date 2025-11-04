@@ -1,11 +1,11 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class BotEnum(str, Enum):
+class BotEnum(StrEnum):
     pass
 
 
-class UserRoles(BotEnum):
+class UserRole(BotEnum):
     ADMIN = "admin"
     TEACHER = "teacher"
     STUDENT = "student"

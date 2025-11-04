@@ -7,12 +7,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.slot_repository import SlotRepository
 from app.schemas.slot_dto import SlotDTO
-from app.utils.config.logger import setup_logger
 from app.utils.datetime_utils import WEEKDAYS
 from app.utils.exceptions.slot_exceptions import (
     SlotFreeNotFoundException,
     SlotNotFoundException,
 )
+from app.utils.logger import setup_logger
 
 logger = setup_logger("SlotService")
 
@@ -54,20 +54,19 @@ class SlotService:
 
     @staticmethod
     async def parse_slots(message_text: str, uuid_teacher: UUID) -> list[SlotDTO]:
-        raw_mt = [
-            word.strip(string.punctuation) for word in message_text.split()
-        ]  # разбиваем сообщение на День и Время
+        # Split message on day and time
+        raw_mt = [word.strip(string.punctuation) for word in message_text.split()]
         slots = list[SlotDTO]()
         weekday_index = 0
         for word in raw_mt:
             try:
-                time = datetime.strptime(
-                    word, "%H:%M"
-                )  # Если word - время, то создаем SlotDTO, иначе кидается ошибка
+                # If word is Time -> create SlotDTO, else raises ValueError
+                time = datetime.strptime(word, "%H:%M")
                 today = datetime.today()
+                # Count slot's date
                 slot_date = (
                     today + timedelta(days=7 - today.weekday() + weekday_index)
-                ).date()  # Считаем дату слота
+                ).date()
                 slot_dt = datetime(
                     day=slot_date.day,
                     month=slot_date.month,
@@ -83,15 +82,10 @@ class SlotService:
                         dt_spot=None,
                     )
                 )
-            except (
-                ValueError
-            ):  # Ловим ошибку, если приведение строки к дате не получилось
-                for (
-                    index,
-                    weekdays,
-                ) in (
-                    WEEKDAYS.items()
-                ):  # weekday_index нужен для расчета даты слота на следующей неделе
+            # Catch exception if str to date failed (row 64)
+            except ValueError:
+                # weekday_index using for count slot date on the next weeek
+                for index, weekdays in WEEKDAYS.items():
                     if word in weekdays:
                         weekday_index = index
                         break
@@ -103,16 +97,16 @@ class SlotService:
         response = ""
         slots_temp = dict[str, tuple[set[str], list[str]]]()
         for slot in slots:
+            # Get number of day in week depending on date
             weekday = calendar.weekday(
                 slot.dt_start.year, slot.dt_start.month, slot.dt_start.day
-            )  # Получаем номер дня недели в зависимости от даты
-            label = WEEKDAYS[weekday][
-                2
-            ]  # Получаем название дня; [2]-русское название в WEEKDAYS
-            sdate = slot.dt_start.strftime(
-                "%d.%m.%y"
-            )  # Дата (без времени) в формате строки
-            time = slot.dt_start.strftime("%H:%M")  # Время (без даты) в формате строки
+            )
+            # Get day label; [2]-label in WEEKDAYS on russian
+            label = WEEKDAYS[weekday][2]
+            # Date (without time) in str format
+            sdate = slot.dt_start.strftime("%d.%m.%y")
+            # Time (without date) in str format
+            time = slot.dt_start.strftime("%H:%M")
             if label not in slots_temp:
                 slots_temp[label] = (set(), [])
             slots_temp[label][0].add(sdate)
