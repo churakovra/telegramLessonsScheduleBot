@@ -22,7 +22,7 @@ class SlotRepository:
         except IntegrityError as e:
             await self._db.rollback()
             raise ValueError(e) from e
-        
+
     async def add_slots(self, slots: list[SlotDTO]):
         slots = [Slot.new_instance(slot) for slot in slots]
         self._db.add_all(slots)
@@ -39,11 +39,15 @@ class SlotRepository:
         self, teacher_uuid: UUID, week: int | None = None
     ) -> list[SlotDTO]:
         slots = list()
-        stmt = select(Slot).where(
-            and_(
-                Slot.uuid_teacher == teacher_uuid,
-                extract("week", Slot.dt_start) == week,
+        stmt = (
+            select(Slot)
+            .where(
+                and_(
+                    Slot.uuid_teacher == teacher_uuid,
+                    extract("week", Slot.dt_start) == week,
+                )
             )
+            .order_by(Slot.dt_start.asc())
         )
         for slot in await self._db.scalars(stmt):
             slots.append(SlotDTO.model_validate(slot))
@@ -87,10 +91,7 @@ class SlotRepository:
         await self._db.execute(stmt)
         await self._db.commit()
 
-    
     async def delete_slots(self, slots: list[SlotDTO]):
-        stmt = delete(Slot).where(
-            Slot.uuid.in_([slot.uuid for slot in slots])
-        )
+        stmt = delete(Slot).where(Slot.uuid.in_([slot.uuid for slot in slots]))
         await self._db.execute(stmt)
         await self._db.commit()

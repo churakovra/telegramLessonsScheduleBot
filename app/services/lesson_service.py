@@ -4,6 +4,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.lesson_repository import LessonRepository
 from app.schemas.lesson_dto import LessonDTO
+from app.schemas.slot_dto import SlotDTO
+from app.utils.exceptions.lesson_exceptions import LessonsNotFoundException
+from app.utils.logger import setup_logger
+
+
+logger = setup_logger("lesson_service")
 
 
 class LessonService:
@@ -26,3 +32,11 @@ class LessonService:
 
         await self._repository.create_lesson(**lesson.model_dump())
         return lesson.uuid
+    
+    
+    async def get_lessons(self, slots: list[SlotDTO]):
+        lessons = await self._repository.get_lessons(slots)
+        if len(lessons.keys()) <= 0:
+            raise LessonsNotFoundException()
+        logger.debug(lessons)
+        return lessons

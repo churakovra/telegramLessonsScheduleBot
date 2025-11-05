@@ -1,17 +1,22 @@
 import calendar
 import string
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
+from io import StringIO
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from tabulate import tabulate
 
 from app.repositories.slot_repository import SlotRepository
+from app.schemas.lesson_dto import LessonDTO
 from app.schemas.slot_dto import SlotDTO
+from app.schemas.user_dto import UserDTO
 from app.utils.datetime_utils import WEEKDAYS
 from app.utils.enums.bot_values import WeekFlag
 from app.utils.exceptions.slot_exceptions import (
     SlotFreeNotFoundException,
     SlotNotFoundException,
+    SlotsNotFoundException,
 )
 from app.utils.logger import setup_logger
 
@@ -36,14 +41,18 @@ class SlotService:
             teacher_uuid=teacher_uuid, week=week
         )
         slots_dts = {slot.dt_start for slot in slots}
-        existing_slots_dts = {existing_slot.dt_start for existing_slot in existing_slots}
+        existing_slots_dts = {
+            existing_slot.dt_start for existing_slot in existing_slots
+        }
 
         to_delete = existing_slots_dts - slots_dts
         to_add = slots_dts - existing_slots_dts
-        
-        slots_to_delete = [slot for slot in existing_slots if slot.dt_start in to_delete]
+
+        slots_to_delete = [
+            slot for slot in existing_slots if slot.dt_start in to_delete
+        ]
         slots_to_add = [slot for slot in slots if slot.dt_start in to_add]
-        
+
         await self._repository.delete_slots(slots=slots_to_delete)
         await self._repository.add_slots(slots=slots_to_add)
 
@@ -52,6 +61,14 @@ class SlotService:
         if slot is None:
             raise SlotNotFoundException(slot_uuid)
         return slot
+
+    async def get_slots(self, teacher_uuid: UUID, week_flag: WeekFlag) -> list[SlotDTO]:
+        week = datetime.now().isocalendar().week
+        week = week + 1 if week_flag == WeekFlag.NEXT else week
+        slots = await self._repository.get_slots(teacher_uuid, week)
+        if len(slots) <= 0:
+            raise SlotsNotFoundException(teacher_uuid, week_flag)
+        return slots
 
     async def get_free_slots(self, teacher_uuid: UUID) -> list[SlotDTO]:
         slots = await self._repository.get_free_slots(teacher_uuid)
@@ -114,7 +131,7 @@ class SlotService:
         return slots
 
     @staticmethod
-    async def get_slot_reply(slots: list[SlotDTO]) -> str:
+    async def get_parsed_slots_reply(slots: list[SlotDTO]) -> str:
         response = ""
         slots_temp = dict[str, tuple[set[str], list[str]]]()
         for slot in slots:
@@ -138,3 +155,76 @@ class SlotService:
                 f"📅: {label}, {slot_info[0].pop()}\n🕐: {', '.join(slot_info[1])}\n\n"
             )
         return response
+
+
+    @staticmethod
+    async def get_slots_schedule_reply(
+        slots: list[SlotDTO], lessons: dict[UUID, LessonDTO], students: list[UserDTO]
+    ) -> str:
+        student_map = {s.uuid: s for s in students}
+
+        response = StringIO()
+        current_day: date | None = None
+        day_slots: list[dict[str, str]] = []
+        lessons_cnt = 0
+        day_earning = 0
+        week_lessons_cnt = 0
+        week_earning = 0
+
+        def write_day_summary():
+            if day_slots:
+                rows = {
+                    "time": [s["time"] for s in day_slots],
+                    "student": [s["student"] for s in day_slots],
+                    "price": [s["price"] for s in day_slots],
+                }
+                response.write(f"{tabulate(rows, headers=['Время', 'Ученик', 'Цена'])}\n")
+                response.write(f"Уроков {lessons_cnt}, за день {day_earning}\n\n")
+
+        for slot in slots:
+            slot_date = slot.dt_start.date()
+            slot_time = slot.dt_start.time()
+
+            if slot_date != current_day:
+                if current_day is not None:
+                    write_day_summary()
+                    week_lessons_cnt += lessons_cnt
+                    week_earning += day_earning
+
+                current_day = slot_date
+                week_day_num = current_day.isocalendar().weekday
+                weekday = WEEKDAYS[week_day_num][2]
+                response.write(f"{weekday} {current_day}\n")
+                day_slots.clear()
+                lessons_cnt = 0
+                day_earning = 0
+
+            if not slot.uuid_student:
+                day_slots.append({"time": str(slot_time), "student": "", "price": ""})
+                continue
+
+            if slot.uuid_student not in lessons:
+                logger.error(f"Student {slot.uuid_student} has no lesson, but somehow spotted slot {slot.uuid}")
+                continue
+
+            student = student_map.get(slot.uuid_student)
+            if not student:
+                logger.error(f"Student {slot.uuid_student} not found in students list")
+                continue
+
+            lesson = lessons[slot.uuid_student]
+            day_slots.append({
+                "time": str(slot_time),
+                "student": student.username,
+                "price": str(lesson.price),
+            })
+
+            lessons_cnt += 1
+            day_earning += lesson.price
+
+        write_day_summary()
+        week_lessons_cnt += lessons_cnt
+        week_earning += day_earning
+        response.write(f"Итого: ЗАНЯТИЙ {week_lessons_cnt} ДОХОД {week_earning}")
+
+        return response.getvalue()

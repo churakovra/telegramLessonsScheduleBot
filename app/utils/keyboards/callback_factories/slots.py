@@ -27,3 +27,7 @@ class SlotsForStudents(CallbackData, prefix="fabslots"):
 
 class UpdateSlots(SpecifyWeekMixin, prefix="update-slots"):
     pass
+
+
+class ListSlots(SpecifyWeekMixin, prefix="list-slots"):
+    pass

@@ -29,7 +29,7 @@ async def wait_for_slots(message: Message, state: FSMContext, session: AsyncSess
 
     await state.set_state(ScheduleStates.wait_for_confirmation)
 
-    slot_reply = await slot_service.get_slot_reply(slots)
+    slot_reply = await slot_service.get_parsed_slots_reply(slots)
     markup = MarkupBuilder.is_slots_correct_markup()
     await message.answer(text=slot_reply, reply_markup=markup)
 

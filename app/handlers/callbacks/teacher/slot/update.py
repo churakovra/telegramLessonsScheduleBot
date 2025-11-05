@@ -20,7 +20,7 @@ router = Router()
 @router.callback_query(SubMenu.filter(F.menu_type == MenuType.TEACHER_SLOT_UPDATE))
 async def on_teacher_slot_update(callback: CallbackQuery):
     markup = MarkupBuilder.specify_week_markup(callback_data=UpdateSlots)
-    message = MessageTemplate.update_slot_message(markup)
+    message = MessageTemplate.specify_week_message(markup)
     await callback.message.answer(
         text=message.message_text, reply_markup=message.reply_markup
     )

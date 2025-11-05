@@ -17,14 +17,14 @@ class MessageTemplate:
     @staticmethod
     async def slots_added_for_student_message(slots: list[SlotDTO], markup: InlineKeyboardMarkup):
         return BotMessage(
-            message_text=f"{BotStrings.Student.SLOTS_ADDED}\n\n{await SlotService.get_slot_reply(slots)}",
+            message_text=f"{BotStrings.Student.SLOTS_ADDED}\n\n{await SlotService.get_parsed_slots_reply(slots)}",
             reply_markup=markup,
         )
         
     @staticmethod
     async def slots_updated_for_student_message(slots: list[SlotDTO], markup: InlineKeyboardMarkup):
         return BotMessage(
-            message_text=f"{BotStrings.Student.SLOTS_UPDATED}\n\n{await SlotService.get_slot_reply(slots)}",
+            message_text=f"{BotStrings.Student.SLOTS_UPDATED}\n\n{await SlotService.get_parsed_slots_reply(slots)}",
             reply_markup=markup,
         )
 
@@ -51,7 +51,7 @@ class MessageTemplate:
         )
 
     @staticmethod
-    def update_slot_message(
+    def specify_week_message(
         markup: InlineKeyboardMarkup
     ) -> BotMessage:
         return BotMessage(

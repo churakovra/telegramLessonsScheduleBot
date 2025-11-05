@@ -1,3 +1,4 @@
+from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.student_repository import StudentRepository
@@ -10,10 +11,16 @@ class StudentService:
     def __init__(self, session: AsyncSession):
         self._repository = StudentRepository(session)
 
-    async def get_student(self, username: str) -> UserDTO:
-        student = await self._repository.get_student(username)
+    async def get_student_by_username(self, username: str) -> UserDTO:
+        student = await self._repository.get_student_by_username(username)
         if student is None:
             raise UserNotFoundException(username, UserRole.STUDENT)
+        return student
+    
+    async def get_student_by_uuid(self, uuid: UUID) -> UserDTO:
+        student = await self._repository.get_student_by_uuid(uuid=uuid)
+        if student is None:
+            raise UserNotFoundException(uuid, UserRole.STUDENT)
         return student
 
     async def parse_students(self, students_raw: str) -> tuple[list[UserDTO], list[str]]:
@@ -21,7 +28,7 @@ class StudentService:
         unknown_students = list[str]()
         for username in students_raw.split(" "):
             try:
-                students.append(await self.get_student(username.strip()))
+                students.append(await self.get_student_by_username(username.strip()))
             except UserNotFoundException:
                 unknown_students.append(username.strip())
         return students, unknown_students
