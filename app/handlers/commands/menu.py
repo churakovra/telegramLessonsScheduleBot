@@ -19,13 +19,11 @@ logger = setup_logger()
 
 @router.message(Command("menu"))
 async def send_menu_message(message: Message, session: AsyncSession):
-    logger.debug("in send_menu_message def")
     username = getattr(message.from_user, "username", "")
     try:
         user_service = UserService(session)
         user = await user_service.get_user(username)
         markup = MarkupBuilder.main_menu_markup(user.role)
-        logger.debug(f"Got markup, {str(markup)}")
         bot_message = MessageTemplate.main_menu_message(user.firstname, markup)
         await message.answer(
             text=bot_message.message_text, reply_markup=bot_message.reply_markup

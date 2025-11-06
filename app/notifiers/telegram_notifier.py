@@ -12,9 +12,11 @@ class TelegramNotifier:
         await self.bot.send_message(
             chat_id=receiver_chat_id,
             text=bot_message.message_text,
-            reply_markup=bot_message.reply_markup
+            reply_markup=bot_message.reply_markup,
         )
 
-    async def send_message_to_users(self, bot_message: BotMessage, users: list[UserDTO]):
+    async def send_message_to_users(
+        self, bot_message: BotMessage, users: list[UserDTO]
+    ):
         for user in users:
             await self.send_message(bot_message, user.chat_id)

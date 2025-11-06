@@ -1,5 +1,7 @@
 from uuid import UUID
 
+from app.utils.enums.bot_values import WeekFlag
+
 
 class SlotValidationException(Exception):
     def __init__(self):
@@ -17,6 +19,12 @@ class SlotNotFoundException(Exception):
     def __init__(self, slot_uuid: UUID):
         self.slot_uuid = slot_uuid
         self.message = f"Slot {slot_uuid} were not found"
+        
+class SlotsNotFoundException(Exception):
+    def __init__(self, teacher_uuid: UUID, week_flag: WeekFlag):
+        self.teacher_uuid = teacher_uuid
+        self.week_flag = week_flag
+        self.message = f"Teacher's {teacher_uuid} on week {week_flag} were not found"
 
 
 class SlotFreeNotFoundException(Exception):

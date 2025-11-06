@@ -1,4 +1,5 @@
 import calendar
+from typing import Type
 from uuid import UUID
 
 from aiogram.types import InlineKeyboardMarkup
@@ -7,11 +8,12 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from app.schemas.slot_dto import SlotDTO
 from app.utils.bot_strings import BotStrings
 from app.utils.datetime_utils import WEEKDAYS, day_format, time_format_HM
-from app.utils.enums.bot_values import UserRole
+from app.utils.enums.bot_values import OperationType, UserRole, WeekFlag
 from app.utils.enums.menu_type import MenuType
 from app.utils.exceptions.user_exceptions import UserUnknownRoleException
 from app.utils.keyboards.callback_factories.back import Back
 from app.utils.keyboards.callback_factories.menu import NewMainMenu
+from app.utils.keyboards.callback_factories.mixins import SpecifyWeekMixin
 from app.utils.keyboards.callback_factories.slots import (
     DaysForStudents,
     ResendSlots,
@@ -49,9 +51,6 @@ class MarkupBuilder:
 
         for menu in menu_data:
             builder.button(text=menu.text, callback_data=menu.callback_data)
-            logger.debug(
-                f"get_menu_markup: name={menu.text}; callback_data={menu.callback_data}"
-            )
 
         builder.adjust(1)
         return builder.as_markup()
@@ -59,7 +58,6 @@ class MarkupBuilder:
     @staticmethod
     def sub_menu_markup(sub_menu_type: MenuType) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
-        logger.debug(f"in get_sub_menu_markup, sub_menu_type={sub_menu_type}")
         match sub_menu_type:
             case MenuType.TEACHER_STUDENT:
                 menu_type = SubMenuDataTeacher.teacher_student
@@ -77,9 +75,6 @@ class MarkupBuilder:
                 raise ValueError(f"Wrong sub_menu_type {sub_menu_type}")
         for button in menu_type:
             builder.button(text=button.text, callback_data=button.callback_data)
-            logger.debug(
-                f"get_sub_menu_markup: name={button.text}; callback_data={button.callback_data}"
-            )
         builder.button(
             text="Назад", callback_data=Back(parent_keyboard="menu_keyboard")
         )
@@ -101,11 +96,15 @@ class MarkupBuilder:
         return builder.as_markup()
 
     @staticmethod
-    def send_slots_markup(teacher_uuid: UUID) -> InlineKeyboardMarkup:
+    def send_slots_markup(
+        teacher_uuid: UUID, operation_type: OperationType
+    ) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         builder.button(
             text=BotStrings.Menu.SEND,
-            callback_data=SendSlots(teacher_uuid=teacher_uuid),
+            callback_data=SendSlots(
+                teacher_uuid=teacher_uuid, operation_type=operation_type
+            ),
         )
         return builder.as_markup()
 
@@ -171,4 +170,21 @@ class MarkupBuilder:
         )
 
         builder.adjust(1)
+        return builder.as_markup()
+
+    @staticmethod
+    def specify_week_markup(
+        callback_data: type[SpecifyWeekMixin],
+    ) -> InlineKeyboardMarkup:
+        builder = InlineKeyboardBuilder()
+        builder.button(
+            text=BotStrings.Menu.CURRENT_WEEK,
+            callback_data=callback_data(week_flag=WeekFlag.CURRENT),
+        )
+        builder.button(
+            text=BotStrings.Menu.NEXT_WEEK,
+            callback_data=callback_data(week_flag=WeekFlag.NEXT),
+        )
+
+        builder.adjust(2)
         return builder.as_markup()

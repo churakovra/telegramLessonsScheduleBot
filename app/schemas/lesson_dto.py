@@ -10,6 +10,8 @@ class LessonDTO(BaseModel):
     duration: int
     uuid_teacher: UUID
     price: int
+    
+    model_config = {"from_attributes": True}
 
     @classmethod
     def new_dto(cls, label: str, duration: int, uuid_teacher: UUID, price: int):

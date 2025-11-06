@@ -18,7 +18,7 @@ class SubMenuDataTeacher:
         ),
         ButtonDTO(
             text="Изменить ученика",
-            callback_data=SubMenu(menu_type=MenuType.TEACHER_STUDENT_update),
+            callback_data=SubMenu(menu_type=MenuType.TEACHER_STUDENT_UPDATE),
         ),
         ButtonDTO(
             text="Удалить ученика",
@@ -37,7 +37,7 @@ class SubMenuDataTeacher:
         ),
         ButtonDTO(
             text="Изменить окошки",
-            callback_data=SubMenu(menu_type=MenuType.TEACHER_SLOT_update),
+            callback_data=SubMenu(menu_type=MenuType.TEACHER_SLOT_UPDATE),
         ),
     ]
 
@@ -52,7 +52,7 @@ class SubMenuDataTeacher:
         ),
         ButtonDTO(
             text="Изменить предмет",
-            callback_data=SubMenu(menu_type=MenuType.TEACHER_LESSON_update),
+            callback_data=SubMenu(menu_type=MenuType.TEACHER_LESSON_UPDATE),
         ),
         ButtonDTO(
             text="Удалить предмет",

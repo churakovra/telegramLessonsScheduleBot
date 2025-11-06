@@ -31,7 +31,7 @@ async def handle_callback(
 
     try:
         student_service = StudentService(session=session)
-        student = await student_service.get_student(username=student_username)
+        student = await student_service.get_student_by_username(username=student_username)
 
         assigned_slot = await assign_slot(
             session=session, student=student, slot_uuid=slot_uuid

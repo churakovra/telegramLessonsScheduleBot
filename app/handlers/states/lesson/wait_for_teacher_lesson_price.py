@@ -36,7 +36,6 @@ async def handle_state(
             "price": price,
             "uuid_teacher": data["teacher_uuid"],
         }
-        logger.debug(lesson)
 
         lesson_service = LessonService(session)
         await lesson_service.create_lesson(**lesson)
