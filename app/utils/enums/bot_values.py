@@ -10,3 +10,13 @@ class UserRole(BotEnum):
     TEACHER = "teacher"
     STUDENT = "student"
     NOT_DEFINED = "not defined"
+    
+
+class OperationType(BotEnum):
+    ADD = "0"
+    UPDATE = "1"
+
+
+class WeekFlag(BotEnum):
+    CURRENT = "0"
+    NEXT = "1"

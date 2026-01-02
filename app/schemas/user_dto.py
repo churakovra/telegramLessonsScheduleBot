@@ -18,6 +18,8 @@ class UserDTO(BaseModel):
     dt_reg: datetime
     dt_edit: datetime
     
+    model_config = {"from_attributes": True}
+    
     @property
     def role(self) -> UserRole:
         if self.is_admin:

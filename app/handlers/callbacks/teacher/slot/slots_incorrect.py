@@ -9,8 +9,8 @@ router = Router()
 
 
 @router.callback_query(F.data == BotStrings.Teacher.CALLBACK_SLOTS_INCORRECT)
-async def retry_send_slots(callback: CallbackQuery, state: FSMContext):
-    await callback.message.answer(BotStrings.Teacher.SLOTS_FAILURE_ANSWER)
+async def handle_callback(callback: CallbackQuery, state: FSMContext):
+    await callback.message.answer(BotStrings.Teacher.SLOTS_FAILURE)
     await state.set_state(ScheduleStates.wait_for_slots)
     await callback.message.delete()
     await callback.answer()

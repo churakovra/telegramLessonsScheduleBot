@@ -6,6 +6,7 @@ from app.notifiers.telegram_notifier import TelegramNotifier
 from app.services.slot_service import SlotService
 from app.services.teacher_service import TeacherService
 from app.services.user_service import UserService
+from app.utils.enums.bot_values import OperationType
 from app.utils.exceptions.teacher_exceptions import TeacherStudentsNotFound
 from app.utils.keyboards.callback_factories.slots import SendSlots
 from app.utils.keyboards.markup_builder import MarkupBuilder
@@ -30,7 +31,14 @@ async def handle_callback(
 
         slots = await slots_service.get_free_slots(teacher_uuid)
         markup = MarkupBuilder.days_for_students_markup(slots, teacher_uuid)
-        message = await MessageTemplate.slots_for_student_message(slots, markup)
+        if callback_data.operation_type == OperationType.ADD:
+            message = await MessageTemplate.slots_added_for_student_message(
+                slots, markup
+            )
+        else:
+            message = await MessageTemplate.slots_updated_for_student_message(
+                slots, markup
+            )
 
         [await notifier.send_message(message, student.chat_id) for student in students]
         await callback.message.delete()

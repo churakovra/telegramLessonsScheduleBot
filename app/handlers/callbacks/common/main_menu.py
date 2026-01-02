@@ -13,10 +13,8 @@ logger = setup_logger()
 
 @router.callback_query(MainMenu.filter())
 async def handle_callback(callback: CallbackQuery, callback_data: MainMenu):
-    logger.debug("In cg-t callback handler")
 
     data = callback_data.menu_type
-    logger.debug(f"callback data = {data}")
     markup = MarkupBuilder.sub_menu_markup(data)
 
     await callback.message.answer(text=callback.message.text, reply_markup=markup)
