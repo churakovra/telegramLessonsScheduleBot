@@ -8,7 +8,7 @@ from app.handlers import register_routers
 from app.middlewares.setup import setup_middlewares
 from app.notifiers.telegram_notifier import TelegramNotifier
 
-logger = setup_logger("bot")
+logger = setup_logger(__name__)
 
 
 async def main():

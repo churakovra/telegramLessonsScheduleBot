@@ -10,7 +10,7 @@ from app.utils.enums.bot_values import OperationType
 from app.utils.keyboards.markup_builder import MarkupBuilder
 from app.utils.logger import setup_logger
 
-logger = setup_logger("slots_correct")
+logger = setup_logger(__name__)
 
 
 router = Router()

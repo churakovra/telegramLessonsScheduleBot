@@ -10,7 +10,7 @@ from app.schemas.slot_dto import SlotDTO
 from app.utils.logger import setup_logger
 
 
-logger = setup_logger("lesson_repository")
+logger = setup_logger(__name__)
 
 
 class LessonRepository:

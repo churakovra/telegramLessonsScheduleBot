@@ -7,7 +7,7 @@ from app.utils.bot_strings import BotStrings
 from app.utils.logger import setup_logger
 
 router = Router()
-logger = setup_logger("lesson-label")
+logger = setup_logger(__name__)
 
 
 @router.message(ScheduleStates.wait_for_teacher_lesson_label)

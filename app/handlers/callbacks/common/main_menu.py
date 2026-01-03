@@ -8,7 +8,7 @@ from app.utils.keyboards.markup_builder import MarkupBuilder
 
 router = Router()
 
-logger = setup_logger()
+logger = setup_logger(__name__)
 
 
 @router.callback_query(MainMenu.filter())

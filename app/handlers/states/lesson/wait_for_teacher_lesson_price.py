@@ -13,7 +13,7 @@ from app.utils.keyboards.markup_builder import MarkupBuilder
 from app.utils.message_template import MessageTemplate
 
 router = Router()
-logger = setup_logger("teacher-lesson-price")
+logger = setup_logger(__name__)
 
 
 @router.message(ScheduleStates.wait_for_teacher_lesson_price)

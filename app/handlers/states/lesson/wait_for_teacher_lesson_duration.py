@@ -7,14 +7,11 @@ from app.utils.bot_strings import BotStrings
 from app.utils.logger import setup_logger
 
 router = Router()
-logger = setup_logger("teacher-lesson-duration")
+logger = setup_logger(__name__)
 
 
 @router.message(ScheduleStates.wait_for_teacher_lesson_duration)
-async def handle_state(
-        message: Message,
-        state: FSMContext
-):
+async def handle_state(message: Message, state: FSMContext):
     data = await state.get_data()
     previous_message_id = data["previous_message_id"]
     raw_mt = getattr(message, "text", "")
@@ -31,7 +28,9 @@ async def handle_state(
 
         await state.set_state(ScheduleStates.wait_for_teacher_lesson_duration)
 
-        sent_message = await message.answer(BotStrings.Teacher.TEACHER_LESSON_ADD_DURATION_ERROR)
+        sent_message = await message.answer(
+            BotStrings.Teacher.TEACHER_LESSON_ADD_DURATION_ERROR
+        )
         await state.update_data(previous_message_id=sent_message.message_id)
 
     finally:

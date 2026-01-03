@@ -32,7 +32,7 @@ from app.utils.keyboards.menu_data.sub_menu import (
 )
 from app.utils.logger import setup_logger
 
-logger = setup_logger()
+logger = setup_logger(__name__)
 
 
 class MarkupBuilder:

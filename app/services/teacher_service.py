@@ -12,7 +12,7 @@ from app.utils.exceptions.teacher_exceptions import (
 )
 from app.utils.exceptions.user_exceptions import UserNotFoundException
 
-logger = setup_logger("teacher-service")
+logger = setup_logger(__name__)
 
 
 class TeacherService:

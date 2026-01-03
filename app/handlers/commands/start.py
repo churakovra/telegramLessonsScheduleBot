@@ -10,7 +10,7 @@ from app.utils.logger import setup_logger
 from app.utils.enums.bot_values import UserRole
 
 router = Router()
-logger = setup_logger("start")
+logger = setup_logger(__name__)
 
 
 @router.message(Command("start"))

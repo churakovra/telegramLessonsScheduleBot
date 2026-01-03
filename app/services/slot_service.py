@@ -20,7 +20,7 @@ from app.utils.exceptions.slot_exceptions import (
 )
 from app.utils.logger import setup_logger
 
-logger = setup_logger("SlotService")
+logger = setup_logger(__name__)
 
 
 class SlotService:

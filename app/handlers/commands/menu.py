@@ -14,7 +14,7 @@ from app.utils.message_template import MessageTemplate
 
 router = Router()
 
-logger = setup_logger()
+logger = setup_logger(__name__)
 
 
 @router.message(Command("menu"))

@@ -9,7 +9,7 @@ from app.utils.exceptions.lesson_exceptions import LessonsNotFoundException
 from app.utils.logger import setup_logger
 
 
-logger = setup_logger("lesson_service")
+logger = setup_logger(__name__)
 
 
 class LessonService:

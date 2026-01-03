@@ -12,7 +12,7 @@ from app.utils.keyboards.markup_builder import MarkupBuilder
 from app.utils.logger import setup_logger
 from app.utils.message_template import MessageTemplate
 
-logger = setup_logger("callbacks.teacher.slot.update")
+logger = setup_logger(__name__)
 
 router = Router()
 
