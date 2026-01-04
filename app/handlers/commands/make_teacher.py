@@ -25,7 +25,7 @@ async def make_teacher_from_student(message: Message, command: CommandObject, se
     try:
         user_service = UserService(session)
         await user_service.add_role(initiator_user, teacher_username, UserRole.TEACHER)
-        await message.answer(BotStrings.Admin.MAKE_TEACHER_SUCCESS.format(teacher_username))
+        await message.answer(BotStrings.Admin.MAKE_TEACHER_SUCCESS.format(user=teacher_username))
         logger.info(f"User {teacher_username} having {UserRole.TEACHER} now. Initiator is {initiator_user}")
     except (UserNotFoundException, UserChangeRoleException) as e:
         logger.error(e.message)
