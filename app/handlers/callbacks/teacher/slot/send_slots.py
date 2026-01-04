@@ -10,10 +10,11 @@ from app.utils.enums.bot_values import OperationType
 from app.utils.exceptions.teacher_exceptions import TeacherStudentsNotFound
 from app.utils.keyboards.callback_factories.slots import SendSlots
 from app.utils.keyboards.markup_builder import MarkupBuilder
+from app.utils.logger import setup_logger
 from app.utils.message_template import MessageTemplate
 
 router = Router()
-
+logger = setup_logger(__name__)
 
 @router.callback_query(SendSlots.filter())
 async def handle_callback(
@@ -28,7 +29,6 @@ async def handle_callback(
 
     try:
         students = await teacher_service.get_unsigned_students(teacher_uuid)
-
         slots = await slots_service.get_free_slots(teacher_uuid)
         markup = MarkupBuilder.days_for_students_markup(slots, teacher_uuid)
         if callback_data.operation_type == OperationType.ADD:
@@ -39,11 +39,11 @@ async def handle_callback(
             message = await MessageTemplate.slots_updated_for_student_message(
                 slots, markup
             )
-
         [await notifier.send_message(message, student.chat_id) for student in students]
         await callback.message.delete()
-
+        logger.info(f"Teacher {teacher_uuid} sent slots to students")
     except TeacherStudentsNotFound as e:
+        logger.error(e.message)
         await callback.message.answer(e.message)
     finally:
         user_service = UserService(session)
@@ -53,5 +53,4 @@ async def handle_callback(
         await notifier.send_message(
             bot_message=bot_message, receiver_chat_id=callback.message.chat.id
         )
-
         await callback.answer()

@@ -12,10 +12,11 @@ from app.utils.enums.menu_type import MenuType
 from app.utils.exceptions.user_exceptions import UserNotFoundException
 from app.utils.keyboards.callback_factories.menu import SubMenu
 from app.utils.keyboards.markup_builder import MarkupBuilder
+from app.utils.logger import setup_logger
 from app.utils.message_template import MessageTemplate
 
 router = Router()
-
+logger = setup_logger(__name__)
 
 @router.callback_query(SubMenu.filter(F.menu_type == MenuType.TEACHER_SLOT_ADD))
 async def handle_callback(
@@ -29,3 +30,4 @@ async def handle_callback(
     await state.update_data(operation_type=OperationType.ADD)
     await callback.message.answer(BotStrings.Teacher.SLOTS_ADD)
     await callback.answer()
+    logger.info("Add slot flow has been started")

@@ -1,4 +1,4 @@
-from aiogram import Router, F
+from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,8 +9,10 @@ from app.utils.bot_strings import BotStrings
 from app.utils.enums.menu_type import MenuType
 from app.utils.exceptions.user_exceptions import UserNotFoundException
 from app.utils.keyboards.callback_factories.menu import SubMenu
+from app.utils.logger import setup_logger
 
 router = Router()
+logger = setup_logger(__name__)
 
 @router.callback_query(SubMenu.filter(F.menu_type == MenuType.TEACHER_LESSON_ADD))
 async def handle_callback(
@@ -28,8 +30,11 @@ async def handle_callback(
         await callback.message.delete()
         message = await callback.message.answer(BotStrings.Teacher.TEACHER_LESSON_ADD_LABEL)
         await state.update_data(previous_message_id=message.message_id)
+        
+        logger.info(f"Teacher {teacher.uuid} added new lesson")
 
     except UserNotFoundException:
+        logger.error(f"Teacher {teacher.uuid} tried to add new lesson, but didn't have enough rights")
         await callback.message.answer(BotStrings.Teacher.NOT_ENOUGH_RIGHTS)
         return
     finally:
