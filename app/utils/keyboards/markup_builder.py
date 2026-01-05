@@ -5,6 +5,7 @@ from uuid import UUID
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+from app.schemas.lesson_dto import LessonDTO
 from app.schemas.slot_dto import SlotDTO
 from app.utils.bot_strings import BotStrings
 from app.utils.datetime_utils import WEEKDAYS, day_format, time_format_HM
@@ -12,6 +13,7 @@ from app.utils.enums.bot_values import OperationType, UserRole, WeekFlag
 from app.utils.enums.menu_type import MenuType
 from app.utils.exceptions.user_exceptions import UserUnknownRoleException
 from app.utils.keyboards.callback_factories.back import Back
+from app.utils.keyboards.callback_factories.lessons import LessonDelete
 from app.utils.keyboards.callback_factories.menu import NewMainMenu
 from app.utils.keyboards.callback_factories.mixins import SpecifyWeekMixin
 from app.utils.keyboards.callback_factories.slots import (
@@ -187,4 +189,17 @@ class MarkupBuilder:
         )
 
         builder.adjust(2)
+        return builder.as_markup()
+    
+    @staticmethod
+    def delete_lessons_markup(
+        lessons: list[LessonDTO]
+    ):
+        builder = InlineKeyboardBuilder()
+        for lesson in lessons:
+            builder.button(
+                text=lesson.label,
+                callback_data=LessonDelete(lesson_uuid=lesson.uuid)
+            )
+        builder.adjust(1)
         return builder.as_markup()

@@ -40,3 +40,7 @@ class LessonService:
             raise LessonsNotFoundException()
         logger.debug(lessons)
         return lessons
+    
+
+    async def get_teacher_lessons(self, teacher_uuid: UUID) -> list[LessonDTO]:
+        return []
