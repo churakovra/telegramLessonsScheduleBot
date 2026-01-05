@@ -30,8 +30,6 @@ async def handle_callback(
         await callback.message.delete()
         message = await callback.message.answer(BotStrings.Teacher.TEACHER_LESSON_ADD_LABEL)
         await state.update_data(previous_message_id=message.message_id)
-        
-        logger.info(f"Teacher {teacher.uuid} added new lesson")
 
     except UserNotFoundException:
         logger.error(f"Teacher {teacher.uuid} tried to add new lesson, but didn't have enough rights")

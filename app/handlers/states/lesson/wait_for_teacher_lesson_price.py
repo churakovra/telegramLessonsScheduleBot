@@ -54,7 +54,8 @@ async def handle_state(
             bot_message=bot_message, receiver_chat_id=message.chat.id
         )
         await state.clear()
-
+        
+        logger.info(f"Teacher {data["teacher_uuid"]} added new lesson")
     except Exception as e:
         logger.error(e)
 

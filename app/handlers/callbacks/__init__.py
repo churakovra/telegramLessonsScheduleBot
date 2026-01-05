@@ -1,6 +1,6 @@
-from .days_for_students import router as day_button_handle_router
-from .slots_for_students import router as slot_button_handle_router
-from .user_info import router as user_info_router
+from .student.common.days_for_students import router as day_button_handle_router
+from .student.common.slots_for_students import router as slot_button_handle_router
+from .common.user_info import router as user_info_router
 from .teacher import teacher_routers
 from .common import common_routers
 
