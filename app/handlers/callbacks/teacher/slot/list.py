@@ -1,5 +1,4 @@
 from aiogram import F, Router
-from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -41,7 +40,7 @@ async def handle_callback(
     try:
         teacher = await teacher_service.get_teacher(callback.from_user.username)
         slots = await slot_service.get_slots(teacher.uuid, callback_data.week_flag)
-        lessons = await lesson_service.get_lessons(slots)
+        lessons = await lesson_service.get_students_lessons_by_slots(slots)
         students = [
             await student_service.get_student_by_uuid(slot.uuid_student)
             for slot in slots

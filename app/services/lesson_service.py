@@ -34,8 +34,8 @@ class LessonService:
         return lesson.uuid
     
     
-    async def get_lessons(self, slots: list[SlotDTO]):
-        lessons = await self._repository.get_lessons(slots)
+    async def get_students_lessons_by_slots(self, slots: list[SlotDTO]):
+        lessons = await self._repository.get_students_lessons_by_slots(slots)
         if len(lessons.keys()) <= 0:
             raise LessonsNotFoundException()
         logger.debug(lessons)

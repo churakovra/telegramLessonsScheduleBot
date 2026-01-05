@@ -37,7 +37,7 @@ class LessonRepository:
         await self._db.refresh(lesson)
         return lesson.uuid
 
-    async def get_lessons(self, slots: list[SlotDTO]) -> dict[UUID, LessonDTO]:
+    async def get_students_lessons_by_slots(self, slots: list[SlotDTO]) -> dict[UUID, LessonDTO]:
         stmt = (
             select(Lesson, TeacherStudent.uuid_student)
             .join(TeacherStudent, Lesson.uuid == TeacherStudent.uuid_lesson)
