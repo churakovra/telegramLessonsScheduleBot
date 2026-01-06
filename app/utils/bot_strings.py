@@ -26,6 +26,9 @@ class BotStrings:
         TEACHER_LESSON_ADD_PRICE = "Стоимость?"
         TEACHER_LESSON_ADD_PRICE_ERROR = "Неверный формат. Укажи пожалуйста сумму: 500, 800, 1500..."
         TEACHER_LESSON_ADD_SUCCESS = "Предмет {lesson} успешно добавлен"
+        TEACHER_LESSON_DELETE = "Выбери предмет для удаления:"
+        TEACHER_LESSONS_WERE_NOT_FOUND = "Ошибка. Предметы не найдены"
+        TEACHER_LESSON_DELETE_SUCCESS = "Предмет успешно удалён"
         
         #* Slots
         SLOTS_ADD = "Отправь окошки"

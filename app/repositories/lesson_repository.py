@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import and_, select
+from sqlalchemy import and_, delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.orm.lesson import Lesson
@@ -53,3 +53,22 @@ class LessonRepository:
         for lesson, student_uuid in await self._db.execute(stmt):
             result[student_uuid] = lesson
         return result
+    
+
+    async def get_teacher_lessons(self, teacher_uuid: UUID) -> list[LessonDTO]:
+        lessons = list()
+        stmt = (
+            select(Lesson)
+            .where(Lesson.uuid_teacher == teacher_uuid)
+            .order_by(Lesson.label.asc())
+        )
+        for lesson in await self._db.scalars(stmt):
+            logger.debug(f"lesson {lesson}")
+            lessons.append(LessonDTO.model_validate(lesson))
+        return lessons
+    
+
+    async def delete_lesson(self, lesson_uuid: UUID) -> None:
+        stmt = delete(Lesson).where(Lesson.uuid == lesson_uuid)
+        await self._db.execute(stmt)
+        await self._db.commit()

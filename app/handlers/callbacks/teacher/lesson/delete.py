@@ -4,7 +4,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.services.lesson_service import LessonService
 from app.services.teacher_service import TeacherService
+from app.utils.bot_strings import BotStrings
 from app.utils.enums.menu_type import MenuType
+from app.utils.exceptions.lesson_exceptions import LessonsNotFoundException
+from app.utils.exceptions.user_exceptions import UserNotFoundException
 from app.utils.keyboards.callback_factories.lessons import LessonDelete
 from app.utils.keyboards.callback_factories.menu import SubMenu
 from app.utils.keyboards.markup_builder import MarkupBuilder
@@ -22,13 +25,28 @@ async def on_delete_button_pressed(
     teacher_service = TeacherService(session)
     lesson_service = LessonService(session)
     try:
+        message_text = ""
+        markup = None
         teacher_username = callback.from_user.username
         teacher = await teacher_service.get_teacher(teacher_username)
+        logger.debug(f"teacher {teacher.uuid}")
         lessons = await lesson_service.get_teacher_lessons(teacher.uuid)
+        message_text = BotStrings.Teacher.TEACHER_LESSON_DELETE
         markup = MarkupBuilder.delete_lessons_markup(lessons)
-    except Exception:
-        pass    
+    except UserNotFoundException as e:
+        logger.error(e.message)
+        message_text = BotStrings.User.USER_INFO_ERROR
+        return
+    except LessonsNotFoundException as e:
+        logger.error(e.message)
+        message_text = BotStrings.Teacher.TEACHER_LESSONS_WERE_NOT_FOUND
+    await callback.message.answer(text=message_text, reply_markup=markup)
+    await callback.answer()
 
 
 @router.callback_query(LessonDelete.filter())
-async def delete_lesson(callback: CallbackQuery, session: AsyncSession): ...
+async def delete_lesson(callback: CallbackQuery, callback_data: LessonDelete, session: AsyncSession):
+    service = LessonService(session)
+    await service.delete_lesson(callback_data.lesson_uuid)
+    await callback.message.answer(BotStrings.Teacher.TEACHER_LESSON_DELETE_SUCCESS)
+    await callback.answer()

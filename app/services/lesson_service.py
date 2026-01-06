@@ -43,4 +43,11 @@ class LessonService:
     
 
     async def get_teacher_lessons(self, teacher_uuid: UUID) -> list[LessonDTO]:
-        return []
+        lessons = await self._repository.get_teacher_lessons(teacher_uuid)
+        if len(lessons) <= 0:
+            raise LessonsNotFoundException()
+        return lessons
+
+
+    async def delete_lesson(self, lesson_uuid: UUID) -> None:
+        await self._repository.delete_lesson(lesson_uuid)
