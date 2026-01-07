@@ -15,36 +15,20 @@ if TYPE_CHECKING:
 class TeacherStudent(Base):
     __tablename__ = "teacher_student"
 
-    uuid: Mapped[UUID] = mapped_column(primary_key=True)
-    uuid_teacher: Mapped[UUID] = mapped_column(ForeignKey("users.uuid"))
-    uuid_student: Mapped[UUID] = mapped_column(ForeignKey("users.uuid"))
-    uuid_lesson: Mapped[UUID] = mapped_column(ForeignKey("lessons.uuid", ondelete="CASCADE"), nullable=True)
+    id_teacher: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    id_student: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    id_lesson: Mapped[int] = mapped_column(
+        ForeignKey("lessons.id", ondelete="CASCADE"), nullable=True
+    )
 
     __table_args__ = (
-        UniqueConstraint('uuid_teacher', 'uuid_student', name='_teacher_student_uc'),
+        UniqueConstraint("id_teacher", "id_student", name="id_teacher_student_uc"),
     )
-
 
     teacher: Mapped["User"] = relationship(
-        argument="User",
-        foreign_keys=[uuid_teacher],
-        back_populates="teacher"
+        argument="User", foreign_keys=[id_teacher], back_populates="teacher"
     )
     student: Mapped["User"] = relationship(
-        argument="User",
-        foreign_keys=[uuid_student],
-        back_populates="student"
+        argument="User", foreign_keys=[id_student], back_populates="student"
     )
-    lesson: Mapped["Lesson"] = relationship(
-        argument="Lesson",
-        back_populates="lessons"
-    )
-
-    @classmethod
-    def new_instance(cls, uuid_teacher: UUID, uuid_student: UUID, uuid_lesson: UUID | None):
-        return cls(
-            uuid=uuid.uuid4(),
-            uuid_teacher=uuid_teacher,
-            uuid_student=uuid_student,
-            uuid_lesson=uuid_lesson
-        )
+    lesson: Mapped["Lesson"] = relationship(argument="Lesson", back_populates="lessons")

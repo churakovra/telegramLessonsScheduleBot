@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 from uuid import UUID
 
-from sqlalchemy import String, BigInteger, DateTime
+from sqlalchemy import BigInteger, DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.orm.base import Base
@@ -16,7 +16,6 @@ if TYPE_CHECKING:
 class User(Base):
     __tablename__ = "users"
 
-    uuid: Mapped[UUID] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     firstname: Mapped[str] = mapped_column(String, nullable=False)
     lastname: Mapped[str] = mapped_column(String, nullable=True)
@@ -27,28 +26,23 @@ class User(Base):
     dt_reg: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     dt_edit: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
-    lessons: Mapped[List["Lesson"]] = relationship(
-        argument="Lesson",
-        back_populates="teacher"
+    lessons: Mapped[list["Lesson"]] = relationship(
+        argument="Lesson", back_populates="teacher"
     )
 
-    teacher_slots: Mapped[List["Slot"]] = relationship(
-        argument="Slot",
-        foreign_keys="[Slot.uuid_teacher]",
-        back_populates="teacher"
+    teacher_slots: Mapped[list["Slot"]] = relationship(
+        argument="Slot", foreign_keys="[Slot.id_teacher]", back_populates="teacher"
     )
-    student_slots: Mapped[List["Slot"]] = relationship(
-        argument="Slot",
-        foreign_keys="[Slot.uuid_student]",
-        back_populates="student"
+    student_slots: Mapped[list["Slot"]] = relationship(
+        argument="Slot", foreign_keys="[Slot.id_student]", back_populates="student"
     )
-    teacher: Mapped[List["TeacherStudent"]] = relationship(
+    teacher: Mapped[list["TeacherStudent"]] = relationship(
         argument="TeacherStudent",
-        foreign_keys="[TeacherStudent.uuid_teacher]",
-        back_populates="teacher"
+        foreign_keys="[TeacherStudent.id_teacher]",
+        back_populates="teacher",
     )
-    student: Mapped[List["TeacherStudent"]] = relationship(
+    student: Mapped[list["TeacherStudent"]] = relationship(
         argument="TeacherStudent",
-        foreign_keys="[TeacherStudent.uuid_student]",
-        back_populates="student"
+        foreign_keys="[TeacherStudent.id_student]",
+        back_populates="student",
     )
