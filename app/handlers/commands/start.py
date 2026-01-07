@@ -18,7 +18,7 @@ async def add_new_user(message: Message, session: AsyncSession):
     username = message.from_user.username
     first_name = message.from_user.first_name
     last_name = message.from_user.last_name
-    id = message.from_user.id
+    chat_id = message.from_user.id
 
     user_service = UserService(session)
     try:
@@ -27,7 +27,7 @@ async def add_new_user(message: Message, session: AsyncSession):
             firstname=first_name,
             lastname=last_name,
             role=UserRole.STUDENT,
-            chat_id=id,
+            chat_id=chat_id,
         )
         logger.info(f"New user registeged. User id: {new_user_uuid}")
     except IntegrityError as e:

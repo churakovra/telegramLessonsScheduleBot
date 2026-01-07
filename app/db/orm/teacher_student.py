@@ -15,20 +15,14 @@ if TYPE_CHECKING:
 class TeacherStudent(Base):
     __tablename__ = "teacher_student"
 
-    id_teacher: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    id_student: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    id_lesson: Mapped[int] = mapped_column(
-        ForeignKey("lessons.id", ondelete="CASCADE"), nullable=True
+    uuid_teacher: Mapped[UUID] = mapped_column(ForeignKey("users.uuid"))
+    uuid_student: Mapped[UUID] = mapped_column(ForeignKey("users.uuid"))
+    uuid_lesson: Mapped[UUID] = mapped_column(
+        ForeignKey("lessons.uuid", ondelete="CASCADE"), nullable=True
     )
 
-    __table_args__ = (
-        UniqueConstraint("id_teacher", "id_student", name="id_teacher_student_uc"),
-    )
+    __table_args__ = (UniqueConstraint("uuid_teacher", "uuid_student", name="_teacher_student_uc"),)
 
-    teacher: Mapped["User"] = relationship(
-        argument="User", foreign_keys=[id_teacher], back_populates="teacher"
-    )
-    student: Mapped["User"] = relationship(
-        argument="User", foreign_keys=[id_student], back_populates="student"
-    )
+    teacher: Mapped["User"] = relationship(argument="User", foreign_keys=[uuid_teacher], back_populates="teacher")
+    student: Mapped["User"] = relationship(argument="User", foreign_keys=[uuid_student], back_populates="student")
     lesson: Mapped["Lesson"] = relationship(argument="Lesson", back_populates="lessons")
