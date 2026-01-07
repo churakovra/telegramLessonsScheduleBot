@@ -11,7 +11,7 @@ from app.db.orm.user import User
 class Slot(Base):
     __tablename__ = "slots"
 
-    uuid: Mapped[UUID] = mapped_column(Uuid(), unique=True, default=uuid4()) 
+    uuid: Mapped[UUID] = mapped_column(Uuid(), unique=True) 
     uuid_teacher: Mapped[int] = mapped_column(ForeignKey("users.uuid"), nullable=False)
     dt_start: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     dt_add: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)

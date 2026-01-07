@@ -47,18 +47,7 @@ class TeacherRepository:
         teacher = await self._get_teacher(data)
         if teacher is None:
             return teacher
-        return UserDTO(
-            uuid=teacher.uuid,
-            username=teacher.username,
-            firstname=teacher.firstname,
-            lastname=teacher.lastname,
-            is_student=teacher.is_student,
-            is_teacher=teacher.is_teacher,
-            is_admin=teacher.is_admin,
-            chat_id=teacher.chat_id,
-            dt_reg=teacher.dt_reg,
-            dt_edit=teacher.dt_edit
-        )
+        return UserDTO.model_validate(teacher)
 
     async def remove_teacher(self, teacher_uuid: UUID):
         stmt = (
@@ -70,13 +59,17 @@ class TeacherRepository:
         await self._db.execute(stmt)
         await self._db.commit()
 
-    async def attach_student(self, teacher_uuid: UUID, student_uuid: UUID, uuid_lesson: UUID | None) -> UUID:
+    async def attach_student(self, teacher_uuid: UUID, student_uuid: UUID, uuid_lesson: UUID | None) -> TeacherStudent:
         try:
-            teacher_student = TeacherStudent.new_instance(teacher_uuid, student_uuid, uuid_lesson)
+            teacher_student = TeacherStudent(
+                uuid_teacher=teacher_uuid, 
+                uuid_student=student_uuid, 
+                uuid_lesson=uuid_lesson
+            )
             self._db.add(teacher_student)
-            await self._db.commit()
+            await self._db.flush()
             await self._db.refresh(teacher_student)
-            return teacher_student.uuid
+            return teacher_student
         except IntegrityError as e:
             raise ValueError(str(e)) from e
 
@@ -89,18 +82,7 @@ class TeacherRepository:
         )
         for user in await self._db.scalars(stmt):
             users.append(
-                UserDTO(
-                    uuid=user.uuid,
-                    username=user.username,
-                    firstname=user.firstname,
-                    lastname=user.lastname,
-                    is_student=user.is_student,
-                    is_teacher=user.is_teacher,
-                    is_admin=user.is_admin,
-                    chat_id=user.chat_id,
-                    dt_reg=user.dt_reg,
-                    dt_edit=user.dt_edit
-                )
+                UserDTO.model_validate(user)
             )
 
         return users
@@ -133,18 +115,7 @@ class TeacherRepository:
         )
         for user in await self._db.scalars(stmt):
             users.append(
-                UserDTO(
-                    uuid=user.uuid,
-                    username=user.username,
-                    firstname=user.firstname,
-                    lastname=user.lastname,
-                    is_student=user.is_student,
-                    is_teacher=user.is_teacher,
-                    is_admin=user.is_admin,
-                    chat_id=user.chat_id,
-                    dt_reg=user.dt_reg,
-                    dt_edit=user.dt_edit
-                )
+                UserDTO.model_validate(user)
             )
         return users
 

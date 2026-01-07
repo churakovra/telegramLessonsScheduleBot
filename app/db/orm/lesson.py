@@ -11,7 +11,7 @@ from app.db.orm.user import User
 class Lesson(Base):
     __tablename__ = "lessons"
 
-    uuid: Mapped[UUID] = mapped_column(Uuid(), unique=True, default=uuid4()) 
+    uuid: Mapped[UUID] = mapped_column(Uuid(), unique=True) 
     label: Mapped[str] = mapped_column(nullable=False)
     duration: Mapped[int] = mapped_column(nullable=False)
     uuid_teacher: Mapped[int] = mapped_column(ForeignKey("users.uuid"), nullable=False)

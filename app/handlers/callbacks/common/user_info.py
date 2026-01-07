@@ -13,7 +13,6 @@ async def send_user_info(callback: CallbackQuery, session: AsyncSession):
     username = getattr(callback.from_user, "username", "") or ""
     user_service = UserService(session)
     response = await user_service.get_user_info(username)
-
     if callback.message:
         await callback.message.answer(response)
     await callback.answer()

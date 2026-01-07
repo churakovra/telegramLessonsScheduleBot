@@ -1,10 +1,19 @@
-import uuid
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from pydantic import BaseModel
 
+from app.schemas.common import BaseDTO
 
-class LessonDTO(BaseModel):
+
+class CreateLessonDTO(BaseModel):
+    uuid: UUID = uuid4()
+    label: str
+    duration: int
+    uuid_teacher: UUID
+    price: int
+
+
+class LessonDTO(BaseDTO):
     uuid: UUID
     label: str
     duration: int
@@ -13,12 +22,3 @@ class LessonDTO(BaseModel):
     
     model_config = {"from_attributes": True}
 
-    @classmethod
-    def new_dto(cls, label: str, duration: int, uuid_teacher: UUID, price: int):
-        return cls(
-            uuid=uuid.uuid4(),
-            label=label,
-            duration=duration,
-            uuid_teacher=uuid_teacher,
-            price=price
-        )

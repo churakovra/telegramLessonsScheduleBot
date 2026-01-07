@@ -20,8 +20,6 @@ async def handle_callback(
 ):
     slots_service = SlotService(session)
     slots = await slots_service.get_free_slots(callback_data.teacher_uuid)
-
     markup = MarkupBuilder.days_for_students_markup(slots, callback_data.teacher_uuid)
     message = await MessageTemplate.slots_added_for_student_message(slots, markup)
-
     await notifier.send_message(message, callback_data.student_chat_id)

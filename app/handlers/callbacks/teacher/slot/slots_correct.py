@@ -3,6 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.schemas.slot_dto import CreateSlotDTO
 from app.services.slot_service import SlotService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
@@ -24,12 +25,10 @@ async def reply_and_save_to_db(
     callback: CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     data = await state.get_data()
-    slots = data["slots"]
+    slots: list[CreateSlotDTO] = data["slots"]
     teacher_uuid = data["teacher_uuid"]
     operation_type = data["operation_type"]
-
-    logger.info(data)
-
+    
     slot_service = SlotService(session)
     if operation_type == OperationType.ADD:
         await slot_service.add_slots(slots)
@@ -40,7 +39,7 @@ async def reply_and_save_to_db(
         await callback.message.answer(
             text="Unknown type of operation",
         )
-
+    logger.info(f"Teacher {teacher_uuid} successfully added slots")
     await callback.message.answer(
         text=BotStrings.Teacher.SLOTS_PROCESSING_SUCCESS,
         reply_markup=MarkupBuilder.send_slots_markup(

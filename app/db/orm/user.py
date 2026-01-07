@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 class User(Base):
     __tablename__ = "users"
 
-    uuid: Mapped[UUID] = mapped_column(Uuid(), unique=True, default=uuid4())
+    uuid: Mapped[UUID] = mapped_column(Uuid(), unique=True, nullable=False)
     username: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     firstname: Mapped[str] = mapped_column(String, nullable=False)
     lastname: Mapped[str] = mapped_column(String, nullable=True)
@@ -24,8 +24,7 @@ class User(Base):
     is_teacher: Mapped[bool] = mapped_column(default=False)
     is_admin: Mapped[bool] = mapped_column(default=False)
     chat_id: Mapped[int] = mapped_column(BigInteger)
-    dt_reg: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    dt_edit: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
 
     lessons: Mapped[list["Lesson"]] = relationship(argument="Lesson", back_populates="teacher")
     teacher_slots: Mapped[list["Slot"]] = relationship(argument="Slot", foreign_keys="[Slot.uuid_teacher]", back_populates="teacher")

@@ -6,25 +6,15 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.orm.slot import Slot
-from app.schemas.slot_dto import SlotDTO
+from app.schemas.slot_dto import CreateSlotDTO, SlotDTO
 
 
 class SlotRepository:
     def __init__(self, session: AsyncSession):
         self._db = session
 
-    async def add_slot(self, slot_dto: SlotDTO):
-        slot = Slot.new_instance(slot_dto)
-        try:
-            self._db.add(slot)
-            await self._db.commit()
-            await self._db.refresh(slot)
-        except IntegrityError as e:
-            await self._db.rollback()
-            raise ValueError(e) from e
-
-    async def add_slots(self, slots: list[SlotDTO]):
-        slots = [Slot.new_instance(slot) for slot in slots]
+    async def add_slots(self, slots_dto: list[CreateSlotDTO]):
+        slots = [Slot(**slot.model_dump()) for slot in slots_dto]
         self._db.add_all(slots)
         await self._db.commit()
 
