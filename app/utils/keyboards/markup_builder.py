@@ -1,5 +1,4 @@
 import calendar
-from typing import Type
 from uuid import UUID
 
 from aiogram.types import InlineKeyboardMarkup
@@ -13,6 +12,7 @@ from app.utils.enums.bot_values import OperationType, UserRole, WeekFlag
 from app.utils.enums.menu_type import MenuType
 from app.utils.exceptions.user_exceptions import UserUnknownRoleException
 from app.utils.keyboards.callback_factories.back import Back
+from app.utils.keyboards.callback_factories.common import BaseDelete
 from app.utils.keyboards.callback_factories.lessons import LessonDelete
 from app.utils.keyboards.callback_factories.menu import NewMainMenu
 from app.utils.keyboards.callback_factories.mixins import SpecifyWeekMixin
@@ -190,16 +190,28 @@ class MarkupBuilder:
 
         builder.adjust(2)
         return builder.as_markup()
-    
+
     @staticmethod
-    def delete_lessons_markup(
-        lessons: list[LessonDTO]
-    ):
+    def delete_lessons_markup(lessons: list[LessonDTO]):
         builder = InlineKeyboardBuilder()
         for lesson in lessons:
             builder.button(
-                text=lesson.label,
-                callback_data=LessonDelete(lesson_uuid=lesson.uuid)
+                text=lesson.label, callback_data=LessonDelete(uuid=lesson.uuid)
             )
         builder.adjust(1)
+        return builder.as_markup()
+
+    @staticmethod
+    def confirm_deletion_markup(
+        callback_data_cls: type[BaseDelete], callback_data: BaseDelete
+    ):
+        builder = InlineKeyboardBuilder()
+        builder.button(
+            text=BotStrings.Menu.YES,
+            callback_data=callback_data_cls(uuid=callback_data.uuid, confirmed=True),
+        )
+        builder.button(
+            text=BotStrings.Menu.NO, callback_data=Back(parent_keyboard="menu_keyboard")
+        )
+        builder.adjust(2)
         return builder.as_markup()

@@ -1,6 +1,5 @@
+from app.utils.keyboards.callback_factories.common import BaseDelete
 
-from uuid import UUID
-from aiogram.filters.callback_data import CallbackData
 
-class LessonDelete(CallbackData, prefix="delete-l"):
-    lesson_uuid: UUID
+class LessonDelete(BaseDelete, prefix="delete-l"):
+    pass

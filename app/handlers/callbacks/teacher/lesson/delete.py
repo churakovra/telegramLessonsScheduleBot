@@ -44,9 +44,23 @@ async def on_delete_button_pressed(
     await callback.answer()
 
 
-@router.callback_query(LessonDelete.filter())
-async def delete_lesson(callback: CallbackQuery, callback_data: LessonDelete, session: AsyncSession):
+@router.callback_query(LessonDelete.filter(F.confirmed == False))
+async def request_delete_confirmation(
+    callback: CallbackQuery, callback_data: LessonDelete
+):
+    markup = MarkupBuilder.confirm_deletion_markup(LessonDelete, callback_data)
+    await callback.message.answer(
+        text=BotStrings.Teacher.TEACHER_LESSON_DELETE_CONFIRMATION_REQUEST,
+        reply_markup=markup,
+    )
+    await callback.answer()
+
+
+@router.callback_query(LessonDelete.filter(F.confirmed == True))
+async def delete_lesson(
+    callback: CallbackQuery, callback_data: LessonDelete, session: AsyncSession
+):
     service = LessonService(session)
-    await service.delete_lesson(callback_data.lesson_uuid)
+    await service.delete_lesson(callback_data.uuid)
     await callback.message.answer(BotStrings.Teacher.TEACHER_LESSON_DELETE_SUCCESS)
     await callback.answer()

@@ -28,6 +28,7 @@ class BotStrings:
         TEACHER_LESSON_ADD_SUCCESS = "Предмет {lesson} успешно добавлен"
         TEACHER_LESSON_DELETE = "Выбери предмет для удаления:"
         TEACHER_LESSONS_WERE_NOT_FOUND = "Ошибка. Предметы не найдены"
+        TEACHER_LESSON_DELETE_CONFIRMATION_REQUEST = "Вы уверены, что хотите удалить урок? Это автоматически удалит и записи учеников."
         TEACHER_LESSON_DELETE_SUCCESS = "Предмет успешно удалён"
         
         #* Slots

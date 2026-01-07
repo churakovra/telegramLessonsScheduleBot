@@ -6,6 +6,10 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 from alembic import context
 from app.db.database import url
+from app.db.orm.user import User
+from app.db.orm.lesson import Lesson
+from app.db.orm.slot import Slot
+from app.db.orm.teacher_student import TeacherStudent
 from app.db.orm.base import Base
 
 url = URL.create(

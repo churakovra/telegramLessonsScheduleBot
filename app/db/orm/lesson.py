@@ -19,4 +19,6 @@ class Lesson(Base):
     price: Mapped[int] = mapped_column(nullable=False)
 
     teacher: Mapped["User"] = relationship(argument="User", back_populates="lessons")
-    lessons: Mapped[List["TeacherStudent"]] = relationship(argument="TeacherStudent", back_populates="lesson", cascade=True)
+    lessons: Mapped[List["TeacherStudent"]] = relationship(
+        argument="TeacherStudent", back_populates="lesson", cascade="all, delete-orphan"
+    )
