@@ -60,7 +60,8 @@ async def request_delete_confirmation(
 async def delete_lesson(
     callback: CallbackQuery, callback_data: LessonDelete, session: AsyncSession
 ):
-    service = LessonService(session)
-    await service.delete_lesson(callback_data.uuid)
+    lesson_service = LessonService(session)
+    await lesson_service.detach_lesson(callback_data.uuid)
+    await lesson_service.delete_lesson(callback_data.uuid)
     await callback.message.answer(BotStrings.Teacher.TEACHER_LESSON_DELETE_SUCCESS)
     await callback.answer()

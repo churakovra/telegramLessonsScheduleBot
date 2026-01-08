@@ -1,4 +1,4 @@
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from sqlalchemy import ForeignKey, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -18,4 +18,4 @@ class Lesson(Base):
     price: Mapped[int] = mapped_column(nullable=False)
 
     teacher: Mapped["User"] = relationship(argument="User", back_populates="lessons")
-    lessons: Mapped[list["TeacherStudent"]] = relationship(argument="TeacherStudent", back_populates="lesson", cascade="all, delete-orphan")
+    lessons: Mapped[list["TeacherStudent"]] = relationship(argument="TeacherStudent", back_populates="lesson")

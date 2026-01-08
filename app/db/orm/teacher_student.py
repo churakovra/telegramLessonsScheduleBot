@@ -17,7 +17,7 @@ class TeacherStudent(Base):
 
     uuid_teacher: Mapped[UUID] = mapped_column(ForeignKey("users.uuid"))
     uuid_student: Mapped[UUID] = mapped_column(ForeignKey("users.uuid"))
-    uuid_lesson: Mapped[UUID] = mapped_column(ForeignKey("lessons.uuid", ondelete="CASCADE"), nullable=True)
+    uuid_lesson: Mapped[UUID] = mapped_column(ForeignKey("lessons.uuid"), nullable=True)
 
     __table_args__ = (UniqueConstraint("uuid_teacher", "uuid_student", name="_teacher_student_uc"),)
 

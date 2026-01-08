@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import and_, delete, select
+from sqlalchemy import and_, delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.orm.lesson import Lesson
@@ -17,17 +17,16 @@ class LessonRepository:
     def __init__(self, session: AsyncSession):
         self._db = session
 
-    async def create_lesson(
-        self,
-        lesson_dto: CreateLessonDTO
-    ) -> Lesson:
+    async def create_lesson(self, lesson_dto: CreateLessonDTO) -> Lesson:
         lesson = Lesson(**lesson_dto.model_dump())
         self._db.add(lesson)
         await self._db.commit()
         await self._db.refresh(lesson)
         return lesson
 
-    async def get_students_lessons_by_slots(self, slots: list[SlotDTO]) -> dict[UUID, LessonDTO]:
+    async def get_students_lessons_by_slots(
+        self, slots: list[SlotDTO]
+    ) -> dict[UUID, LessonDTO]:
         stmt = (
             select(Lesson, TeacherStudent.uuid_student)
             .join(TeacherStudent, Lesson.uuid == TeacherStudent.uuid_lesson)
@@ -43,7 +42,6 @@ class LessonRepository:
         for lesson, student_uuid in await self._db.execute(stmt):
             result[student_uuid] = lesson
         return result
-    
 
     async def get_teacher_lessons(self, teacher_uuid: UUID) -> list[LessonDTO]:
         lessons = list()
@@ -56,7 +54,15 @@ class LessonRepository:
             logger.debug(f"lesson {lesson}")
             lessons.append(LessonDTO.model_validate(lesson))
         return lessons
-    
+
+    async def detach_lesson(self, lesson_uuid: UUID) -> None:
+        stmt = (
+            update(TeacherStudent)
+            .where(TeacherStudent.uuid_lesson == lesson_uuid)
+            .values(uuid_lesson=None)
+        )
+        await self._db.execute(stmt)
+        await self._db.commit()
 
     async def delete_lesson(self, lesson_uuid: UUID) -> None:
         stmt = delete(Lesson).where(Lesson.uuid == lesson_uuid)
