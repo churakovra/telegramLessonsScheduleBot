@@ -13,6 +13,14 @@ class CreateLessonDTO(BaseModel):
     price: int
 
 
+class UpdateLessonDTO(BaseModel):
+    label: str | None = Field(default=None, alias="label")
+    duration: int | None = Field(default=None, alias="duration")
+    price: int | None = Field(default=None, alias="price")
+
+    model_config = {"from_attributes": True}
+
+
 class LessonDTO(BaseDTO):
     uuid: UUID
     label: str

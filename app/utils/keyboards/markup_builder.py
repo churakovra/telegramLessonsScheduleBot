@@ -12,8 +12,8 @@ from app.utils.enums.bot_values import OperationType, UserRole, WeekFlag
 from app.utils.enums.menu_type import MenuType
 from app.utils.exceptions.user_exceptions import UserUnknownRoleException
 from app.utils.keyboards.callback_factories.back import Back
-from app.utils.keyboards.callback_factories.common import BaseDelete
-from app.utils.keyboards.callback_factories.lessons import LessonDelete
+from app.utils.keyboards.callback_factories.common import BaseDelete, BaseUpdate
+from app.utils.keyboards.callback_factories.lessons import LessonDelete, LessonUpdate
 from app.utils.keyboards.callback_factories.menu import NewMainMenu
 from app.utils.keyboards.callback_factories.mixins import SpecifyWeekMixin
 from app.utils.keyboards.callback_factories.slots import (
@@ -204,7 +204,7 @@ class MarkupBuilder:
     @staticmethod
     def confirm_deletion_markup(
         callback_data_cls: type[BaseDelete], callback_data: BaseDelete
-    ):
+    ) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         builder.button(
             text=BotStrings.Menu.YES,
@@ -214,4 +214,31 @@ class MarkupBuilder:
             text=BotStrings.Menu.NO, callback_data=Back(parent_keyboard="menu_keyboard")
         )
         builder.adjust(2)
+        return builder.as_markup()
+    
+
+    @staticmethod
+    def update_lessons_markup(lessons: list[LessonDTO]) -> InlineKeyboardMarkup:
+        builder = InlineKeyboardBuilder()
+        for lesson in lessons:
+            builder.button(
+                text=lesson.label, callback_data=LessonUpdate(uuid=lesson.uuid)
+            )
+        builder.adjust(1)
+        return builder.as_markup()
+    
+
+    @staticmethod
+    def specs_to_update_markup(
+        lesson_uuid: UUID,
+        specs: dict[str, str],
+        callback_data_cls: type[BaseUpdate]
+    ) -> InlineKeyboardMarkup:
+        builder = InlineKeyboardBuilder()
+        specs["all"] = "Всё"
+        for spec, label in specs.items():
+            builder.button(
+                text=label, callback_data=callback_data_cls(uuid=lesson_uuid, spec=spec)
+            )
+        builder.adjust(1)
         return builder.as_markup()

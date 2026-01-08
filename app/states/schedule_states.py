@@ -10,3 +10,4 @@ class ScheduleStates(StatesGroup):
     wait_for_teacher_lesson_label = State() # wait for new lesson label
     wait_for_teacher_lesson_duration = State() # wait for new lesson duration
     wait_for_teacher_lesson_price = State() # wait for new lesson price
+    wait_for_lesson_update = State() # wait for new lesson label/duration/price

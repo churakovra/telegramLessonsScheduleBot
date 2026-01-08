@@ -13,8 +13,8 @@ class UserRole(BotEnum):
     
 
 class OperationType(BotEnum):
-    ADD = "0"
-    UPDATE = "1"
+    ADD = "add"
+    UPDATE = "update"
 
 
 class WeekFlag(BotEnum):

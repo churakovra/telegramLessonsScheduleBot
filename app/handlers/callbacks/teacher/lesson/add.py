@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.teacher_service import TeacherService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
+from app.utils.enums.bot_values import OperationType
 from app.utils.enums.menu_type import MenuType
 from app.utils.exceptions.user_exceptions import UserNotFoundException
 from app.utils.keyboards.callback_factories.menu import SubMenu
@@ -24,7 +25,8 @@ async def handle_callback(
     try:
         teacher = await teacher_service.get_teacher(callback.from_user.username)
 
-        await state.update_data(teacher_uuid=teacher.uuid)
+        await state.update_data(uuid_teacher=teacher.uuid)
+        await state.update_data(operation_type=OperationType.ADD)
         await state.set_state(ScheduleStates.wait_for_teacher_lesson_label)
 
         await callback.message.delete()

@@ -25,11 +25,14 @@ class BotStrings:
         TEACHER_LESSON_ADD_DURATION_ERROR = "Неверный формат. Укажи пожалуйста в минутах:  45, 60, 90..."
         TEACHER_LESSON_ADD_PRICE = "Стоимость?"
         TEACHER_LESSON_ADD_PRICE_ERROR = "Неверный формат. Укажи пожалуйста сумму: 500, 800, 1500..."
-        TEACHER_LESSON_ADD_SUCCESS = "Предмет {lesson} успешно добавлен"
+        TEACHER_LESSON_ADD_SUCCESS = "Предмет успешно добавлен"
         TEACHER_LESSON_DELETE = "Выбери предмет для удаления:"
         TEACHER_LESSONS_WERE_NOT_FOUND = "Ошибка. Предметы не найдены"
         TEACHER_LESSON_DELETE_CONFIRMATION_REQUEST = "Вы уверены, что хотите удалить урок? Это автоматически удалит и записи учеников."
         TEACHER_LESSON_DELETE_SUCCESS = "Предмет успешно удалён"
+        TEACHER_LESSON_UPDATE = "Выбери предмет для изменения:"
+        TEACHER_LESSON_UPDATE_SELECT_SPEC = "Что поменять?"
+        TEACHER_LESSON_UPDATE_SUCCESS = "Предмет успешно обновлен"
         
         #* Slots
         SLOTS_ADD = "Отправь окошки"
