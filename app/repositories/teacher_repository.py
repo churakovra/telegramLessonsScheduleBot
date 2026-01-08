@@ -67,7 +67,7 @@ class TeacherRepository:
                 uuid_lesson=uuid_lesson
             )
             self._db.add(teacher_student)
-            await self._db.flush()
+            await self._db.commit()
             await self._db.refresh(teacher_student)
             return teacher_student
         except IntegrityError as e:
