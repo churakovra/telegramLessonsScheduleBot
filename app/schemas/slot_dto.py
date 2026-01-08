@@ -1,16 +1,16 @@
 from datetime import UTC, datetime, timedelta, timezone
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 from app.schemas.common import BaseDTO
 
 
 class CreateSlotDTO(BaseModel): 
-    uuid: UUID = uuid4()
+    uuid: UUID = Field(default_factory=uuid4)
     uuid_teacher: UUID
     dt_start: datetime
-    dt_add: datetime = datetime.now(UTC)
+    dt_add: datetime = Field(default_factory=lambda: datetime.now(UTC))
     uuid_student: UUID | None
     dt_spot: datetime | None
 

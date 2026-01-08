@@ -1,13 +1,13 @@
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, Field, model_validator
 
 from app.schemas.common import BaseDTO
 from app.utils.enums.bot_values import UserRole
 
 
 class CreateUserDTO(BaseModel):
-    uuid: UUID = uuid4()
+    uuid: UUID = Field(default_factory=uuid4)
     username: str
     firstname: str
     lastname: str | None = None

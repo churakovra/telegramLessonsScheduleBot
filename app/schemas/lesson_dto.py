@@ -1,12 +1,12 @@
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.schemas.common import BaseDTO
 
 
 class CreateLessonDTO(BaseModel):
-    uuid: UUID = uuid4()
+    uuid: UUID = Field(default_factory=uuid4)
     label: str
     duration: int
     uuid_teacher: UUID
