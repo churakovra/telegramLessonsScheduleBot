@@ -29,7 +29,6 @@ async def on_delete_button_pressed(
         markup = None
         teacher_username = callback.from_user.username
         teacher = await teacher_service.get_teacher(teacher_username)
-        logger.debug(f"teacher {teacher.uuid}")
         lessons = await lesson_service.get_teacher_lessons(teacher.uuid)
         message_text = BotStrings.Teacher.TEACHER_LESSON_DELETE
         markup = MarkupBuilder.delete_lessons_markup(lessons)
