@@ -31,7 +31,7 @@ async def on_delete_button_pressed(
         teacher = await teacher_service.get_teacher(teacher_username)
         lessons = await lesson_service.get_teacher_lessons(teacher.uuid)
         message_text = BotStrings.Teacher.TEACHER_LESSON_DELETE
-        markup = MarkupBuilder.delete_lessons_markup(lessons)
+        markup = MarkupBuilder.lessons_markup(lessons, LessonDelete)
     except UserNotFoundException as e:
         logger.error(e.message)
         message_text = BotStrings.User.USER_INFO_ERROR

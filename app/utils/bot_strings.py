@@ -33,6 +33,7 @@ class BotStrings:
         TEACHER_LESSON_UPDATE = "Выбери предмет для изменения:"
         TEACHER_LESSON_UPDATE_SELECT_SPEC = "Что поменять?"
         TEACHER_LESSON_UPDATE_SUCCESS = "Предмет успешно обновлен"
+        TEACHER_LESSON_LIST = "Список Ваших уроков:"
         
         #* Slots
         SLOTS_ADD = "Отправь окошки"
