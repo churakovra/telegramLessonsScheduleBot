@@ -1,4 +1,8 @@
-from app.utils.keyboards.callback_factories.common import BaseDelete, BaseUpdate
+from app.utils.keyboards.callback_factories.common import BaseDelete, BaseList, BaseUpdate
+
+
+class LessonList(BaseList, prefix="list-l"):
+    pass
 
 
 class LessonDelete(BaseDelete, prefix="delete-l"):

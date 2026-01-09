@@ -57,3 +57,17 @@ class LessonService:
         update = UpdateLessonDTO.model_validate(kwargs)
         update_dict = {k: v for k, v in update.model_dump(exclude_unset=True, exclude_none=True).items()}
         await self._repository.update_lesson(lesson_uuid, update_dict)
+
+
+    async def get_lesson(self, lesson_uuid: UUID) -> LessonDTO:
+        lesson = await self._repository.get_lesson_or_none(lesson_uuid)
+        if not lesson:
+            raise LessonsNotFoundException()
+        return LessonDTO.model_validate(lesson)
+    
+
+    async def get_lesson_info(self, lesson: LessonDTO) -> str:
+        label = f"*{lesson.label}*"
+        duration = f"Длительность {lesson.duration} мин"
+        price = f"Стоимость {lesson.price} руб"
+        return f"{label}\n{duration}\n{price}"

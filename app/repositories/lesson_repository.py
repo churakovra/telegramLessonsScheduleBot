@@ -74,3 +74,9 @@ class LessonRepository:
         stmt = update(Lesson).where(Lesson.uuid == lesson_uuid).values(values)
         await self._db.execute(stmt)
         await self._db.commit()
+
+
+    async def get_lesson_or_none(self, lesson_uuid: UUID) -> Lesson | None:
+        stmt = select(Lesson).where(Lesson.uuid == lesson_uuid)
+        lesson = await self._db.scalar(stmt)
+        return lesson
