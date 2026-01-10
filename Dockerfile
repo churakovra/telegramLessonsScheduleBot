@@ -1,13 +1,13 @@
 FROM python:3.13-slim
 LABEL authors="churakovra"
 
-WORKDIR /bot
+WORKDIR /app
 
 RUN pip install uv
 
 COPY pyproject.toml uv.lock ./
 RUN uv sync
 
-COPY app ./app
+COPY app .
 
 CMD ["uv", "run", "python", "-m", "app.main"]
