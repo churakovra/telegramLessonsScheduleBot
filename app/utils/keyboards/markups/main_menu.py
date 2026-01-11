@@ -1,10 +1,18 @@
+from abc import ABC
 from app.schemas.button_dto import ButtonDTO
 from app.utils.enums.menu_type import MenuType
 from app.utils.keyboards.callback_factories.menu import MainMenu
 
 
-class MainMenuDataTeacher:
-    teacher_menu = [
+class BaseMarkupDraft(ABC):
+    def __init__(self):
+        self.markup: list[ButtonDTO] = None
+        self.adjust: int = None
+
+
+
+class MainMenuDataTeacher(BaseMarkupDraft):
+    markup = [
         ButtonDTO(
             text="Ученики",
             callback_data=MainMenu(menu_type=MenuType.TEACHER_STUDENT),
@@ -18,6 +26,7 @@ class MainMenuDataTeacher:
             callback_data=MainMenu(menu_type=MenuType.TEACHER_LESSON),
         ),
     ]
+    adjust = 1
 
 
 class MainMenuDataStudent:
