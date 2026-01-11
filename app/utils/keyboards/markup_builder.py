@@ -21,12 +21,12 @@ from app.utils.keyboards.callback_factories.slots import (
     SendSlots,
     SlotsForStudents,
 )
-from app.utils.keyboards.menu_data.main_menu import (
+from app.utils.keyboards.markups.main_menu import (
     MainMenuDataAdmin,
     MainMenuDataStudent,
     MainMenuDataTeacher,
 )
-from app.utils.keyboards.menu_data.sub_menu import (
+from app.utils.keyboards.markups.sub_menu import (
     SubMenuDataAdmin,
     SubMenuDataStudent,
     SubMenuDataTeacher,
@@ -35,8 +35,22 @@ from app.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 
+from markup_config import config
+
 
 class MarkupBuilder:
+    async def build(self, markup: str):
+        markup_config = config.get(markup)
+        builder = InlineKeyboardBuilder()
+        for button in markup_config.buttons:
+            builder.button(
+                text=button.text,
+                callback_data=button.callback
+            )
+        builder.adjust(markup_config.adjust)
+        return builder.as_markup()
+
+
     @staticmethod
     def main_menu_markup(role: UserRole) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
