@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from app.schemas.button_dto import ButtonDTO
 from app.utils.enums.menu_type import MenuType
-from app.utils.keyboards.callback_factories.menu import SubMenu
+from app.utils.keyboard.callback_factories.menu import SubMenu
 
 
 @dataclass

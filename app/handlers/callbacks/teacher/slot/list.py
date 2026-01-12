@@ -9,9 +9,9 @@ from app.services.teacher_service import TeacherService
 from app.utils.enums.menu_type import MenuType
 from app.utils.exceptions.lesson_exceptions import LessonsNotFoundException
 from app.utils.exceptions.slot_exceptions import SlotsNotFoundException
-from app.utils.keyboards.callback_factories.menu import SubMenu
-from app.utils.keyboards.callback_factories.slots import ListSlots
-from app.utils.keyboards.markup_builder import MarkupBuilder
+from app.utils.keyboard.callback_factories.menu import SubMenu
+from app.utils.keyboard.callback_factories.slots import ListSlots
+from app.utils.keyboard.builder import MarkupBuilder
 from app.utils.message_template import MessageTemplate
 
 router = Router()

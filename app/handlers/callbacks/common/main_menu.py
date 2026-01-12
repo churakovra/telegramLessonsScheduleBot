@@ -2,8 +2,8 @@ from aiogram import Router
 from aiogram.types import CallbackQuery
 
 from app.utils.logger import setup_logger
-from app.utils.keyboards.callback_factories.menu import MainMenu
-from app.utils.keyboards.markup_builder import MarkupBuilder
+from app.utils.keyboard.callback_factories.menu import MainMenu
+from app.utils.keyboard.builder import MarkupBuilder
 
 
 router = Router()

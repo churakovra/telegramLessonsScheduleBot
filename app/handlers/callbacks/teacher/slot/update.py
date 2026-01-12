@@ -6,9 +6,9 @@ from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
 from app.utils.enums.bot_values import OperationType
 from app.utils.enums.menu_type import MenuType
-from app.utils.keyboards.callback_factories.menu import SubMenu
-from app.utils.keyboards.callback_factories.slots import UpdateSlots
-from app.utils.keyboards.markup_builder import MarkupBuilder
+from app.utils.keyboard.callback_factories.menu import SubMenu
+from app.utils.keyboard.callback_factories.slots import UpdateSlots
+from app.utils.keyboard.builder import MarkupBuilder
 from app.utils.logger import setup_logger
 from app.utils.message_template import MessageTemplate
 

@@ -4,8 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.notifiers.telegram_notifier import TelegramNotifier
 from app.services.slot_service import SlotService
-from app.utils.keyboards.callback_factories.slots import ResendSlots
-from app.utils.keyboards.markup_builder import MarkupBuilder
+from app.utils.keyboard.callback_factories.slots import ResendSlots
+from app.utils.keyboard.builder import MarkupBuilder
 from app.utils.message_template import MessageTemplate
 
 router = Router()

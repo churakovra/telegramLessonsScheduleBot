@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.slot_service import SlotService
 from app.utils.datetime_utils import day_format
 from app.utils.exceptions.slot_exceptions import SlotFreeNotFoundException
-from app.utils.keyboards.callback_factories.slots import DaysForStudents
-from app.utils.keyboards.markup_builder import MarkupBuilder
+from app.utils.keyboard.callback_factories.slots import DaysForStudents
+from app.utils.keyboard.builder import MarkupBuilder
 
 router = Router()
 

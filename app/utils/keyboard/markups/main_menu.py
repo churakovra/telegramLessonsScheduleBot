@@ -1,7 +1,7 @@
 from abc import ABC
 from app.schemas.button_dto import ButtonDTO
 from app.utils.enums.menu_type import MenuType
-from app.utils.keyboards.callback_factories.menu import MainMenu
+from app.utils.keyboard.callback_factories.menu import MainMenu
 
 
 class BaseMarkupDraft(ABC):

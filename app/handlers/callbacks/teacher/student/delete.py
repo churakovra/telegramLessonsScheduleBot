@@ -5,7 +5,7 @@ from aiogram.types import CallbackQuery
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
 from app.utils.enums.menu_type import MenuType
-from app.utils.keyboards.callback_factories.menu import SubMenu
+from app.utils.keyboard.callback_factories.menu import SubMenu
 
 router = Router()
 

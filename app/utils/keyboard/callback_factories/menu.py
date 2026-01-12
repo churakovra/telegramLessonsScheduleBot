@@ -14,7 +14,7 @@ class MainMenu(BaseMenu, prefix="main-menu"):
 
 class SubMenu(BaseMenu, prefix="sub-menu"):
     pass
-
+ 
 
 class NewMainMenu(BaseMenu, prefix="new-main-menu"):
     role: UserRole

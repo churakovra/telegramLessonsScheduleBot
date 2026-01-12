@@ -12,8 +12,8 @@ from app.services.student_service import StudentService
 from app.services.teacher_service import TeacherService
 from app.utils.datetime_utils import full_format_no_sec
 from app.utils.exceptions.user_exceptions import UserNotFoundException
-from app.utils.keyboards.callback_factories.slots import SlotsForStudents
-from app.utils.keyboards.markup_builder import MarkupBuilder
+from app.utils.keyboard.callback_factories.slots import SlotsForStudents
+from app.utils.keyboard.builder import MarkupBuilder
 from app.utils.message_template import MessageTemplate
 
 router = Router()

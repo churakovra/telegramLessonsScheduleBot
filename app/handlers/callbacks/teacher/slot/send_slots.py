@@ -8,8 +8,8 @@ from app.services.teacher_service import TeacherService
 from app.services.user_service import UserService
 from app.utils.enums.bot_values import OperationType
 from app.utils.exceptions.teacher_exceptions import TeacherStudentsNotFound
-from app.utils.keyboards.callback_factories.slots import SendSlots
-from app.utils.keyboards.markup_builder import MarkupBuilder
+from app.utils.keyboard.callback_factories.slots import SendSlots
+from app.utils.keyboard.builder import MarkupBuilder
 from app.utils.logger import setup_logger
 from app.utils.message_template import MessageTemplate
 

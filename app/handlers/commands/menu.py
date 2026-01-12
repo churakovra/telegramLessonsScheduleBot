@@ -8,7 +8,7 @@ from app.utils.exceptions.user_exceptions import (
     UserNotFoundException,
     UserUnknownRoleException,
 )
-from app.utils.keyboards.markup_builder import MarkupBuilder
+from app.utils.keyboard.builder import MarkupBuilder
 from app.utils.logger import setup_logger
 from app.utils.message_template import MessageTemplate
 

@@ -9,8 +9,8 @@ from app.utils.exceptions.user_exceptions import (
     UserNotFoundException,
     UserUnknownRoleException,
 )
-from app.utils.keyboards.callback_factories.back import Back
-from app.utils.keyboards.markup_builder import MarkupBuilder
+from app.utils.keyboard.callback_factories.back import Back
+from app.utils.keyboard.builder import MarkupBuilder
 from app.utils.message_template import MessageTemplate
 
 router = Router()

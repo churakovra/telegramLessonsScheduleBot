@@ -8,9 +8,9 @@ from app.utils.bot_strings import BotStrings
 from app.utils.enums.menu_type import MenuType
 from app.utils.exceptions.lesson_exceptions import LessonsNotFoundException
 from app.utils.exceptions.user_exceptions import UserNotFoundException
-from app.utils.keyboards.callback_factories.lessons import LessonList
-from app.utils.keyboards.callback_factories.menu import SubMenu
-from app.utils.keyboards.markup_builder import MarkupBuilder
+from app.utils.keyboard.callback_factories.lessons import LessonList
+from app.utils.keyboard.callback_factories.menu import SubMenu
+from app.utils.keyboard.builder import MarkupBuilder
 from app.utils.logger import setup_logger
 
 router = Router()
