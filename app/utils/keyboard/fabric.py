@@ -1,70 +1,187 @@
 import calendar
-from uuid import UUID
-from aiogram.types import InlineKeyboardMarkup
+
+from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from app.schemas.lesson_dto import LessonDTO
-from app.schemas.slot_dto import SlotDTO
 from app.utils.bot_strings import BotStrings
 from app.utils.datetime_utils import WEEKDAYS, day_format, time_format_HM
-from app.utils.enums.bot_values import OperationType, UserRole, WeekFlag
+from app.utils.enums.bot_values import WeekFlag
 from app.utils.enums.menu_type import MenuType
-from app.utils.exceptions.user_exceptions import UserUnknownRoleException
 from app.utils.keyboard.callback_factories.back import Back
-from app.utils.keyboard.callback_factories.common import BaseCallback, BaseDelete, BaseUpdate
-from app.utils.keyboard.callback_factories.menu import NewMainMenu
-from app.utils.keyboard.callback_factories.mixins import SpecifyWeekMixin
-from app.utils.keyboard.callback_factories.slots import DaysForStudents, ResendSlots, SendSlots, SlotsForStudents
-from app.utils.keyboard.context import MenuContext
-from app.utils.keyboard.markups.main_menu import MainMenuDataAdmin, MainMenuDataStudent, MainMenuDataTeacher
-from app.utils.keyboard.markups.sub_menu import SubMenuDataAdmin, SubMenuDataStudent, SubMenuDataTeacher
+from app.utils.keyboard.callback_factories.menu import MainMenu, NewMainMenu
+from app.utils.keyboard.callback_factories.slots import (
+    DaysForStudents,
+    ResendSlots,
+    SendSlots,
+    SlotsForStudents,
+)
+from app.utils.keyboard.context import (
+    ConfirmDeletionKeyboardContext,
+    DaysForStudentsKeyboardContext,
+    LessonOperationKeyboardContext,
+    SendSlotsKeyboardContext,
+    SlotsForStudentsKeyboardContext,
+    SpecifyWeekKeyboardContext,
+    SpecsToUpdateKeyboardContext,
+    SuccessSlotBindKeyboardContext,
+)
 
 
-
-def main_menu_markup(builder: InlineKeyboardBuilder, context: MenuContext) -> InlineKeyboardBuilder:
-    role = MenuContext.role
-    match role:
-        case UserRole.TEACHER:
-            menu_data = MainMenuDataTeacher.markup
-        case UserRole.STUDENT:
-            menu_data = MainMenuDataStudent.student_menu
-        case UserRole.ADMIN:
-            menu_data = MainMenuDataAdmin.admin_menu
-        case _:
-            raise UserUnknownRoleException(role=role)
-
-    for menu in menu_data:
-        builder.button(text=menu.text, callback_data=menu.callback_data)
-
-    builder.adjust(1)
-    return builder
-
-
-def sub_menu_markup(builder, sub_menu_type: MenuType) -> InlineKeyboardMarkup:
-    match sub_menu_type:
-        case MenuType.TEACHER_STUDENT:
-            menu_type = SubMenuDataTeacher.teacher_student
-        case MenuType.TEACHER_SLOT:
-            menu_type = SubMenuDataTeacher.teacher_slot
-        case MenuType.TEACHER_LESSON:
-            menu_type = SubMenuDataTeacher.teacher_lesson
-        case MenuType.STUDENT_TEACHER:
-            menu_type = SubMenuDataStudent.student_teacher
-        case MenuType.STUDENT_SLOT:
-            menu_type = SubMenuDataStudent.student_slot
-        case MenuType.ADMIN_TEMP:
-            menu_type = SubMenuDataAdmin.admin_temp
-        case _:
-            raise ValueError(f"Wrong sub_menu_type {sub_menu_type}")
-    for button in menu_type:
-        builder.button(text=button.text, callback_data=button.callback_data)
-    builder.button(
-        text="Назад", callback_data=Back(parent_keyboard="menu_keyboard")
+def teacher_main_menu(builder: InlineKeyboardBuilder) -> InlineKeyboardBuilder:
+    builder.add(
+        [
+            InlineKeyboardButton(
+                text="Ученики",
+                callback_data=MainMenu(menu_type=MenuType.TEACHER_STUDENT),
+            ),
+            InlineKeyboardButton(
+                text="Расписание",
+                callback_data=MainMenu(menu_type=MenuType.TEACHER_SLOT),
+            ),
+            InlineKeyboardButton(
+                text="Предметы",
+                callback_data=MainMenu(menu_type=MenuType.TEACHER_LESSON),
+            ),
+        ]
     )
     builder.adjust(1)
     return builder
 
-def is_slots_correct_markup(builder) -> InlineKeyboardMarkup:
+
+def student_main_menu(builder: InlineKeyboardBuilder) -> InlineKeyboardBuilder:
+    builder.add(
+        [
+            InlineKeyboardButton(
+                text="Преподаватели",
+                callback_data=MainMenu(menu_type=MenuType.STUDENT_TEACHER),
+            ),
+            InlineKeyboardButton(
+                text="Занятия", callback_data=MainMenu(menu_type=MenuType.STUDENT_SLOT)
+            ),
+        ]
+    )
+    builder.adjust(1)
+    return builder
+
+
+def admin_main_menu(builder: InlineKeyboardBuilder) -> InlineKeyboardBuilder:
+    builder.add(
+        [
+            InlineKeyboardButton(
+                text="Пока командами",
+                callback_data=MainMenu(menu_type=MenuType.ADMIN_TEMP),
+            ),
+        ]
+    )
+    builder.adjust(1)
+    return builder
+
+
+def teacher_sub_menu_student(builder: InlineKeyboardBuilder) -> InlineKeyboardBuilder:
+    builder.add(
+        [
+            InlineKeyboardButton(
+                text="Мои ученики",
+                callback_data=MainMenu(menu_type=MenuType.TEACHER_STUDENT_LIST),
+            ),
+            InlineKeyboardButton(
+                text="Добавить ученика",
+                callback_data=MainMenu(menu_type=MenuType.TEACHER_STUDENT_ADD),
+            ),
+            InlineKeyboardButton(
+                text="Изменить ученика",
+                callback_data=MainMenu(menu_type=MenuType.TEACHER_STUDENT_UPDATE),
+            ),
+            InlineKeyboardButton(
+                text="Удалить ученика",
+                callback_data=MainMenu(menu_type=MenuType.TEACHER_STUDENT_DELETE),
+            ),
+        ]
+    )
+    return builder
+
+
+def teacher_sub_menu_slot(builder: InlineKeyboardBuilder) -> InlineKeyboardBuilder:
+    builder.add(
+        [
+            InlineKeyboardButton(
+                text="Моё расписание",
+                callback_data=MainMenu(menu_type=MenuType.TEACHER_SLOT_LIST),
+            ),
+            InlineKeyboardButton(
+                text="Добавить окошки",
+                callback_data=MainMenu(menu_type=MenuType.TEACHER_SLOT_ADD),
+            ),
+            InlineKeyboardButton(
+                text="Изменить окошки",
+                callback_data=MainMenu(menu_type=MenuType.TEACHER_SLOT_UPDATE),
+            ),
+        ]
+    )
+    return builder
+
+
+def teacher_sub_menu_lesson(builder: InlineKeyboardBuilder) -> InlineKeyboardBuilder:
+    builder.add(
+        [
+            InlineKeyboardButton(
+                text="Мои предметы",
+                callback_data=MainMenu(menu_type=MenuType.TEACHER_LESSON_LIST),
+            ),
+            InlineKeyboardButton(
+                text="Добавить предмет",
+                callback_data=MainMenu(menu_type=MenuType.TEACHER_LESSON_ADD),
+            ),
+            InlineKeyboardButton(
+                text="Изменить предмет",
+                callback_data=MainMenu(menu_type=MenuType.TEACHER_LESSON_UPDATE),
+            ),
+            InlineKeyboardButton(
+                text="Удалить предмет",
+                callback_data=MainMenu(menu_type=MenuType.TEACHER_LESSON_DELETE),
+            ),
+        ]
+    )
+    return builder
+
+
+def student_sub_menu_teacher(builder: InlineKeyboardBuilder) -> InlineKeyboardBuilder:
+    builder.add(
+        [
+            InlineKeyboardButton(
+                text="Заглушка",
+                callback_data=MainMenu(menu_type=MenuType.STUDENT_TEACHER_LIST),
+            ),
+        ]
+    )
+    return builder
+
+
+def student_sub_menu_slot(builder: InlineKeyboardBuilder) -> InlineKeyboardBuilder:
+    builder.add(
+        [
+            InlineKeyboardButton(
+                text="Заглушка",
+                callback_data=MainMenu(menu_type=MenuType.STUDENT_SLOT_LIST),
+            ),
+        ]
+    )
+    return builder
+
+
+def admin_sub_menu_temp(builder: InlineKeyboardBuilder) -> InlineKeyboardBuilder:
+    builder.add(
+        [
+            InlineKeyboardButton(
+                text="Пока командой",
+                callback_data=MainMenu(menu_type=MenuType.ADMIN_TEMP),
+            ),
+        ]
+    )
+    return builder
+
+
+def is_slots_correct_markup(builder) -> InlineKeyboardBuilder:
     builder.button(
         text=BotStrings.Menu.YES,
         callback_data=BotStrings.Teacher.CALLBACK_SLOTS_CORRECT,
@@ -76,22 +193,22 @@ def is_slots_correct_markup(builder) -> InlineKeyboardMarkup:
 
     return builder
 
-def send_slots_markup(
-    builder, teacher_uuid: UUID, operation_type: OperationType
-) -> InlineKeyboardMarkup:
+
+def send_slots(builder, context: SendSlotsKeyboardContext) -> InlineKeyboardBuilder:
     builder.button(
         text=BotStrings.Menu.SEND,
         callback_data=SendSlots(
-            teacher_uuid=teacher_uuid, operation_type=operation_type
+            teacher_uuid=context.teacher_uuid, operation_type=context.operation_type
         ),
     )
     return builder
 
-def days_for_students_markup(
-    builder, slots: list[SlotDTO], teacher_uuid: UUID
-) -> InlineKeyboardMarkup:
+
+def days_for_students(
+    builder, context: DaysForStudentsKeyboardContext
+) -> InlineKeyboardBuilder:
     prev_slot_date = None
-    for slot in slots:
+    for slot in context.slots:
         slot_date = slot.dt_start.date()
         if slot_date != prev_slot_date:
             day_number = calendar.weekday(
@@ -101,18 +218,19 @@ def days_for_students_markup(
             builder.button(
                 text=day_name,
                 callback_data=DaysForStudents(
-                    day=slot_date.strftime(day_format), teacher_uuid=teacher_uuid
+                    day=slot_date.strftime(day_format),
+                    teacher_uuid=context.teacher_uuid,
                 ),
             )
             prev_slot_date = slot_date
-
     builder.adjust(1)
     return builder
 
-def slots_for_students_markup(
-    builder, slots: list[SlotDTO], teacher_uuid: UUID
-) -> InlineKeyboardMarkup:
-    for slot in slots:
+
+def slots_for_students(
+    builder, context: SlotsForStudentsKeyboardContext
+) -> InlineKeyboardBuilder:
+    for slot in context.slots:
         time_str = slot.dt_start.strftime(time_format_HM)
         builder.button(
             text=time_str, callback_data=SlotsForStudents(uuid_slot=slot.uuid)
@@ -120,77 +238,87 @@ def slots_for_students_markup(
     builder.button(
         text="Назад",
         callback_data=Back(
-            parent_keyboard="days_for_students", teacher_uuid=teacher_uuid
+            parent_keyboard="days_for_students", teacher_uuid=context.teacher_uuid
         ),
     )
     builder.adjust(1)
     return builder
 
-def success_slot_bind_markup(
-    builder, teacher_uuid: UUID, student_chat_id: int, role: UserRole, username: str
-) -> InlineKeyboardMarkup:
+
+def success_slot_bind(
+    builder, context: SuccessSlotBindKeyboardContext
+) -> InlineKeyboardBuilder:
     builder.button(
         text=BotStrings.Menu.BIND_ANOTHER_SLOT,
         callback_data=ResendSlots(
-            teacher_uuid=teacher_uuid, student_chat_id=student_chat_id
+            teacher_uuid=context.teacher_uuid, student_chat_id=context.student_chat_id
         ),
     )
     builder.button(
         text=BotStrings.Menu.MENU,
         callback_data=NewMainMenu(
-            menu_type=MenuType.NEW, role=role, username=username
+            menu_type=MenuType.NEW, role=context.role, username=context.username
         ),
     )
-
     builder.adjust(1)
     return builder
 
-def specify_week_markup(
-    builder, callback_data: type[SpecifyWeekMixin],
-) -> InlineKeyboardMarkup:
+
+def specify_week(
+    builder,
+    context: SpecifyWeekKeyboardContext,
+) -> InlineKeyboardBuilder:
     builder.button(
         text=BotStrings.Menu.CURRENT_WEEK,
-        callback_data=callback_data(week_flag=WeekFlag.CURRENT),
+        callback_data=context.callback_data(week_flag=WeekFlag.CURRENT),
     )
     builder.button(
         text=BotStrings.Menu.NEXT_WEEK,
-        callback_data=callback_data(week_flag=WeekFlag.NEXT),
+        callback_data=context.callback_data(week_flag=WeekFlag.NEXT),
     )
 
     builder.adjust(2)
     return builder
 
-def lessons_markup(builder, lessons: list[LessonDTO], callback_cls: type[BaseCallback]):
-    for lesson in lessons:
+
+def lessons_operation(
+    builder, context: LessonOperationKeyboardContext
+) -> InlineKeyboardBuilder:
+    for lesson in context.lessons:
         builder.button(
-            text=lesson.label, callback_data=callback_cls(uuid=lesson.uuid)
+            text=lesson.label, callback_data=context.callback_cls(uuid=lesson.uuid)
         )
     builder.adjust(1)
     return builder
 
-def confirm_deletion_markup(
-    builder, callback_data_cls: type[BaseDelete], callback_data: BaseDelete
-) -> InlineKeyboardMarkup:
+
+def confirm_deletion(
+    builder, context: ConfirmDeletionKeyboardContext
+) -> InlineKeyboardBuilder:
     builder.button(
         text=BotStrings.Menu.YES,
-        callback_data=callback_data_cls(uuid=callback_data.uuid, confirmed=True),
+        callback_data=context.callback_data_cls(
+            uuid=context.callback_data.uuid, confirmed=True
+        ),
     )
     builder.button(
-        text=BotStrings.Menu.NO, callback_data=Back(parent_keyboard="menu_keyboard")
+        text=BotStrings.Menu.NO,
+        callback_data=Back(parent_keyboard="menu_keyboard"),
     )
     builder.adjust(2)
     return builder
 
-def specs_to_update_markup(
-    builder, 
-    lesson_uuid: UUID,
-    specs: dict[str, str],
-    callback_data_cls: type[BaseUpdate]
-) -> InlineKeyboardMarkup:
-    specs["all"] = "Всё"
-    for spec, label in specs.items():
+
+def specs_to_update(
+    builder, context: SpecsToUpdateKeyboardContext
+) -> InlineKeyboardBuilder:
+    context.specs["all"] = "Всё"
+    for spec, label in context.specs.items():
         builder.button(
-            text=label, callback_data=callback_data_cls(uuid=lesson_uuid, spec=spec)
+            text=label,
+            callback_data=context.callback_data_cls(
+                uuid=context.lesson_uuid, spec=spec
+            ),
         )
     builder.adjust(1)
     return builder

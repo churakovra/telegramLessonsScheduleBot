@@ -7,15 +7,16 @@ from app.utils.logger import setup_logger
 
 from ..keyboard import keyboard_registry
 
-
 logger = setup_logger(__name__)
 
 
-
 class MarkupBuilder:
-    
-    async def build(self, markup: KeyboardType, context: KeyboardContext) -> InlineKeyboardMarkup:
-        keyboard_factory = keyboard_registry[markup]
+    async def build(
+        self, markup: KeyboardType, context: KeyboardContext
+    ) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
+        keyboard_factory = keyboard_registry[markup]
         keyboard = keyboard_factory(builder, context)
         return keyboard.as_markup()
+
+    # TODO Fix MarkupBuilder in handlers and test this shiet..
