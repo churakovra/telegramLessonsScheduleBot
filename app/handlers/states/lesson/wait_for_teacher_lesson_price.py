@@ -7,11 +7,11 @@ from app.utils.enums.bot_values import OperationType, UserRole
 from app.utils.logger import setup_logger
 from app.notifiers.telegram_notifier import TelegramNotifier
 from app.services.lesson_service import LessonService
-from app.services.user_service import UserService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
 from app.utils.keyboard.builder import MarkupBuilder
-from app.utils.message_template import MessageTemplate
+from app.utils.keyboard import markup_type_by_role
+from app.utils.message_template import main_menu_message
 
 router = Router()
 logger = setup_logger(__name__)
@@ -51,11 +51,9 @@ async def handle_state(
             )
         )
 
-        markup = MarkupBuilder.main_menu_markup(UserRole.TEACHER)
-        bot_message = MessageTemplate.main_menu_message(username, markup)
-        await notifier.send_message(
-            bot_message=bot_message, receiver_chat_id=message.chat.id
-        )
+        markup = MarkupBuilder.build(markup_type_by_role[UserRole.TEACHER])
+        bot_message = main_menu_message(username, markup)
+        await notifier.send_message(bot_message=bot_message, receiver_chat_id=message.chat.id)
         await state.clear()
         
         logger.info(f"Teacher {uuid_teacher} added new lesson")

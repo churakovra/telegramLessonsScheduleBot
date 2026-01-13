@@ -11,7 +11,8 @@ from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
 from app.utils.exceptions.teacher_exceptions import TeacherAlreadyHasStudentException
 from app.utils.keyboard.builder import MarkupBuilder
-from app.utils.message_template import MessageTemplate
+from app.utils.message_template import main_menu_message
+from app.utils.keyboard import markup_type_by_role
 
 router = Router()
 
@@ -61,8 +62,8 @@ async def handle_state(
     user_service = UserService(session)
     username = getattr(message.from_user, "username", "") or ""
     user = await user_service.get_user(username)
-    markup = MarkupBuilder.main_menu_markup(user.role)
-    bot_message = MessageTemplate.main_menu_message(user.username, markup)
+    markup = MarkupBuilder.build(markup_type_by_role[user.role])
+    bot_message = main_menu_message(user.username, markup)
     await notifier.send_message(
         bot_message=bot_message, receiver_chat_id=message.chat.id
     )

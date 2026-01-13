@@ -9,7 +9,8 @@ from app.services.user_service import UserService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
 from app.utils.keyboard.builder import MarkupBuilder
-from app.utils.message_template import MessageTemplate
+from app.utils.message_template import main_menu_message
+from app.utils.keyboard import markup_type_by_role
 
 router = Router()
 
@@ -42,9 +43,7 @@ async def handle_state(message: Message, session: AsyncSession, state: FSMContex
     await message.delete()
     user_service = UserService(session)
     user = await user_service.get_user(teacher_username)
-    markup = MarkupBuilder.main_menu_markup(user.role)
-    bot_message = MessageTemplate.main_menu_message(user.username, markup)
-    await message.answer(
-        text=bot_message.message_text, reply_markup=bot_message.reply_markup
-    )
+    markup = MarkupBuilder.build(markup_type_by_role[user.role])
+    bot_message = main_menu_message(user.username, markup)
+    await message.answer(**bot_message)
     await state.clear()
