@@ -2,7 +2,7 @@ from collections.abc import Callable
 
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from app.utils.enums.bot_values import KeyboardType
+from app.utils.enums.bot_values import KeyboardType, UserRole
 from app.utils.keyboard.fabric import (
     admin_main_menu,
     admin_sub_menu_temp,
@@ -43,4 +43,11 @@ keyboard_registry: dict[KeyboardType, Callable[..., InlineKeyboardBuilder]] = {
     KeyboardType.LESSONS_OPERATION: lessons_operation,
     KeyboardType.CONFIRM_DELETION: confirm_deletion,
     KeyboardType.SPECS_TO_UPDATE: specs_to_update,
+}
+
+
+markup_type_by_role = {
+    UserRole.TEACHER: KeyboardType.TEACHER_MAIN,
+    UserRole.STUDENT: KeyboardType.STUDENT_MAIN,
+    UserRole.ADMIN: KeyboardType.ADMIN_MAIN,
 }

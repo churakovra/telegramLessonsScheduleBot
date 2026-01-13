@@ -4,6 +4,9 @@ from app.schemas.bot_message import BotMessage
 from app.utils.bot_strings import BotStrings
 
 
+#TODO rework & update all outcoming messages from bot
+
+
 def main_menu_message(username: str, markup: InlineKeyboardMarkup) -> BotMessage:
     return BotMessage(
         text=BotStrings.Common.MENU.format(user=username),
@@ -53,3 +56,11 @@ def success_slot_bind_message(
 
 def specify_week_message(markup: InlineKeyboardMarkup) -> BotMessage:
     return BotMessage(text=BotStrings.Common.SPECIFY_WEEK, reply_markup=markup)
+
+
+def confirm_lesson_deletion(markup: InlineKeyboardMarkup) -> BotMessage:
+    return BotMessage(text=BotStrings.Teacher.TEACHER_LESSON_DELETE_CONFIRMATION_REQUEST, reply_markup=markup)
+
+
+def lesson_deletion_success() -> BotMessage:
+    return BotMessage(text=BotStrings.Teacher.TEACHER_LESSON_DELETE_SUCCESS, reply_markup=None)

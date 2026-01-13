@@ -7,20 +7,21 @@ from app.services.lesson_service import LessonService
 from app.services.teacher_service import TeacherService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
-from app.utils.enums.bot_values import OperationType
+from app.utils.enums.bot_values import KeyboardType, OperationType
 from app.utils.enums.menu_type import MenuType
 from app.utils.exceptions.lesson_exceptions import LessonsNotFoundException
 from app.utils.exceptions.user_exceptions import UserNotFoundException
 from app.utils.keyboard.callback_factories.lessons import LessonUpdate
-from app.utils.keyboard.callback_factories.menu import SubMenu
+from app.utils.keyboard.callback_factories.menu import MenuCallback
 from app.utils.keyboard.builder import MarkupBuilder
+from app.utils.keyboard.context import LessonOperationKeyboardContext, SpecsToUpdateKeyboardContext
 from app.utils.logger import setup_logger
 
 router = Router()
 logger = setup_logger(__name__)
 
 
-@router.callback_query(SubMenu.filter(F.menu_type == MenuType.TEACHER_LESSON_UPDATE))
+@router.callback_query(MenuCallback.filter(F.menu_type == MenuType.TEACHER_LESSON_UPDATE))
 async def on_update_button_pressed(callback: CallbackQuery, session: AsyncSession) -> None:
     teacher_service = TeacherService(session)
     lesson_service = LessonService(session)
@@ -31,7 +32,8 @@ async def on_update_button_pressed(callback: CallbackQuery, session: AsyncSessio
         teacher = await teacher_service.get_teacher(teacher_username)
         lessons = await lesson_service.get_teacher_lessons(teacher.uuid)
         message_text = BotStrings.Teacher.TEACHER_LESSON_UPDATE
-        markup = MarkupBuilder.lessons_markup(lessons, LessonUpdate)
+        markup_context = LessonOperationKeyboardContext(lessons, LessonUpdate)
+        markup = MarkupBuilder.build(KeyboardType.LESSONS_OPERATION,markup_context)
     except UserNotFoundException as e:
         logger.error(e.message)
         message_text = BotStrings.User.USER_INFO_ERROR
@@ -52,11 +54,13 @@ async def on_lesson_button_pressed(
         "duration": "Продолжительность",
         "price": "Цена",
     }
-    markup = MarkupBuilder.specs_to_update_markup(
+    markup_context = SpecsToUpdateKeyboardContext(
         lesson_uuid=callback_data.uuid,
         specs=lesson_specs,
         callback_data_cls=LessonUpdate,
+    
     )
+    markup = MarkupBuilder.build(KeyboardType.SPECS_TO_UPDATE, markup_context)
     text = BotStrings.Teacher.TEACHER_LESSON_UPDATE_SELECT_SPEC
     await callback.message.answer(text=text, reply_markup=markup)
     await callback.answer()
@@ -66,18 +70,15 @@ async def on_lesson_button_pressed(
 async def update_lesson_label(
     callback: CallbackQuery, callback_data: LessonUpdate, state: FSMContext
 ) -> None:
-    match callback_data.spec:
-        case "label":
-            message = BotStrings.Teacher.TEACHER_LESSON_ADD_LABEL
-        case "duration":
-            message = BotStrings.Teacher.TEACHER_LESSON_ADD_DURATION
-        case "price": 
-            message = BotStrings.Teacher.TEACHER_LESSON_ADD_PRICE
-        case _:
-            pass
+    spec_to_message = {
+        "label": BotStrings.Teacher.TEACHER_LESSON_ADD_LABEL,
+        "duration": BotStrings.Teacher.TEACHER_LESSON_ADD_DURATION,
+        "price": BotStrings.Teacher.TEACHER_LESSON_ADD_PRICE,
+        None: "Ooops" #TODO refactor this
+    }
     await state.update_data(lesson_uuid=callback_data.uuid, spec=callback_data.spec)
     await state.set_state(ScheduleStates.wait_for_lesson_update)
-    await callback.message.answer(message)
+    await callback.message.answer(spec_to_message[callback_data.spec])
     await callback.answer()
 
 

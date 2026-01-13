@@ -7,8 +7,9 @@ from app.schemas.slot_dto import CreateSlotDTO
 from app.services.slot_service import SlotService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
-from app.utils.enums.bot_values import OperationType
+from app.utils.enums.bot_values import KeyboardType, OperationType
 from app.utils.keyboard.builder import MarkupBuilder
+from app.utils.keyboard.context import SendSlotsKeyboardContext
 from app.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
@@ -28,7 +29,7 @@ async def reply_and_save_to_db(
     slots: list[CreateSlotDTO] = data["slots"]
     teacher_uuid = data["teacher_uuid"]
     operation_type = data["operation_type"]
-    
+
     slot_service = SlotService(session)
     if operation_type == OperationType.ADD:
         await slot_service.add_slots(slots)
@@ -40,11 +41,10 @@ async def reply_and_save_to_db(
             text="Unknown type of operation",
         )
     logger.info(f"Teacher {teacher_uuid} successfully added slots")
+    markup_context = SendSlotsKeyboardContext(teacher_uuid, operation_type)
     await callback.message.answer(
         text=BotStrings.Teacher.SLOTS_PROCESSING_SUCCESS,
-        reply_markup=MarkupBuilder.send_slots_markup(
-            teacher_uuid=teacher_uuid, operation_type=operation_type
-        ),
+        reply_markup=MarkupBuilder.build(KeyboardType.SEND_SLOTS, markup_context),
     )
 
     await state.clear()

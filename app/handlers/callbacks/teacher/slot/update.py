@@ -4,26 +4,26 @@ from aiogram.types import CallbackQuery
 
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
-from app.utils.enums.bot_values import OperationType
+from app.utils.enums.bot_values import KeyboardType, OperationType
 from app.utils.enums.menu_type import MenuType
-from app.utils.keyboard.callback_factories.menu import SubMenu
+from app.utils.keyboard.callback_factories.menu import MenuCallback
 from app.utils.keyboard.callback_factories.slots import UpdateSlots
 from app.utils.keyboard.builder import MarkupBuilder
+from app.utils.keyboard.context import SpecifyWeekKeyboardContext
 from app.utils.logger import setup_logger
-from app.utils.message_template import MessageTemplate
+from app.utils.message_template import specify_week_message
 
 logger = setup_logger(__name__)
 
 router = Router()
 
 
-@router.callback_query(SubMenu.filter(F.menu_type == MenuType.TEACHER_SLOT_UPDATE))
+@router.callback_query(MenuCallback.filter(F.menu_type == MenuType.TEACHER_SLOT_UPDATE))
 async def on_teacher_slot_update(callback: CallbackQuery):
-    markup = MarkupBuilder.specify_week_markup(callback_data=UpdateSlots)
-    message = MessageTemplate.specify_week_message(markup)
-    await callback.message.answer(
-        text=message.message_text, reply_markup=message.reply_markup
-    )
+    markup_context = SpecifyWeekKeyboardContext(UpdateSlots)
+    markup = MarkupBuilder.build(KeyboardType.SPECIFY_WEEK, markup_context)
+    message = specify_week_message(markup)
+    await callback.message.answer(**message)
     await callback.answer()
 
 

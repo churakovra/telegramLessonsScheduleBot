@@ -5,12 +5,12 @@ from aiogram.types import CallbackQuery
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
 from app.utils.enums.menu_type import MenuType
-from app.utils.keyboard.callback_factories.menu import SubMenu
+from app.utils.keyboard.callback_factories.menu import MenuCallback
 
 router = Router()
 
 
-@router.callback_query(SubMenu.filter(F.menu_type == MenuType.TEACHER_STUDENT_DELETE))
+@router.callback_query(MenuCallback.filter(F.menu_type == MenuType.TEACHER_STUDENT_DELETE))
 async def handle_callback(
         callback: CallbackQuery,
         state: FSMContext

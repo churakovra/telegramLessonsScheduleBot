@@ -8,15 +8,16 @@ from app.services.user_service import UserService
 from app.utils.enums.menu_type import MenuType
 from app.utils.exceptions.teacher_exceptions import TeacherStudentsNotFound
 from app.utils.exceptions.user_exceptions import UserNotFoundException
-from app.utils.keyboard.callback_factories.menu import SubMenu
+from app.utils.keyboard.callback_factories.menu import MenuCallback
+from app.utils.keyboard import markup_type_by_role
 from app.utils.keyboard.builder import MarkupBuilder
-from app.utils.message_template import MessageTemplate
+from app.utils.message_template import main_menu_message
 
 router = Router()
 
 
 @router.callback_query(
-    SubMenu.filter(F.menu_type == MenuType.TEACHER_STUDENT_LIST)
+    MenuCallback.filter(F.menu_type == MenuType.TEACHER_STUDENT_LIST)
 )
 async def handle_callback(
     callback: CallbackQuery,
@@ -44,8 +45,8 @@ async def handle_callback(
     finally:
         user_service = UserService(session)
         user = await user_service.get_user(username)
-        markup = MarkupBuilder.main_menu_markup(user.role)
-        bot_message = MessageTemplate.main_menu_message(user.username, markup)
+        markup = MarkupBuilder.build(markup_type_by_role[user.role])
+        bot_message = main_menu_message(user.username, markup)
         await notifier.send_message(
             bot_message=bot_message, receiver_chat_id=callback.message.chat.id
         )

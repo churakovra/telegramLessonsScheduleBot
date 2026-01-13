@@ -2,12 +2,14 @@ from uuid import UUID
 
 from aiogram.filters.callback_data import CallbackData
 
+
 class BaseCallback(CallbackData, prefix="b"):
     uuid: UUID
 
 
 class BaseList(BaseCallback, prefix="list-b"):
-    uuid:UUID
+    uuid: UUID
+
 
 class BaseUpdate(BaseCallback, prefix="update-b"):
     uuid: UUID

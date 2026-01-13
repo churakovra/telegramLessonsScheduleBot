@@ -6,24 +6,25 @@ from app.services.lesson_service import LessonService
 from app.services.slot_service import SlotService
 from app.services.student_service import StudentService
 from app.services.teacher_service import TeacherService
+from app.utils.enums.bot_values import KeyboardType
 from app.utils.enums.menu_type import MenuType
 from app.utils.exceptions.lesson_exceptions import LessonsNotFoundException
 from app.utils.exceptions.slot_exceptions import SlotsNotFoundException
-from app.utils.keyboard.callback_factories.menu import SubMenu
+from app.utils.keyboard.callback_factories.menu import MenuCallback
 from app.utils.keyboard.callback_factories.slots import ListSlots
 from app.utils.keyboard.builder import MarkupBuilder
-from app.utils.message_template import MessageTemplate
+from app.utils.keyboard.context import SpecifyWeekKeyboardContext
+from app.utils.message_template import specify_week_message
 
 router = Router()
 
 
-@router.callback_query(SubMenu.filter(F.menu_type == MenuType.TEACHER_SLOT_LIST))
-async def on_teacher_slot_list(callback: CallbackQuery):
-    markup = MarkupBuilder.specify_week_markup(callback_data=ListSlots)
-    message = MessageTemplate.specify_week_message(markup=markup)
-    await callback.message.answer(
-        text=message.message_text, reply_markup=message.reply_markup
-    )
+@router.callback_query(MenuCallback.filter(F.menu_type == MenuType.TEACHER_SLOT_LIST))
+async def on_teacher_slot_list(callback: CallbackQuery) -> None:
+    markup_context = SpecifyWeekKeyboardContext(ListSlots)
+    markup = MarkupBuilder.build(KeyboardType.SPECIFY_WEEK, markup_context)
+    message = specify_week_message(markup=markup)
+    await callback.message.answer(**message)
     await callback.answer()
 
 
@@ -46,12 +47,8 @@ async def handle_callback(
             for slot in slots
             if slot.uuid_student
         ]
-        slots_schedule = await slot_service.get_slots_schedule_reply(
-            slots, lessons, students
-        )
-        await callback.message.answer(
-            text=f"`{slots_schedule}`", parse_mode="MarkdownV2"
-        )
+        slots_schedule = await slot_service.get_slots_schedule_reply(slots, lessons, students)
+        await callback.message.answer(text=f"`{slots_schedule}`", parse_mode="MarkdownV2")
     except LessonsNotFoundException as e:
         pass
     except SlotsNotFoundException as e:

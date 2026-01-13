@@ -1,25 +1,16 @@
 from aiogram import F, Router
 from aiogram.types import CallbackQuery
-
-
-from app.services.user_service import UserService
-from app.utils.enums.bot_values import KeyboardType, UserRole
-from app.utils.enums.menu_type import MenuType
-from app.utils.exceptions.user_exceptions import UserNotFoundException
-from app.utils.keyboard.builder import MarkupBuilder
-from app.utils.keyboard.callback_factories.menu import MenuCallback
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.services.user_service import UserService
+from app.utils.enums.menu_type import MenuType
+from app.utils.exceptions.user_exceptions import UserNotFoundException
+from app.utils.keyboard import markup_type_by_role
+from app.utils.keyboard.builder import MarkupBuilder
+from app.utils.keyboard.callback_factories.menu import MenuCallback
 from app.utils.message_template import main_menu_message
 
 router = Router()
-
-
-markup_type_by_role = {
-    UserRole.TEACHER: KeyboardType.TEACHER_MAIN,
-    UserRole.STUDENT: KeyboardType.STUDENT_MAIN,
-    UserRole.ADMIN: KeyboardType.ADMIN_MAIN,
-}
 
 
 
