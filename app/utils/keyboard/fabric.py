@@ -1,6 +1,5 @@
 import calendar
 
-from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from app.utils.bot_strings import BotStrings
@@ -27,174 +26,139 @@ from app.utils.keyboard.context import (
 )
 
 
-def teacher_main_menu(builder: InlineKeyboardBuilder) -> InlineKeyboardBuilder:
-    builder.add(
-        [
-            InlineKeyboardButton(
-                text="Ученики",
-                callback_data=MenuCallback(menu_type=MenuType.TEACHER_STUDENT),
-            ),
-            InlineKeyboardButton(
-                text="Расписание",
-                callback_data=MenuCallback(menu_type=MenuType.TEACHER_SLOT),
-            ),
-            InlineKeyboardButton(
-                text="Предметы",
-                callback_data=MenuCallback(menu_type=MenuType.TEACHER_LESSON),
-            ),
-        ]
-    )
+def teacher_main_menu(
+    builder: InlineKeyboardBuilder, *args, **kwargs
+) -> InlineKeyboardBuilder:
+    buttons = [
+        ("Ученики", MenuCallback(menu_type=MenuType.TEACHER_STUDENT)),
+        ("Расписание", MenuCallback(menu_type=MenuType.TEACHER_SLOT)),
+        ("Предметы", MenuCallback(menu_type=MenuType.TEACHER_LESSON)),
+    ]
+    for button_text, callback in buttons:
+        builder.button(text=button_text, callback_data=callback)
     builder.adjust(1)
     return builder
 
 
-def student_main_menu(builder: InlineKeyboardBuilder) -> InlineKeyboardBuilder:
-    builder.add(
-        [
-            InlineKeyboardButton(
-                text="Преподаватели",
-                callback_data=MenuCallback(menu_type=MenuType.STUDENT_TEACHER),
-            ),
-            InlineKeyboardButton(
-                text="Занятия", callback_data=MenuCallback(menu_type=MenuType.STUDENT_SLOT)
-            ),
-        ]
-    )
+def student_main_menu(
+    builder: InlineKeyboardBuilder, *args, **kwargs
+) -> InlineKeyboardBuilder:
+    buttons = [
+        ("Преподаватели", MenuCallback(menu_type=MenuType.STUDENT_TEACHER)),
+        ("Занятия", MenuCallback(menu_type=MenuType.STUDENT_SLOT)),
+    ]
+    for button_text, callback in buttons:
+        builder.button(text=button_text, callback_data=callback)
     builder.adjust(1)
     return builder
 
 
-def admin_main_menu(builder: InlineKeyboardBuilder) -> InlineKeyboardBuilder:
-    builder.add(
-        [
-            InlineKeyboardButton(
-                text="Пока командами",
-                callback_data=MenuCallback(menu_type=MenuType.ADMIN_TEMP),
-            ),
-        ]
-    )
+def admin_main_menu(
+    builder: InlineKeyboardBuilder, *args, **kwargs
+) -> InlineKeyboardBuilder:
+    buttons = [
+        ("Пока командами", MenuCallback(menu_type=MenuType.ADMIN_TEMP)),
+    ]
+    for button_text, callback in buttons:
+        builder.button(text=button_text, callback_data=callback)
     builder.adjust(1)
     return builder
 
 
-def teacher_sub_menu_student(builder: InlineKeyboardBuilder) -> InlineKeyboardBuilder:
-    builder.add(
-        [
-            InlineKeyboardButton(
-                text="Мои ученики",
-                callback_data=MenuCallback(menu_type=MenuType.TEACHER_STUDENT_LIST),
-            ),
-            InlineKeyboardButton(
-                text="Добавить ученика",
-                callback_data=MenuCallback(menu_type=MenuType.TEACHER_STUDENT_ADD),
-            ),
-            InlineKeyboardButton(
-                text="Изменить ученика",
-                callback_data=MenuCallback(menu_type=MenuType.TEACHER_STUDENT_UPDATE),
-            ),
-            InlineKeyboardButton(
-                text="Удалить ученика",
-                callback_data=MenuCallback(menu_type=MenuType.TEACHER_STUDENT_DELETE),
-            ),
-        ]
-    )
+def teacher_sub_menu_student(
+    builder: InlineKeyboardBuilder, *args, **kwargs
+) -> InlineKeyboardBuilder:
+    buttons = [
+        ("Мои ученики", MenuCallback(menu_type=MenuType.TEACHER_STUDENT_LIST)),
+        ("Добавить ученика", MenuCallback(menu_type=MenuType.TEACHER_STUDENT_ADD)),
+        ("Изменить ученика", MenuCallback(menu_type=MenuType.TEACHER_STUDENT_UPDATE)),
+        ("Удалить ученика", MenuCallback(menu_type=MenuType.TEACHER_STUDENT_DELETE)),
+    ]
+    for button_text, callback in buttons:
+        builder.button(text=button_text, callback_data=callback)
+    builder.adjust(1)
     return builder
 
 
-def teacher_sub_menu_slot(builder: InlineKeyboardBuilder) -> InlineKeyboardBuilder:
-    builder.add(
-        [
-            InlineKeyboardButton(
-                text="Моё расписание",
-                callback_data=MenuCallback(menu_type=MenuType.TEACHER_SLOT_LIST),
-            ),
-            InlineKeyboardButton(
-                text="Добавить окошки",
-                callback_data=MenuCallback(menu_type=MenuType.TEACHER_SLOT_ADD),
-            ),
-            InlineKeyboardButton(
-                text="Изменить окошки",
-                callback_data=MenuCallback(menu_type=MenuType.TEACHER_SLOT_UPDATE),
-            ),
-        ]
-    )
+def teacher_sub_menu_slot(
+    builder: InlineKeyboardBuilder, *args, **kwargs
+) -> InlineKeyboardBuilder:
+    buttons = [
+        ("Моё расписание", MenuCallback(menu_type=MenuType.TEACHER_SLOT_LIST)),
+        ("Добавить окошки", MenuCallback(menu_type=MenuType.TEACHER_SLOT_ADD)),
+        ("Изменить окошки", MenuCallback(menu_type=MenuType.TEACHER_SLOT_UPDATE)),
+    ]
+    for button_text, callback in buttons:
+        builder.button(text=button_text, callback_data=callback)
+    builder.adjust(1)
     return builder
 
 
-def teacher_sub_menu_lesson(builder: InlineKeyboardBuilder) -> InlineKeyboardBuilder:
-    builder.add(
-        [
-            InlineKeyboardButton(
-                text="Мои предметы",
-                callback_data=MenuCallback(menu_type=MenuType.TEACHER_LESSON_LIST),
-            ),
-            InlineKeyboardButton(
-                text="Добавить предмет",
-                callback_data=MenuCallback(menu_type=MenuType.TEACHER_LESSON_ADD),
-            ),
-            InlineKeyboardButton(
-                text="Изменить предмет",
-                callback_data=MenuCallback(menu_type=MenuType.TEACHER_LESSON_UPDATE),
-            ),
-            InlineKeyboardButton(
-                text="Удалить предмет",
-                callback_data=MenuCallback(menu_type=MenuType.TEACHER_LESSON_DELETE),
-            ),
-        ]
-    )
+def teacher_sub_menu_lesson(
+    builder: InlineKeyboardBuilder, *args, **kwargs
+) -> InlineKeyboardBuilder:
+    buttons = [
+        ("Мои предметы", MenuCallback(menu_type=MenuType.TEACHER_LESSON_LIST)),
+        ("Добавить предмет", MenuCallback(menu_type=MenuType.TEACHER_LESSON_ADD)),
+        ("Изменить предмет", MenuCallback(menu_type=MenuType.TEACHER_LESSON_UPDATE)),
+        ("Удалить предмет", MenuCallback(menu_type=MenuType.TEACHER_LESSON_DELETE)),
+    ]
+    for button_text, callback in buttons:
+        builder.button(text=button_text, callback_data=callback)
+    builder.adjust(1)
     return builder
 
 
-def student_sub_menu_teacher(builder: InlineKeyboardBuilder) -> InlineKeyboardBuilder:
-    builder.add(
-        [
-            InlineKeyboardButton(
-                text="Заглушка",
-                callback_data=MenuCallback(menu_type=MenuType.STUDENT_TEACHER_LIST),
-            ),
-        ]
-    )
+def student_sub_menu_teacher(
+    builder: InlineKeyboardBuilder, *args, **kwargs
+) -> InlineKeyboardBuilder:
+    buttons = [
+        ("Заглушка", MenuCallback(menu_type=MenuType.STUDENT_TEACHER_LIST)),
+    ]
+    for button_text, callback in buttons:
+        builder.button(text=button_text, callback_data=callback)
+    builder.adjust(1)
     return builder
 
 
-def student_sub_menu_slot(builder: InlineKeyboardBuilder) -> InlineKeyboardBuilder:
-    builder.add(
-        [
-            InlineKeyboardButton(
-                text="Заглушка",
-                callback_data=MenuCallback(menu_type=MenuType.STUDENT_SLOT_LIST),
-            ),
-        ]
-    )
+def student_sub_menu_slot(
+    builder: InlineKeyboardBuilder, *args, **kwargs
+) -> InlineKeyboardBuilder:
+    buttons = [
+        ("Заглушка", MenuCallback(menu_type=MenuType.STUDENT_SLOT_LIST)),
+    ]
+    for button_text, callback in buttons:
+        builder.button(text=button_text, callback_data=callback)
+    builder.adjust(1)
     return builder
 
 
-def admin_sub_menu_temp(builder: InlineKeyboardBuilder) -> InlineKeyboardBuilder:
-    builder.add(
-        [
-            InlineKeyboardButton(
-                text="Пока командой",
-                callback_data=MenuCallback(menu_type=MenuType.ADMIN_TEMP),
-            ),
-        ]
-    )
+def admin_sub_menu_temp(
+    builder: InlineKeyboardBuilder, *args, **kwargs
+) -> InlineKeyboardBuilder:
+    buttons = [
+        ("Пока командами", MenuCallback(menu_type=MenuType.ADMIN_TEMP)),
+    ]
+    for button_text, callback in buttons:
+        builder.button(text=button_text, callback_data=callback)
+    builder.adjust(1)
     return builder
 
 
-def is_slots_correct_markup(builder) -> InlineKeyboardBuilder:
-    builder.button(
-        text=BotStrings.Menu.YES,
-        callback_data=BotStrings.Teacher.CALLBACK_SLOTS_CORRECT,
-    )
-    builder.button(
-        text=BotStrings.Menu.NO,
-        callback_data=BotStrings.Teacher.CALLBACK_SLOTS_INCORRECT,
-    )
-
+def is_slots_correct_markup(builder, *args, **kwargs) -> InlineKeyboardBuilder:
+    buttons = [
+        (BotStrings.Menu.YES, BotStrings.Teacher.CALLBACK_SLOTS_CORRECT),
+        (BotStrings.Menu.NO, BotStrings.Teacher.CALLBACK_SLOTS_INCORRECT)
+    ]
+    for button_text, callback in buttons:
+        builder.button(text=button_text, callback_data=callback)
+    builder.adjust(2)
     return builder
 
 
-def send_slots(builder, context: SendSlotsKeyboardContext) -> InlineKeyboardBuilder:
+def send_slots(
+    builder, context: SendSlotsKeyboardContext, *args, **kwargs
+) -> InlineKeyboardBuilder:
     builder.button(
         text=BotStrings.Menu.SEND,
         callback_data=SendSlots(
@@ -205,7 +169,7 @@ def send_slots(builder, context: SendSlotsKeyboardContext) -> InlineKeyboardBuil
 
 
 def days_for_students(
-    builder, context: DaysForStudentsKeyboardContext
+    builder, context: DaysForStudentsKeyboardContext, *args, **kwargs
 ) -> InlineKeyboardBuilder:
     prev_slot_date = None
     for slot in context.slots:
@@ -228,7 +192,7 @@ def days_for_students(
 
 
 def slots_for_students(
-    builder, context: SlotsForStudentsKeyboardContext
+    builder, context: SlotsForStudentsKeyboardContext, *args, **kwargs
 ) -> InlineKeyboardBuilder:
     for slot in context.slots:
         time_str = slot.dt_start.strftime(time_format_HM)
@@ -246,7 +210,7 @@ def slots_for_students(
 
 
 def success_slot_bind(
-    builder, context: SuccessSlotBindKeyboardContext
+    builder, context: SuccessSlotBindKeyboardContext, *args, **kwargs
 ) -> InlineKeyboardBuilder:
     builder.button(
         text=BotStrings.Menu.BIND_ANOTHER_SLOT,
@@ -265,24 +229,20 @@ def success_slot_bind(
 
 
 def specify_week(
-    builder,
-    context: SpecifyWeekKeyboardContext,
+    builder, context: SpecifyWeekKeyboardContext, *args, **kwargs
 ) -> InlineKeyboardBuilder:
-    builder.button(
-        text=BotStrings.Menu.CURRENT_WEEK,
-        callback_data=context.callback_data(week_flag=WeekFlag.CURRENT),
-    )
-    builder.button(
-        text=BotStrings.Menu.NEXT_WEEK,
-        callback_data=context.callback_data(week_flag=WeekFlag.NEXT),
-    )
-
+    buttons = [
+        (BotStrings.Menu.CURRENT_WEEK, context.callback_data(week_flag=WeekFlag.CURRENT)),
+        (BotStrings.Menu.NEXT_WEEK, context.callback_data(week_flag=WeekFlag.NEXT)),
+    ]
+    for button_text, callback in buttons:
+        builder.button(text=button_text, callback_data=callback)
     builder.adjust(2)
     return builder
 
 
 def lessons_operation(
-    builder, context: LessonOperationKeyboardContext
+    builder, context: LessonOperationKeyboardContext, *args, **kwargs
 ) -> InlineKeyboardBuilder:
     for lesson in context.lessons:
         builder.button(
@@ -293,24 +253,20 @@ def lessons_operation(
 
 
 def confirm_deletion(
-    builder, context: ConfirmDeletionKeyboardContext
+    builder, context: ConfirmDeletionKeyboardContext, *args, **kwargs
 ) -> InlineKeyboardBuilder:
-    builder.button(
-        text=BotStrings.Menu.YES,
-        callback_data=context.callback_data_cls(
-            uuid=context.callback_data.uuid, confirmed=True
-        ),
-    )
-    builder.button(
-        text=BotStrings.Menu.NO,
-        callback_data=Back(parent_keyboard="menu_keyboard"),
-    )
+    buttons = [
+        (BotStrings.Menu.YES, context.callback_data_cls(uuid=context.callback_data.uuid, confirmed=True)),
+        (BotStrings.Menu.NO, Back(parent_keyboard="menu_keyboard")),
+    ]
+    for button_text, callback in buttons:
+        builder.button(text=button_text, callback_data=callback)
     builder.adjust(2)
     return builder
 
 
 def specs_to_update(
-    builder, context: SpecsToUpdateKeyboardContext
+    builder, context: SpecsToUpdateKeyboardContext, *args, **kwargs
 ) -> InlineKeyboardBuilder:
     context.specs["all"] = "Всё"
     for spec, label in context.specs.items():
