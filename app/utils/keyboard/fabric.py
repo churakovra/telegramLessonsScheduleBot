@@ -8,7 +8,7 @@ from app.utils.datetime_utils import WEEKDAYS, day_format, time_format_HM
 from app.utils.enums.bot_values import WeekFlag
 from app.utils.enums.menu_type import MenuType
 from app.utils.keyboard.callback_factories.back import Back
-from app.utils.keyboard.callback_factories.menu import MainMenu, NewMainMenu
+from app.utils.keyboard.callback_factories.menu import MenuCallback
 from app.utils.keyboard.callback_factories.slots import (
     DaysForStudents,
     ResendSlots,
@@ -32,15 +32,15 @@ def teacher_main_menu(builder: InlineKeyboardBuilder) -> InlineKeyboardBuilder:
         [
             InlineKeyboardButton(
                 text="Ученики",
-                callback_data=MainMenu(menu_type=MenuType.TEACHER_STUDENT),
+                callback_data=MenuCallback(menu_type=MenuType.TEACHER_STUDENT),
             ),
             InlineKeyboardButton(
                 text="Расписание",
-                callback_data=MainMenu(menu_type=MenuType.TEACHER_SLOT),
+                callback_data=MenuCallback(menu_type=MenuType.TEACHER_SLOT),
             ),
             InlineKeyboardButton(
                 text="Предметы",
-                callback_data=MainMenu(menu_type=MenuType.TEACHER_LESSON),
+                callback_data=MenuCallback(menu_type=MenuType.TEACHER_LESSON),
             ),
         ]
     )
@@ -53,10 +53,10 @@ def student_main_menu(builder: InlineKeyboardBuilder) -> InlineKeyboardBuilder:
         [
             InlineKeyboardButton(
                 text="Преподаватели",
-                callback_data=MainMenu(menu_type=MenuType.STUDENT_TEACHER),
+                callback_data=MenuCallback(menu_type=MenuType.STUDENT_TEACHER),
             ),
             InlineKeyboardButton(
-                text="Занятия", callback_data=MainMenu(menu_type=MenuType.STUDENT_SLOT)
+                text="Занятия", callback_data=MenuCallback(menu_type=MenuType.STUDENT_SLOT)
             ),
         ]
     )
@@ -69,7 +69,7 @@ def admin_main_menu(builder: InlineKeyboardBuilder) -> InlineKeyboardBuilder:
         [
             InlineKeyboardButton(
                 text="Пока командами",
-                callback_data=MainMenu(menu_type=MenuType.ADMIN_TEMP),
+                callback_data=MenuCallback(menu_type=MenuType.ADMIN_TEMP),
             ),
         ]
     )
@@ -82,19 +82,19 @@ def teacher_sub_menu_student(builder: InlineKeyboardBuilder) -> InlineKeyboardBu
         [
             InlineKeyboardButton(
                 text="Мои ученики",
-                callback_data=MainMenu(menu_type=MenuType.TEACHER_STUDENT_LIST),
+                callback_data=MenuCallback(menu_type=MenuType.TEACHER_STUDENT_LIST),
             ),
             InlineKeyboardButton(
                 text="Добавить ученика",
-                callback_data=MainMenu(menu_type=MenuType.TEACHER_STUDENT_ADD),
+                callback_data=MenuCallback(menu_type=MenuType.TEACHER_STUDENT_ADD),
             ),
             InlineKeyboardButton(
                 text="Изменить ученика",
-                callback_data=MainMenu(menu_type=MenuType.TEACHER_STUDENT_UPDATE),
+                callback_data=MenuCallback(menu_type=MenuType.TEACHER_STUDENT_UPDATE),
             ),
             InlineKeyboardButton(
                 text="Удалить ученика",
-                callback_data=MainMenu(menu_type=MenuType.TEACHER_STUDENT_DELETE),
+                callback_data=MenuCallback(menu_type=MenuType.TEACHER_STUDENT_DELETE),
             ),
         ]
     )
@@ -106,15 +106,15 @@ def teacher_sub_menu_slot(builder: InlineKeyboardBuilder) -> InlineKeyboardBuild
         [
             InlineKeyboardButton(
                 text="Моё расписание",
-                callback_data=MainMenu(menu_type=MenuType.TEACHER_SLOT_LIST),
+                callback_data=MenuCallback(menu_type=MenuType.TEACHER_SLOT_LIST),
             ),
             InlineKeyboardButton(
                 text="Добавить окошки",
-                callback_data=MainMenu(menu_type=MenuType.TEACHER_SLOT_ADD),
+                callback_data=MenuCallback(menu_type=MenuType.TEACHER_SLOT_ADD),
             ),
             InlineKeyboardButton(
                 text="Изменить окошки",
-                callback_data=MainMenu(menu_type=MenuType.TEACHER_SLOT_UPDATE),
+                callback_data=MenuCallback(menu_type=MenuType.TEACHER_SLOT_UPDATE),
             ),
         ]
     )
@@ -126,19 +126,19 @@ def teacher_sub_menu_lesson(builder: InlineKeyboardBuilder) -> InlineKeyboardBui
         [
             InlineKeyboardButton(
                 text="Мои предметы",
-                callback_data=MainMenu(menu_type=MenuType.TEACHER_LESSON_LIST),
+                callback_data=MenuCallback(menu_type=MenuType.TEACHER_LESSON_LIST),
             ),
             InlineKeyboardButton(
                 text="Добавить предмет",
-                callback_data=MainMenu(menu_type=MenuType.TEACHER_LESSON_ADD),
+                callback_data=MenuCallback(menu_type=MenuType.TEACHER_LESSON_ADD),
             ),
             InlineKeyboardButton(
                 text="Изменить предмет",
-                callback_data=MainMenu(menu_type=MenuType.TEACHER_LESSON_UPDATE),
+                callback_data=MenuCallback(menu_type=MenuType.TEACHER_LESSON_UPDATE),
             ),
             InlineKeyboardButton(
                 text="Удалить предмет",
-                callback_data=MainMenu(menu_type=MenuType.TEACHER_LESSON_DELETE),
+                callback_data=MenuCallback(menu_type=MenuType.TEACHER_LESSON_DELETE),
             ),
         ]
     )
@@ -150,7 +150,7 @@ def student_sub_menu_teacher(builder: InlineKeyboardBuilder) -> InlineKeyboardBu
         [
             InlineKeyboardButton(
                 text="Заглушка",
-                callback_data=MainMenu(menu_type=MenuType.STUDENT_TEACHER_LIST),
+                callback_data=MenuCallback(menu_type=MenuType.STUDENT_TEACHER_LIST),
             ),
         ]
     )
@@ -162,7 +162,7 @@ def student_sub_menu_slot(builder: InlineKeyboardBuilder) -> InlineKeyboardBuild
         [
             InlineKeyboardButton(
                 text="Заглушка",
-                callback_data=MainMenu(menu_type=MenuType.STUDENT_SLOT_LIST),
+                callback_data=MenuCallback(menu_type=MenuType.STUDENT_SLOT_LIST),
             ),
         ]
     )
@@ -174,7 +174,7 @@ def admin_sub_menu_temp(builder: InlineKeyboardBuilder) -> InlineKeyboardBuilder
         [
             InlineKeyboardButton(
                 text="Пока командой",
-                callback_data=MainMenu(menu_type=MenuType.ADMIN_TEMP),
+                callback_data=MenuCallback(menu_type=MenuType.ADMIN_TEMP),
             ),
         ]
     )
@@ -254,12 +254,12 @@ def success_slot_bind(
             teacher_uuid=context.teacher_uuid, student_chat_id=context.student_chat_id
         ),
     )
-    builder.button(
-        text=BotStrings.Menu.MENU,
-        callback_data=NewMainMenu(
-            menu_type=MenuType.NEW, role=context.role, username=context.username
-        ),
-    )
+    # builder.button(
+    #     text=BotStrings.Menu.MENU,
+    #     callback_data=MenuCallback(
+    #         menu_type=MenuType.NEW, role=context.role, username=context.username
+    #     ),
+    # )
     builder.adjust(1)
     return builder
 

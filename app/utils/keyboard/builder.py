@@ -11,11 +11,12 @@ logger = setup_logger(__name__)
 
 
 class MarkupBuilder:
-    async def build(
-        self, markup: KeyboardType, context: KeyboardContext
+    @staticmethod
+    def build(
+        keyboard_type: KeyboardType, context: KeyboardContext | None = None
     ) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
-        keyboard_factory = keyboard_registry[markup]
+        keyboard_factory = keyboard_registry[keyboard_type]
         keyboard = keyboard_factory(builder, context)
         return keyboard.as_markup()
 
