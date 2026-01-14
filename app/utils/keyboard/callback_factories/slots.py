@@ -25,9 +25,9 @@ class SlotsForStudents(CallbackData, prefix="fabslots"):
     uuid_slot: UUID
 
 
-class UpdateSlots(SpecifyWeekMixin, prefix="update-slots"):
+class SlotsUpdate(SpecifyWeekMixin, prefix="update-slots"):
     pass
 
 
-class ListSlots(SpecifyWeekMixin, prefix="list-slots"):
+class SlotsList(SpecifyWeekMixin, prefix="list-slots"):
     pass

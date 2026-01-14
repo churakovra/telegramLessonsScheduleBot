@@ -11,7 +11,7 @@ from app.utils.enums.menu_type import MenuType
 from app.utils.exceptions.lesson_exceptions import LessonsNotFoundException
 from app.utils.exceptions.slot_exceptions import SlotsNotFoundException
 from app.utils.keyboard.callback_factories.menu import MenuCallback
-from app.utils.keyboard.callback_factories.slots import ListSlots
+from app.utils.keyboard.callback_factories.slots import SlotsList
 from app.utils.keyboard.builder import MarkupBuilder
 from app.utils.keyboard.context import SpecifyWeekKeyboardContext
 from app.utils.message_template import specify_week_message
@@ -21,17 +21,17 @@ router = Router()
 
 @router.callback_query(MenuCallback.filter(F.menu_type == MenuType.TEACHER_SLOT_LIST))
 async def on_teacher_slot_list(callback: CallbackQuery) -> None:
-    markup_context = SpecifyWeekKeyboardContext(ListSlots)
+    markup_context = SpecifyWeekKeyboardContext(SlotsList)
     markup = MarkupBuilder.build(KeyboardType.SPECIFY_WEEK, markup_context)
     message = specify_week_message(markup=markup)
     await callback.message.answer(**message)
     await callback.answer()
 
 
-@router.callback_query(ListSlots.filter())
+@router.callback_query(SlotsList.filter())
 async def handle_callback(
     callback: CallbackQuery,
-    callback_data: ListSlots,
+    callback_data: SlotsList,
     session: AsyncSession,
 ):
     teacher_service = TeacherService(session)
