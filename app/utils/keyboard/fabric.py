@@ -6,7 +6,6 @@ from app.utils.bot_strings import BotStrings
 from app.utils.datetime_utils import WEEKDAYS, day_format, time_format_HM
 from app.utils.enums.bot_values import WeekFlag
 from app.utils.enums.menu_type import MenuType
-from app.utils.keyboard.callback_factories.back import Back
 from app.utils.keyboard.callback_factories.menu import MenuCallback
 from app.utils.keyboard.callback_factories.slots import (
     DaysForStudents,
@@ -73,6 +72,7 @@ def teacher_sub_menu_student(
         ("Добавить ученика", MenuCallback(menu_type=MenuType.TEACHER_STUDENT_ADD)),
         ("Изменить ученика", MenuCallback(menu_type=MenuType.TEACHER_STUDENT_UPDATE)),
         ("Удалить ученика", MenuCallback(menu_type=MenuType.TEACHER_STUDENT_DELETE)),
+        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER)),
     ]
     for button_text, callback in buttons:
         builder.button(text=button_text, callback_data=callback)
@@ -87,6 +87,7 @@ def teacher_sub_menu_slot(
         ("Моё расписание", MenuCallback(menu_type=MenuType.TEACHER_SLOT_LIST)),
         ("Добавить окошки", MenuCallback(menu_type=MenuType.TEACHER_SLOT_ADD)),
         ("Изменить окошки", MenuCallback(menu_type=MenuType.TEACHER_SLOT_UPDATE)),
+        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER)),
     ]
     for button_text, callback in buttons:
         builder.button(text=button_text, callback_data=callback)
@@ -102,6 +103,7 @@ def teacher_sub_menu_lesson(
         ("Добавить предмет", MenuCallback(menu_type=MenuType.TEACHER_LESSON_ADD)),
         ("Изменить предмет", MenuCallback(menu_type=MenuType.TEACHER_LESSON_UPDATE)),
         ("Удалить предмет", MenuCallback(menu_type=MenuType.TEACHER_LESSON_DELETE)),
+        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER))
     ]
     for button_text, callback in buttons:
         builder.button(text=button_text, callback_data=callback)
@@ -114,6 +116,7 @@ def student_sub_menu_teacher(
 ) -> InlineKeyboardBuilder:
     buttons = [
         ("Заглушка", MenuCallback(menu_type=MenuType.STUDENT_TEACHER_LIST)),
+        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.STUDENT)),
     ]
     for button_text, callback in buttons:
         builder.button(text=button_text, callback_data=callback)
@@ -126,6 +129,7 @@ def student_sub_menu_slot(
 ) -> InlineKeyboardBuilder:
     buttons = [
         ("Заглушка", MenuCallback(menu_type=MenuType.STUDENT_SLOT_LIST)),
+        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.STUDENT)),
     ]
     for button_text, callback in buttons:
         builder.button(text=button_text, callback_data=callback)
@@ -138,6 +142,7 @@ def admin_sub_menu_temp(
 ) -> InlineKeyboardBuilder:
     buttons = [
         ("Пока командами", MenuCallback(menu_type=MenuType.ADMIN_TEMP)),
+        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.ADMIN)),
     ]
     for button_text, callback in buttons:
         builder.button(text=button_text, callback_data=callback)
@@ -159,12 +164,13 @@ def is_slots_correct_markup(builder, *args, **kwargs) -> InlineKeyboardBuilder:
 def send_slots(
     builder, context: SendSlotsKeyboardContext, *args, **kwargs
 ) -> InlineKeyboardBuilder:
-    builder.button(
-        text=BotStrings.Menu.SEND,
-        callback_data=SendSlots(
-            teacher_uuid=context.teacher_uuid, operation_type=context.operation_type
-        ),
-    )
+    buttons = [
+        (BotStrings.Menu.SEND, SendSlots(**context)),
+        (BotStrings.Menu.CANCEL, MenuCallback(menu_type=MenuType.TEACHER)),
+    ]
+    for button_text, callback in buttons:
+        builder.button(text=button_text, callback_data=callback)
+    builder.adjust(1)
     return builder
 
 
@@ -199,12 +205,6 @@ def slots_for_students(
         builder.button(
             text=time_str, callback_data=SlotsForStudents(uuid_slot=slot.uuid)
         )
-    builder.button(
-        text="Назад",
-        callback_data=Back(
-            parent_keyboard="days_for_students", teacher_uuid=context.teacher_uuid
-        ),
-    )
     builder.adjust(1)
     return builder
 
@@ -212,18 +212,12 @@ def slots_for_students(
 def success_slot_bind(
     builder, context: SuccessSlotBindKeyboardContext, *args, **kwargs
 ) -> InlineKeyboardBuilder:
-    builder.button(
-        text=BotStrings.Menu.BIND_ANOTHER_SLOT,
-        callback_data=ResendSlots(
-            teacher_uuid=context.teacher_uuid, student_chat_id=context.student_chat_id
-        ),
-    )
-    # builder.button(
-    #     text=BotStrings.Menu.MENU,
-    #     callback_data=MenuCallback(
-    #         menu_type=MenuType.NEW, role=context.role, username=context.username
-    #     ),
-    # )
+    buttons = [
+        (BotStrings.Menu.BIND_ANOTHER_SLOT, ResendSlots(**context)),
+        (BotStrings.Menu.MENU, MenuCallback(menu_type=MenuType.STUDENT))
+    ]
+    for button_text, callback in buttons:
+        builder.button(text=button_text, callback_data=callback)
     builder.adjust(1)
     return builder
 
@@ -257,7 +251,7 @@ def confirm_deletion(
 ) -> InlineKeyboardBuilder:
     buttons = [
         (BotStrings.Menu.YES, context.callback_data_cls(uuid=context.callback_data.uuid, confirmed=True)),
-        (BotStrings.Menu.NO, Back(parent_keyboard="menu_keyboard")),
+        (BotStrings.Menu.NO, MenuCallback(menu_type=MenuType.TEACHER)),
     ]
     for button_text, callback in buttons:
         builder.button(text=button_text, callback_data=callback)

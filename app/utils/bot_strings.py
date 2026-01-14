@@ -66,6 +66,7 @@ class BotStrings:
         NO = "Нет"
         MENU = "Меню"
         BACK = "Назад"
+        CANCEL = "Отмена"
         SEND = "Отправить"
         BIND_ANOTHER_SLOT = "Записаться ещё"
         CURRENT_WEEK = "Текущая"

@@ -13,6 +13,9 @@ logger = setup_logger(__name__)
 
 
 markup_type_by_menu_type = {
+    MenuType.TEACHER: KeyboardType.TEACHER_MAIN,
+    MenuType.STUDENT: KeyboardType.STUDENT_MAIN,
+    MenuType.ADMIN: KeyboardType.ADMIN_MAIN,
     MenuType.TEACHER_STUDENT: KeyboardType.TEACHER_SUB_STUDENT,
     MenuType.TEACHER_SLOT: KeyboardType.TEACHER_SUB_SLOT,
     MenuType.TEACHER_LESSON: KeyboardType.TEACHER_SUB_LESSON,
