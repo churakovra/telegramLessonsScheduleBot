@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.orm.user import User
+from app.database.orm.user import User
 from app.schemas.student_dto import StudentDTO
 
 

@@ -5,12 +5,12 @@ from uuid import UUID, uuid4
 from sqlalchemy import BigInteger, DateTime, String, Uuid, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.orm.base import Base
+from app.database.orm.base import Base
 
 if TYPE_CHECKING:
-    from app.db.orm.lesson import Lesson
-    from app.db.orm.slot import Slot
-    from app.db.orm.teacher_student import TeacherStudent
+    from app.database.orm.lesson import Lesson
+    from app.database.orm.slot import Slot
+    from app.database.orm.teacher_student import TeacherStudent
 
 
 class User(Base):

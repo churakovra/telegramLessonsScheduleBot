@@ -5,12 +5,12 @@ from sqlalchemy import URL
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from alembic import context
-from app.db.database import url
-from app.db.orm.user import User
-from app.db.orm.lesson import Lesson
-from app.db.orm.slot import Slot
-from app.db.orm.teacher_student import TeacherStudent
-from app.db.orm.base import Base
+from app.database.database import url
+from app.database.orm.user import User
+from app.database.orm.lesson import Lesson
+from app.database.orm.slot import Slot
+from app.database.orm.teacher_student import TeacherStudent
+from app.database.orm.base import Base
 
 url = URL.create(
     drivername="postgresql+asyncpg",

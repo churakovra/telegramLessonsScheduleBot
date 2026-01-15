@@ -5,7 +5,7 @@ from sqlalchemy import and_, delete, extract, func, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.orm.slot import Slot
+from app.database.orm.slot import Slot
 from app.schemas.slot_dto import CreateSlotDTO, SlotDTO
 
 

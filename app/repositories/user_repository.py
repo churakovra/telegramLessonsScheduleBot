@@ -3,8 +3,8 @@ from uuid import UUID
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.orm.lesson import Lesson
-from app.db.orm.user import User
+from app.database.orm.lesson import Lesson
+from app.database.orm.user import User
 from app.utils.enums.bot_values import UserRole
 from app.schemas.user_dto import CreateUserDTO, UserDTO
 

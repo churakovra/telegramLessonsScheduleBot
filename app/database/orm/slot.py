@@ -4,8 +4,8 @@ from uuid import UUID, uuid4
 from sqlalchemy import DateTime, ForeignKey, UniqueConstraint, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.orm.base import Base
-from app.db.orm.user import User
+from app.database.orm.base import Base
+from app.database.orm.user import User
 
 
 class Slot(Base):

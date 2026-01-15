@@ -4,9 +4,9 @@ from sqlalchemy import select, and_, update, func, not_, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.orm.slot import Slot
-from app.db.orm.teacher_student import TeacherStudent
-from app.db.orm.user import User
+from app.database.orm.slot import Slot
+from app.database.orm.teacher_student import TeacherStudent
+from app.database.orm.user import User
 from app.schemas.user_dto import UserDTO
 
 

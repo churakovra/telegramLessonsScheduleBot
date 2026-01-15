@@ -3,7 +3,7 @@ import pytest_asyncio
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
 
-from app.db.database import url
+from app.database.database import url
 from app.repositories.user_repository import UserRepository
 from app.schemas.user_dto import CreateUserDTO
 from app.utils.enums.bot_values import UserRole

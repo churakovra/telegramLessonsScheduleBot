@@ -3,9 +3,9 @@ from uuid import UUID
 from sqlalchemy import ForeignKey, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.orm.base import Base
-from app.db.orm.teacher_student import TeacherStudent
-from app.db.orm.user import User
+from app.database.orm.base import Base
+from app.database.orm.teacher_student import TeacherStudent
+from app.database.orm.user import User
 
 
 class Lesson(Base):

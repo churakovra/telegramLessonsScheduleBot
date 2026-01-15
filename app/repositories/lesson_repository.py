@@ -3,8 +3,8 @@ from uuid import UUID
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.orm.lesson import Lesson
-from app.db.orm.teacher_student import TeacherStudent
+from app.database.orm.lesson import Lesson
+from app.database.orm.teacher_student import TeacherStudent
 from app.schemas.lesson_dto import CreateLessonDTO, LessonDTO
 from app.schemas.slot_dto import SlotDTO
 from app.utils.logger import setup_logger
