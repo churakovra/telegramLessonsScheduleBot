@@ -232,6 +232,7 @@ def specify_week(
     buttons = [
         (BotStrings.Menu.CURRENT_WEEK, context.callback_data(week_flag=WeekFlag.CURRENT)),
         (BotStrings.Menu.NEXT_WEEK, context.callback_data(week_flag=WeekFlag.NEXT)),
+        (BotStrings.Menu.CANCEL, MenuCallback(menu_type=MenuType.TEACHER))
     ]
     for button_text, callback in buttons:
         builder.button(text=button_text, callback_data=callback)
