@@ -2,7 +2,7 @@ from aiogram import F, Router
 from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.notifiers.telegram_notifier import TelegramNotifier
+from app.notifier.telegram_notifier import TelegramNotifier
 from app.services.teacher_service import TeacherService
 from app.services.user_service import UserService
 from app.utils.enums.menu_type import MenuType

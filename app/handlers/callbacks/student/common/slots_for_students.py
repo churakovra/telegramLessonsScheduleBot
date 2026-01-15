@@ -4,7 +4,7 @@ from aiogram import Router
 from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.notifiers.telegram_notifier import TelegramNotifier
+from app.notifier.telegram_notifier import TelegramNotifier
 from app.schemas.slot_dto import SlotDTO
 from app.schemas.user_dto import UserDTO
 from app.services.slot_service import SlotService

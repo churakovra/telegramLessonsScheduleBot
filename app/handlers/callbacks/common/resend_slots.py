@@ -2,7 +2,7 @@ from aiogram import Router
 from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.notifiers.telegram_notifier import TelegramNotifier
+from app.notifier.telegram_notifier import TelegramNotifier
 from app.services.slot_service import SlotService
 from app.utils.enums.bot_values import KeyboardType
 from app.keyboard.callback_factories.slots import ResendSlots

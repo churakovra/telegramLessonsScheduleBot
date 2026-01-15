@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.notifiers.telegram_notifier import TelegramNotifier
+from app.notifier.telegram_notifier import TelegramNotifier
 from app.services.student_service import StudentService
 from app.services.teacher_service import TeacherService
 from app.services.user_service import UserService

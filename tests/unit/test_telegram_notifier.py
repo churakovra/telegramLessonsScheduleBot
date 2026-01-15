@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import AsyncMock, call
 
-from app.notifiers.telegram_notifier import TelegramNotifier
+from app.notifier.telegram_notifier import TelegramNotifier
 from app.schemas.bot_message import BotMessage
 
 

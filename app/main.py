@@ -5,7 +5,7 @@ from aiogram import Bot, Dispatcher
 from app.config.settings import BOT_TOKEN
 from app.handlers import register_routers
 from app.middlewares.setup import setup_middlewares
-from app.notifiers.telegram_notifier import TelegramNotifier
+from app.notifier.telegram_notifier import TelegramNotifier
 from app.utils.logger import setup_logger
 
 logger = setup_logger(__name__)

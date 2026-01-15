@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.utils.enums.bot_values import OperationType, UserRole
 from app.utils.logger import setup_logger
-from app.notifiers.telegram_notifier import TelegramNotifier
+from app.notifier.telegram_notifier import TelegramNotifier
 from app.services.lesson_service import LessonService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
