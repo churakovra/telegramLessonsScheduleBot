@@ -3,7 +3,7 @@ from collections.abc import Callable
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from app.utils.enums.bot_values import KeyboardType, UserRole
-from app.utils.keyboard.fabric import (
+from app.keyboard.fabric import (
     admin_main_menu,
     admin_sub_menu_temp,
     confirm_deletion,

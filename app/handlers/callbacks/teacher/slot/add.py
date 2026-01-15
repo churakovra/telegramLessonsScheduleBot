@@ -8,7 +8,7 @@ from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
 from app.utils.enums.bot_values import OperationType, WeekFlag
 from app.utils.enums.menu_type import MenuType
-from app.utils.keyboard.callback_factories.menu import MenuCallback
+from app.keyboard.callback_factories.menu import MenuCallback
 from app.utils.logger import setup_logger
 
 router = Router()

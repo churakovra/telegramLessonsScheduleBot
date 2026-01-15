@@ -8,9 +8,9 @@ from app.services.teacher_service import TeacherService
 from app.services.user_service import UserService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
-from app.utils.keyboard.builder import MarkupBuilder
+from app.keyboard.builder import MarkupBuilder
 from app.utils.message_template import main_menu_message
-from app.utils.keyboard import markup_type_by_role
+from app.keyboard import markup_type_by_role
 
 router = Router()
 

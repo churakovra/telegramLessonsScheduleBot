@@ -11,10 +11,10 @@ from app.utils.enums.bot_values import KeyboardType, OperationType
 from app.utils.enums.menu_type import MenuType
 from app.utils.exceptions.lesson_exceptions import LessonsNotFoundException
 from app.utils.exceptions.user_exceptions import UserNotFoundException
-from app.utils.keyboard.callback_factories.lessons import LessonUpdate
-from app.utils.keyboard.callback_factories.menu import MenuCallback
-from app.utils.keyboard.builder import MarkupBuilder
-from app.utils.keyboard.context import LessonOperationKeyboardContext, SpecsToUpdateKeyboardContext
+from app.keyboard.callback_factories.lessons import LessonUpdate
+from app.keyboard.callback_factories.menu import MenuCallback
+from app.keyboard.builder import MarkupBuilder
+from app.keyboard.context import LessonOperationKeyboardContext, SpecsToUpdateKeyboardContext
 from app.utils.logger import setup_logger
 
 router = Router()

@@ -8,8 +8,8 @@ from app.services.slot_service import SlotService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
 from app.utils.enums.bot_values import KeyboardType, OperationType
-from app.utils.keyboard.builder import MarkupBuilder
-from app.utils.keyboard.context import SendSlotsKeyboardContext
+from app.keyboard.builder import MarkupBuilder
+from app.keyboard.context import SendSlotsKeyboardContext
 from app.utils.logger import setup_logger
 
 logger = setup_logger(__name__)

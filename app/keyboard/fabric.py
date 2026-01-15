@@ -6,14 +6,14 @@ from app.utils.bot_strings import BotStrings
 from app.utils.datetime_utils import WEEKDAYS, day_format, time_format_HM
 from app.utils.enums.bot_values import WeekFlag
 from app.utils.enums.menu_type import MenuType
-from app.utils.keyboard.callback_factories.menu import MenuCallback
-from app.utils.keyboard.callback_factories.slots import (
+from app.keyboard.callback_factories.menu import MenuCallback
+from app.keyboard.callback_factories.slots import (
     DaysForStudents,
     ResendSlots,
     SendSlots,
     SlotsForStudents,
 )
-from app.utils.keyboard.context import (
+from app.keyboard.context import (
     ConfirmDeletionKeyboardContext,
     DaysForStudentsKeyboardContext,
     LessonOperationKeyboardContext,

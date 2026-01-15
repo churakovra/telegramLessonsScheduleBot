@@ -7,7 +7,7 @@ from app.services.slot_service import SlotService
 from app.services.teacher_service import TeacherService
 from app.states.schedule_states import ScheduleStates
 from app.utils.enums.bot_values import KeyboardType
-from app.utils.keyboard.builder import MarkupBuilder
+from app.keyboard.builder import MarkupBuilder
 from app.utils.logger import setup_logger
 
 router = Router()

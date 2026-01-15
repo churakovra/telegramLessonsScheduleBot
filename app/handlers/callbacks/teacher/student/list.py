@@ -8,9 +8,9 @@ from app.services.user_service import UserService
 from app.utils.enums.menu_type import MenuType
 from app.utils.exceptions.teacher_exceptions import TeacherStudentsNotFound
 from app.utils.exceptions.user_exceptions import UserNotFoundException
-from app.utils.keyboard.callback_factories.menu import MenuCallback
-from app.utils.keyboard import markup_type_by_role
-from app.utils.keyboard.builder import MarkupBuilder
+from app.keyboard.callback_factories.menu import MenuCallback
+from app.keyboard import markup_type_by_role
+from app.keyboard.builder import MarkupBuilder
 from app.utils.message_template import main_menu_message
 
 router = Router()

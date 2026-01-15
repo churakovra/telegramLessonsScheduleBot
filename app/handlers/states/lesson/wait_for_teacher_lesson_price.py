@@ -9,8 +9,8 @@ from app.notifiers.telegram_notifier import TelegramNotifier
 from app.services.lesson_service import LessonService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
-from app.utils.keyboard.builder import MarkupBuilder
-from app.utils.keyboard import markup_type_by_role
+from app.keyboard.builder import MarkupBuilder
+from app.keyboard import markup_type_by_role
 from app.utils.message_template import main_menu_message
 
 router = Router()

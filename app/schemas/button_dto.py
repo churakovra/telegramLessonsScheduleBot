@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from app.utils.keyboard.callback_factories.menu import MenuCallback
+from app.keyboard.callback_factories.menu import MenuCallback
 
 
 class ButtonDTO(BaseModel):

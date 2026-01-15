@@ -4,12 +4,12 @@ from uuid import UUID
 from app.schemas.lesson_dto import LessonDTO
 from app.schemas.slot_dto import SlotDTO
 from app.utils.enums.bot_values import OperationType, UserRole
-from app.utils.keyboard.callback_factories.common import (
+from app.keyboard.callback_factories.common import (
     BaseCallback,
     BaseDelete,
     BaseUpdate,
 )
-from app.utils.keyboard.callback_factories.mixins import SpecifyWeekMixin
+from app.keyboard.callback_factories.mixins import SpecifyWeekMixin
 
 
 @dataclass

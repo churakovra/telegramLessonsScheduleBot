@@ -3,7 +3,7 @@ from uuid import UUID
 from aiogram.filters.callback_data import CallbackData
 
 from app.utils.enums.bot_values import OperationType
-from app.utils.keyboard.callback_factories.mixins import SpecifyWeekMixin
+from app.keyboard.callback_factories.mixins import SpecifyWeekMixin
 
 
 class SendSlots(CallbackData, prefix="send-slots-to-students"):

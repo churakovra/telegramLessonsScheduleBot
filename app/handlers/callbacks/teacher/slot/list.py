@@ -10,10 +10,10 @@ from app.utils.enums.bot_values import KeyboardType
 from app.utils.enums.menu_type import MenuType
 from app.utils.exceptions.lesson_exceptions import LessonsNotFoundException
 from app.utils.exceptions.slot_exceptions import SlotsNotFoundException
-from app.utils.keyboard.callback_factories.menu import MenuCallback
-from app.utils.keyboard.callback_factories.slots import SlotsList
-from app.utils.keyboard.builder import MarkupBuilder
-from app.utils.keyboard.context import SpecifyWeekKeyboardContext
+from app.keyboard.callback_factories.menu import MenuCallback
+from app.keyboard.callback_factories.slots import SlotsList
+from app.keyboard.builder import MarkupBuilder
+from app.keyboard.context import SpecifyWeekKeyboardContext
 from app.utils.message_template import specify_week_message
 
 router = Router()
