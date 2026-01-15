@@ -13,7 +13,7 @@ from app.services.teacher_service import TeacherService
 from app.utils.datetime_utils import full_format_no_sec
 from app.utils.enums.bot_values import KeyboardType
 from app.utils.exceptions.user_exceptions import UserNotFoundException
-from app.keyboard.callback_factories.slots import SlotsForStudents
+from app.keyboard.callback_factories.slot import SlotsForStudents
 from app.keyboard.builder import MarkupBuilder
 from app.keyboard.context import SuccessSlotBindKeyboardContext
 from app.utils.message_template import slot_is_taken_message, success_slot_bind_message

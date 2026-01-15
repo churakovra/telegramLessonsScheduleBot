@@ -8,9 +8,11 @@ class UserRole(StrEnum):
     NOT_DEFINED = "not defined"
 
 
-class OperationType(StrEnum):
-    ADD = "add"
+class ActionType(StrEnum):
+    CREATE = "create"
     UPDATE = "update"
+    DELETE = "delete"
+    LIST = "list"
 
 
 class WeekFlag(StrEnum):

@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.notifier.telegram_notifier import TelegramNotifier
 from app.services.slot_service import SlotService
 from app.utils.enums.bot_values import KeyboardType
-from app.keyboard.callback_factories.slots import ResendSlots
+from app.keyboard.callback_factories.slot import ResendSlots
 from app.keyboard.builder import MarkupBuilder
 from app.keyboard.context import DaysForStudentsKeyboardContext
 from app.utils.message_template import slots_added_for_student_message

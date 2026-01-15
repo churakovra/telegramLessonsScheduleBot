@@ -2,15 +2,19 @@ import calendar
 
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+from app.keyboard.callback_factories.lesson import LessonCallback
+from app.keyboard.callback_factories.student import StudentCallback
+from app.keyboard.callback_factories.teacher import TeacherCallback
 from app.utils.bot_strings import BotStrings
 from app.utils.datetime_utils import WEEKDAYS, day_format, time_format_HM
-from app.utils.enums.bot_values import WeekFlag
+from app.utils.enums.bot_values import ActionType, WeekFlag
 from app.utils.enums.menu_type import MenuType
 from app.keyboard.callback_factories.menu import MenuCallback
-from app.keyboard.callback_factories.slots import (
+from app.keyboard.callback_factories.slot import (
     DaysForStudents,
     ResendSlots,
     SendSlots,
+    SlotCallback,
     SlotsForStudents,
 )
 from app.keyboard.context import (
@@ -68,10 +72,10 @@ def teacher_sub_menu_student(
     builder: InlineKeyboardBuilder, *args, **kwargs
 ) -> InlineKeyboardBuilder:
     buttons = [
-        ("Мои ученики", MenuCallback(menu_type=MenuType.TEACHER_STUDENT_LIST)),
-        ("Добавить ученика", MenuCallback(menu_type=MenuType.TEACHER_STUDENT_ADD)),
-        ("Изменить ученика", MenuCallback(menu_type=MenuType.TEACHER_STUDENT_UPDATE)),
-        ("Удалить ученика", MenuCallback(menu_type=MenuType.TEACHER_STUDENT_DELETE)),
+        ("Мои ученики", StudentCallback(action=ActionType.LIST)),
+        ("Добавить ученика", StudentCallback(action=ActionType.CREATE)),
+        ("Изменить ученика", StudentCallback(action=ActionType.UPDATE)),
+        ("Удалить ученика", StudentCallback(action=ActionType.DELETE)),
         (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER)),
     ]
     for button_text, callback in buttons:
@@ -84,9 +88,9 @@ def teacher_sub_menu_slot(
     builder: InlineKeyboardBuilder, *args, **kwargs
 ) -> InlineKeyboardBuilder:
     buttons = [
-        ("Моё расписание", MenuCallback(menu_type=MenuType.TEACHER_SLOT_LIST)),
-        ("Добавить окошки", MenuCallback(menu_type=MenuType.TEACHER_SLOT_ADD)),
-        ("Изменить окошки", MenuCallback(menu_type=MenuType.TEACHER_SLOT_UPDATE)),
+        ("Моё расписание", SlotCallback(action=ActionType.LIST)),
+        ("Добавить окошки", SlotCallback(action=ActionType.CREATE)),
+        ("Изменить окошки", SlotCallback(action=ActionType.UPDATE)),
         (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER)),
     ]
     for button_text, callback in buttons:
@@ -99,10 +103,10 @@ def teacher_sub_menu_lesson(
     builder: InlineKeyboardBuilder, *args, **kwargs
 ) -> InlineKeyboardBuilder:
     buttons = [
-        ("Мои предметы", MenuCallback(menu_type=MenuType.TEACHER_LESSON_LIST)),
-        ("Добавить предмет", MenuCallback(menu_type=MenuType.TEACHER_LESSON_ADD)),
-        ("Изменить предмет", MenuCallback(menu_type=MenuType.TEACHER_LESSON_UPDATE)),
-        ("Удалить предмет", MenuCallback(menu_type=MenuType.TEACHER_LESSON_DELETE)),
+        ("Мои предметы", LessonCallback(action=ActionType.LIST)),
+        ("Добавить предмет", LessonCallback(action=ActionType.CREATE)),
+        ("Изменить предмет", LessonCallback(action=ActionType.UPDATE)),
+        ("Удалить предмет", LessonCallback(action=ActionType.DELETE)),
         (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER))
     ]
     for button_text, callback in buttons:
@@ -115,7 +119,7 @@ def student_sub_menu_teacher(
     builder: InlineKeyboardBuilder, *args, **kwargs
 ) -> InlineKeyboardBuilder:
     buttons = [
-        ("Заглушка", MenuCallback(menu_type=MenuType.STUDENT_TEACHER_LIST)),
+        ("Заглушка", TeacherCallback(action=ActionType.LIST)),
         (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.STUDENT)),
     ]
     for button_text, callback in buttons:
@@ -128,7 +132,7 @@ def student_sub_menu_slot(
     builder: InlineKeyboardBuilder, *args, **kwargs
 ) -> InlineKeyboardBuilder:
     buttons = [
-        ("Заглушка", MenuCallback(menu_type=MenuType.STUDENT_SLOT_LIST)),
+        ("Заглушка", SlotCallback(action=ActionType.LIST)),
         (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.STUDENT)),
     ]
     for button_text, callback in buttons:

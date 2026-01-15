@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.utils.enums.bot_values import OperationType, UserRole
+from app.utils.enums.bot_values import ActionType, UserRole
 from app.utils.logger import setup_logger
 from app.notifier.telegram_notifier import TelegramNotifier
 from app.services.lesson_service import LessonService
@@ -37,7 +37,7 @@ async def handle_state(
 
     try:
         lesson_service = LessonService(session)
-        if operation_type == OperationType.ADD:
+        if operation_type == ActionType.CREATE:
             await lesson_service.create_lesson(label=label, duration=duration, uuid_teacher=uuid_teacher, price=price)
             response_msg = BotStrings.Teacher.TEACHER_LESSON_ADD_SUCCESS
         else:

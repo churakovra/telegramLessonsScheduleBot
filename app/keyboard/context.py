@@ -3,10 +3,10 @@ from uuid import UUID
 
 from app.schemas.lesson_dto import LessonDTO
 from app.schemas.slot_dto import SlotDTO
-from app.utils.enums.bot_values import OperationType, UserRole
+from app.utils.enums.bot_values import ActionType, UserRole
 from app.keyboard.callback_factories.common import (
-    BaseCallback,
     BaseDelete,
+    BaseOperationCallback,
     BaseUpdate,
 )
 from app.keyboard.callback_factories.mixins import SpecifyWeekMixin
@@ -20,7 +20,7 @@ class KeyboardContext:
 @dataclass
 class SendSlotsKeyboardContext(KeyboardContext):
     teacher_uuid: UUID
-    operation_type: OperationType
+    operation_type: ActionType
 
 
 @dataclass
@@ -51,7 +51,7 @@ class SpecifyWeekKeyboardContext(KeyboardContext):
 @dataclass
 class LessonOperationKeyboardContext(KeyboardContext):
     lessons: list[LessonDTO]
-    callback_cls: type[BaseCallback]
+    callback_cls: type[BaseOperationCallback]
 
 
 @dataclass
