@@ -1,7 +1,5 @@
 import calendar
 
-from aiogram.utils.keyboard import InlineKeyboardBuilder
-
 from app.keyboard.callback_factories.lesson import LessonCallback
 from app.keyboard.callback_factories.student import StudentCallback
 from app.keyboard.callback_factories.teacher import TeacherCallback
@@ -29,48 +27,34 @@ from app.keyboard.context import (
 )
 
 
-def teacher_main_menu(
-    builder: InlineKeyboardBuilder, *args, **kwargs
-) -> InlineKeyboardBuilder:
+def teacher_main_menu(*args, **kwargs) -> tuple[list, int]:
     buttons = [
         ("Ученики", MenuCallback(menu_type=MenuType.TEACHER_STUDENT)),
         ("Расписание", MenuCallback(menu_type=MenuType.TEACHER_SLOT)),
         ("Предметы", MenuCallback(menu_type=MenuType.TEACHER_LESSON)),
     ]
-    for button_text, callback in buttons:
-        builder.button(text=button_text, callback_data=callback)
-    builder.adjust(1)
-    return builder
+    adjust = 1
+    return buttons, adjust
 
 
-def student_main_menu(
-    builder: InlineKeyboardBuilder, *args, **kwargs
-) -> InlineKeyboardBuilder:
+def student_main_menu(*args, **kwargs) -> tuple[list, int]:
     buttons = [
         ("Преподаватели", MenuCallback(menu_type=MenuType.STUDENT_TEACHER)),
         ("Занятия", MenuCallback(menu_type=MenuType.STUDENT_SLOT)),
     ]
-    for button_text, callback in buttons:
-        builder.button(text=button_text, callback_data=callback)
-    builder.adjust(1)
-    return builder
+    adjust = 1
+    return buttons, adjust
 
 
-def admin_main_menu(
-    builder: InlineKeyboardBuilder, *args, **kwargs
-) -> InlineKeyboardBuilder:
+def admin_main_menu(*args, **kwargs) -> tuple[list, int]:
     buttons = [
         ("Пока командами", MenuCallback(menu_type=MenuType.ADMIN_TEMP)),
     ]
-    for button_text, callback in buttons:
-        builder.button(text=button_text, callback_data=callback)
-    builder.adjust(1)
-    return builder
+    adjust = 1
+    return buttons, adjust
 
 
-def teacher_sub_menu_student(
-    builder: InlineKeyboardBuilder, *args, **kwargs
-) -> InlineKeyboardBuilder:
+def teacher_sub_menu_student(*args, **kwargs) -> tuple[list, int]:
     buttons = [
         ("Мои ученики", StudentCallback(action=ActionType.LIST)),
         ("Добавить ученика", StudentCallback(action=ActionType.CREATE)),
@@ -78,110 +62,83 @@ def teacher_sub_menu_student(
         ("Удалить ученика", StudentCallback(action=ActionType.DELETE)),
         (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER)),
     ]
-    for button_text, callback in buttons:
-        builder.button(text=button_text, callback_data=callback)
-    builder.adjust(1)
-    return builder
+    adjust = 1
+    return buttons, adjust
 
 
-def teacher_sub_menu_slot(
-    builder: InlineKeyboardBuilder, *args, **kwargs
-) -> InlineKeyboardBuilder:
+def teacher_sub_menu_slot(*args, **kwargs) -> tuple[list, int]:
     buttons = [
         ("Моё расписание", SlotCallback(action=ActionType.LIST)),
         ("Добавить окошки", SlotCallback(action=ActionType.CREATE)),
         ("Изменить окошки", SlotCallback(action=ActionType.UPDATE)),
         (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER)),
     ]
-    for button_text, callback in buttons:
-        builder.button(text=button_text, callback_data=callback)
-    builder.adjust(1)
-    return builder
+    adjust = 1
+    return buttons, adjust
 
 
-def teacher_sub_menu_lesson(
-    builder: InlineKeyboardBuilder, *args, **kwargs
-) -> InlineKeyboardBuilder:
+def teacher_sub_menu_lesson(*args, **kwargs) -> tuple[list, int]:
     buttons = [
         ("Мои предметы", LessonCallback(action=ActionType.LIST)),
         ("Добавить предмет", LessonCallback(action=ActionType.CREATE)),
         ("Изменить предмет", LessonCallback(action=ActionType.UPDATE)),
         ("Удалить предмет", LessonCallback(action=ActionType.DELETE)),
-        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER))
+        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER)),
     ]
-    for button_text, callback in buttons:
-        builder.button(text=button_text, callback_data=callback)
-    builder.adjust(1)
-    return builder
+    adjust = 1
+    return buttons, adjust
 
 
-def student_sub_menu_teacher(
-    builder: InlineKeyboardBuilder, *args, **kwargs
-) -> InlineKeyboardBuilder:
+def student_sub_menu_teacher(*args, **kwargs) -> tuple[list, int]:
     buttons = [
         ("Заглушка", TeacherCallback(action=ActionType.LIST)),
         (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.STUDENT)),
     ]
-    for button_text, callback in buttons:
-        builder.button(text=button_text, callback_data=callback)
-    builder.adjust(1)
-    return builder
+    adjust = 1
+    return buttons, adjust
 
 
-def student_sub_menu_slot(
-    builder: InlineKeyboardBuilder, *args, **kwargs
-) -> InlineKeyboardBuilder:
+def student_sub_menu_slot(*args, **kwargs) -> tuple[list, int]:
     buttons = [
         ("Заглушка", SlotCallback(action=ActionType.LIST)),
         (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.STUDENT)),
     ]
-    for button_text, callback in buttons:
-        builder.button(text=button_text, callback_data=callback)
-    builder.adjust(1)
-    return builder
+    adjust = 1
+    return buttons, adjust
 
 
-def admin_sub_menu_temp(
-    builder: InlineKeyboardBuilder, *args, **kwargs
-) -> InlineKeyboardBuilder:
+def admin_sub_menu_temp(*args, **kwargs) -> tuple[list, int]:
     buttons = [
         ("Пока командами", MenuCallback(menu_type=MenuType.ADMIN_TEMP)),
         (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.ADMIN)),
     ]
-    for button_text, callback in buttons:
-        builder.button(text=button_text, callback_data=callback)
-    builder.adjust(1)
-    return builder
+    adjust = 1
+    return buttons, adjust
 
 
-def is_slots_correct_markup(builder, *args, **kwargs) -> InlineKeyboardBuilder:
+def is_slots_correct_markup(*args, **kwargs) -> tuple[list, int]:
     buttons = [
         (BotStrings.Menu.YES, BotStrings.Teacher.CALLBACK_SLOTS_CORRECT),
-        (BotStrings.Menu.NO, BotStrings.Teacher.CALLBACK_SLOTS_INCORRECT)
+        (BotStrings.Menu.NO, BotStrings.Teacher.CALLBACK_SLOTS_INCORRECT),
     ]
-    for button_text, callback in buttons:
-        builder.button(text=button_text, callback_data=callback)
-    builder.adjust(2)
-    return builder
+    adjust = 2
+    return buttons, adjust
 
 
-def send_slots(
-    builder, context: SendSlotsKeyboardContext, *args, **kwargs
-) -> InlineKeyboardBuilder:
+def send_slots(context: SendSlotsKeyboardContext, *args, **kwargs) -> tuple[list, int]:
     buttons = [
         (BotStrings.Menu.SEND, SendSlots(**context)),
         (BotStrings.Menu.CANCEL, MenuCallback(menu_type=MenuType.TEACHER)),
     ]
-    for button_text, callback in buttons:
-        builder.button(text=button_text, callback_data=callback)
-    builder.adjust(1)
-    return builder
+    adjust = 1
+    return buttons, adjust
 
 
 def days_for_students(
-    builder, context: DaysForStudentsKeyboardContext, *args, **kwargs
-) -> InlineKeyboardBuilder:
+    context: DaysForStudentsKeyboardContext, *args, **kwargs
+) -> tuple[list, int]:
     prev_slot_date = None
+    buttons = []
     for slot in context.slots:
         slot_date = slot.dt_start.date()
         if slot_date != prev_slot_date:
@@ -189,91 +146,86 @@ def days_for_students(
                 slot_date.year, slot_date.month, slot_date.day
             )
             day_name = WEEKDAYS[day_number][2]
-            builder.button(
-                text=day_name,
-                callback_data=DaysForStudents(
-                    day=slot_date.strftime(day_format),
-                    teacher_uuid=context.teacher_uuid,
-                ),
+            callback_data = DaysForStudents(
+                day=slot_date.strftime(day_format),
+                teacher_uuid=context.teacher_uuid,
             )
+            buttons.append((day_name, callback_data))
             prev_slot_date = slot_date
-    builder.adjust(1)
-    return builder
+    adjust = 1
+    return buttons, adjust
 
 
 def slots_for_students(
-    builder, context: SlotsForStudentsKeyboardContext, *args, **kwargs
-) -> InlineKeyboardBuilder:
+    context: SlotsForStudentsKeyboardContext, *args, **kwargs
+) -> tuple[list, int]:
+    buttons = []
     for slot in context.slots:
         time_str = slot.dt_start.strftime(time_format_HM)
-        builder.button(
-            text=time_str, callback_data=SlotsForStudents(uuid_slot=slot.uuid)
-        )
-    builder.adjust(1)
-    return builder
+        buttons.append((time_str, SlotsForStudents(uuid_slot=slot.uuid)))
+    adjust = 1
+    return buttons, adjust
 
 
 def success_slot_bind(
-    builder, context: SuccessSlotBindKeyboardContext, *args, **kwargs
-) -> InlineKeyboardBuilder:
+    context: SuccessSlotBindKeyboardContext, *args, **kwargs
+) -> tuple[list, int]:
     buttons = [
         (BotStrings.Menu.BIND_ANOTHER_SLOT, ResendSlots(**context)),
-        (BotStrings.Menu.MENU, MenuCallback(menu_type=MenuType.STUDENT))
+        (BotStrings.Menu.MENU, MenuCallback(menu_type=MenuType.STUDENT)),
     ]
-    for button_text, callback in buttons:
-        builder.button(text=button_text, callback_data=callback)
-    builder.adjust(1)
-    return builder
+    adjust = 1
+    return buttons, adjust
 
 
 def specify_week(
-    builder, context: SpecifyWeekKeyboardContext, *args, **kwargs
-) -> InlineKeyboardBuilder:
+    context: SpecifyWeekKeyboardContext, *args, **kwargs
+) -> tuple[list, int]:
     buttons = [
-        (BotStrings.Menu.CURRENT_WEEK, context.callback_data(week_flag=WeekFlag.CURRENT)),
+        (BotStrings.Menu.CURRENT_WEEK, context.callback_data(week_flag=WeekFlag.CURRENT),),
         (BotStrings.Menu.NEXT_WEEK, context.callback_data(week_flag=WeekFlag.NEXT)),
-        (BotStrings.Menu.CANCEL, MenuCallback(menu_type=MenuType.TEACHER))
+        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER_SLOT)),
     ]
-    for button_text, callback in buttons:
-        builder.button(text=button_text, callback_data=callback)
-    builder.adjust(2)
-    return builder
+    adjust = 2
+    return buttons, adjust
 
 
 def lessons_operation(
-    builder, context: LessonOperationKeyboardContext, *args, **kwargs
-) -> InlineKeyboardBuilder:
-    for lesson in context.lessons:
-        builder.button(
-            text=lesson.label, callback_data=context.callback_cls(uuid=lesson.uuid)
-        )
-    builder.adjust(1)
-    return builder
+    context: LessonOperationKeyboardContext, *args, **kwargs
+) -> tuple[list, int]:
+    buttons = [
+        (lesson.label, context.callback_cls(uuid=lesson.uuid))
+        for lesson in context.lessons
+    ]
+    buttons.append(
+        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER_LESSON))
+    )
+    adjust = 1
+    return buttons, adjust
 
 
 def confirm_deletion(
-    builder, context: ConfirmDeletionKeyboardContext, *args, **kwargs
-) -> InlineKeyboardBuilder:
+    context: ConfirmDeletionKeyboardContext, *args, **kwargs
+) -> tuple[list, int]:
     buttons = [
-        (BotStrings.Menu.YES, context.callback_data_cls(uuid=context.callback_data.uuid, confirmed=True)),
+        (
+            BotStrings.Menu.YES,
+            context.callback_data_cls(uuid=context.callback_data.uuid, confirmed=True),
+        ),
         (BotStrings.Menu.NO, MenuCallback(menu_type=MenuType.TEACHER)),
     ]
-    for button_text, callback in buttons:
-        builder.button(text=button_text, callback_data=callback)
-    builder.adjust(2)
-    return builder
+    adjust = 2
+    return buttons, adjust
 
 
 def specs_to_update(
-    builder, context: SpecsToUpdateKeyboardContext, *args, **kwargs
-) -> InlineKeyboardBuilder:
+    context: SpecsToUpdateKeyboardContext, *args, **kwargs
+) -> tuple[list, int]:
     context.specs["all"] = "Всё"
-    for spec, label in context.specs.items():
-        builder.button(
-            text=label,
-            callback_data=context.callback_data_cls(
-                uuid=context.lesson_uuid, spec=spec
-            ),
-        )
-    builder.adjust(1)
-    return builder
+    buttons = [
+        (label, context.callback_data_cls(uuid=context.lesson_uuid, spec=spec))
+        for spec, label in context.specs.items()
+    ]
+    buttons.append((BotStrings.Menu.BACK, LessonCallback(action=ActionType.UPDATE)))
+    adjust = 1
+    return buttons, adjust

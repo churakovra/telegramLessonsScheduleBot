@@ -1,7 +1,3 @@
-from collections.abc import Callable
-
-from aiogram.utils.keyboard import InlineKeyboardBuilder
-
 from app.utils.enums.bot_values import KeyboardType, UserRole
 from app.keyboard.fabric import (
     admin_main_menu,
@@ -24,7 +20,7 @@ from app.keyboard.fabric import (
     teacher_sub_menu_student,
 )
 
-keyboard_registry: dict[KeyboardType, Callable[..., InlineKeyboardBuilder]] = {
+keyboard_registry: dict = {
     KeyboardType.TEACHER_MAIN: teacher_main_menu,
     KeyboardType.TEACHER_SUB_STUDENT: teacher_sub_menu_student,
     KeyboardType.TEACHER_SUB_SLOT: teacher_sub_menu_slot,

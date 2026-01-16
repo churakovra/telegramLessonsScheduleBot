@@ -17,7 +17,10 @@ class MarkupBuilder:
     ) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         keyboard_factory = keyboard_registry[keyboard_type]
-        keyboard = keyboard_factory(builder, context)
-        return keyboard.as_markup()
+        buttons, adjust = keyboard_factory(context)
+        for button_text, callback in buttons:
+            builder.button(text=button_text, callback_data=callback)
+        builder.adjust(adjust)
+        return builder.as_markup()
 
     # TODO Fix MarkupBuilder in handlers and test this shiet..
