@@ -68,7 +68,7 @@ async def select_lesson(callback: CallbackQuery, session: AsyncSession) -> None:
         lessons = await lesson_service.get_teacher_lessons(teacher.uuid)
         message_text = BotStrings.Teacher.TEACHER_LESSON_UPDATE
         markup_context = LessonOperationKeyboardContext(lessons, LessonUpdate)
-        markup = MarkupBuilder.build(KeyboardType.LESSONS_OPERATION, markup_context)
+        markup = MarkupBuilder.build(KeyboardType.LESSON_OPERATION, markup_context)
     except UserNotFoundException as e:
         logger.error(e.message)
         message_text = BotStrings.User.USER_INFO_ERROR
@@ -144,7 +144,7 @@ async def list(callback: CallbackQuery, session: AsyncSession):
         lessons = await lesson_service.get_teacher_lessons(teacher.uuid)
         message_text = BotStrings.Teacher.TEACHER_LESSON_LIST
         markup_context = LessonOperationKeyboardContext(lessons, LessonList)
-        markup = MarkupBuilder.build(KeyboardType.LESSONS_OPERATION, markup_context)
+        markup = MarkupBuilder.build(KeyboardType.LESSON_OPERATION, markup_context)
     except UserNotFoundException as e:
         logger.error(e.message)
         message_text = BotStrings.User.USER_INFO_ERROR
@@ -182,7 +182,7 @@ async def delete(
         lessons = await lesson_service.get_teacher_lessons(teacher.uuid)
         message_text = BotStrings.Teacher.TEACHER_LESSON_DELETE
         markup_context = LessonOperationKeyboardContext(lessons, LessonDelete)
-        markup = MarkupBuilder.build(KeyboardType.LESSONS_OPERATION, markup_context)
+        markup = MarkupBuilder.build(KeyboardType.LESSON_OPERATION, markup_context)
     except UserNotFoundException as e:
         logger.error(e.message)
         message_text = BotStrings.User.USER_INFO_ERROR

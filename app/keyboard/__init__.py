@@ -11,6 +11,7 @@ from app.keyboard.fabric import (
     specify_week,
     specs_to_update,
     student_main_menu,
+    student_operation,
     student_sub_menu_slot,
     student_sub_menu_teacher,
     success_slot_bind,
@@ -36,7 +37,8 @@ keyboard_registry: dict = {
     KeyboardType.SLOTS_FOR_STUDENTS: slots_for_students,
     KeyboardType.SUCCESS_SLOT_BIND: success_slot_bind,
     KeyboardType.SPECIFY_WEEK: specify_week,
-    KeyboardType.LESSONS_OPERATION: lesson_operation,
+    KeyboardType.STUDENT_OPERATION: student_operation,
+    KeyboardType.LESSON_OPERATION: lesson_operation,
     KeyboardType.CONFIRM_DELETION: confirm_deletion,
     KeyboardType.SPECS_TO_UPDATE: specs_to_update,
 }

@@ -36,6 +36,7 @@ class KeyboardType(StrEnum):
     SLOTS_FOR_STUDENTS = "slots_for_students"
     SUCCESS_SLOT_BIND = "success_slot_bind"
     SPECIFY_WEEK = "specify_week"
-    LESSONS_OPERATION = "lessons_operation"
+    STUDENT_OPERATION = "student_operation"
+    LESSON_OPERATION = "lesson_operation"
     CONFIRM_DELETION = "confirm_deletion"
     SPECS_TO_UPDATE = "specs_to_update"

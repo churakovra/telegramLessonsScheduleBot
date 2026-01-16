@@ -3,6 +3,7 @@ from uuid import UUID
 
 from app.schemas.lesson_dto import LessonDTO
 from app.schemas.slot_dto import SlotDTO
+from app.schemas.student_dto import StudentDTO
 from app.utils.enums.bot_values import ActionType, UserRole
 from app.keyboard.callback_factories.common import (
     BaseDelete,
@@ -49,9 +50,15 @@ class SpecifyWeekKeyboardContext(KeyboardContext):
 
 
 @dataclass
+class StudentOperationKeyboardContext(KeyboardContext):
+    students: list[StudentDTO]
+    operation_callback_cls: type[BaseOperationCallback]
+
+
+@dataclass
 class LessonOperationKeyboardContext(KeyboardContext):
     lessons: list[LessonDTO]
-    callback_cls: type[BaseOperationCallback]
+    operation_callback_cls: type[BaseOperationCallback]
 
 
 @dataclass

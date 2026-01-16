@@ -36,7 +36,7 @@ async def create(callback: CallbackQuery, session: AsyncSession, state: FSMConte
         await callback.answer()
 
 
-@router.callback_query(StudentCallback.filter(F.action == ActionType.LIST))
+@router.callback_query(StudentCallback.filter(F.action == ActionType.LIST)) # TODO rework. form keyboard with names; send; on press show student info
 async def list(
     callback: CallbackQuery,
     session: AsyncSession,
@@ -69,7 +69,10 @@ async def list(
         await callback.answer()
 
 
-@router.callback_query(StudentCallback.filter(F.action == ActionType.DELETE))
+# TODO add student update
+
+
+@router.callback_query(StudentCallback.filter(F.action == ActionType.DELETE)) # TODO rework. send approve keyboard; delete on StudentDelete callback. 
 async def delete(callback: CallbackQuery, state: FSMContext):
     await state.set_state(ScheduleStates.wait_for_student_to_delete)
     await callback.message.delete()

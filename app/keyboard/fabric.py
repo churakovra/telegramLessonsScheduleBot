@@ -1,5 +1,6 @@
 import calendar
 
+from aiogram.filters.callback_data import CallbackData
 from app.keyboard.callback_factories.lesson import LessonCallback
 from app.keyboard.callback_factories.student import StudentCallback
 from app.keyboard.callback_factories.teacher import TeacherCallback
@@ -23,6 +24,7 @@ from app.keyboard.context import (
     SlotsForStudentsKeyboardContext,
     SpecifyWeekKeyboardContext,
     SpecsToUpdateKeyboardContext,
+    StudentOperationKeyboardContext,
     SuccessSlotBindKeyboardContext,
 )
 
@@ -182,7 +184,10 @@ def specify_week(
     context: SpecifyWeekKeyboardContext, *args, **kwargs
 ) -> tuple[list, int]:
     buttons = [
-        (BotStrings.Menu.CURRENT_WEEK, context.callback_data(week_flag=WeekFlag.CURRENT),),
+        (
+            BotStrings.Menu.CURRENT_WEEK,
+            context.callback_data(week_flag=WeekFlag.CURRENT),
+        ),
         (BotStrings.Menu.NEXT_WEEK, context.callback_data(week_flag=WeekFlag.NEXT)),
         (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER_SLOT)),
     ]
@@ -190,11 +195,25 @@ def specify_week(
     return buttons, adjust
 
 
+def student_operation(
+    context: StudentOperationKeyboardContext, *args, **kwargs
+) -> tuple[list, int]:
+    buttons = [
+        (
+            "".join([student.firstname, student.lastname or ""]),
+            context.operation_callback_cls(uuid=student.uuid),
+        )
+        for student in context.students
+    ]
+    adjust = 1
+    return buttons, adjust
+
+
 def lesson_operation(
     context: LessonOperationKeyboardContext, *args, **kwargs
 ) -> tuple[list, int]:
     buttons = [
-        (lesson.label, context.callback_cls(uuid=lesson.uuid))
+        (lesson.label, context.operation_callback_cls(uuid=lesson.uuid))
         for lesson in context.lessons
     ]
     buttons.append(
