@@ -190,7 +190,7 @@ def specify_week(
     return buttons, adjust
 
 
-def lessons_operation(
+def lesson_operation(
     context: LessonOperationKeyboardContext, *args, **kwargs
 ) -> tuple[list, int]:
     buttons = [

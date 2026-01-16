@@ -5,7 +5,7 @@ from app.keyboard.fabric import (
     confirm_deletion,
     days_for_students,
     is_slots_correct_markup,
-    lessons_operation,
+    lesson_operation,
     send_slots,
     slots_for_students,
     specify_week,
@@ -36,7 +36,7 @@ keyboard_registry: dict = {
     KeyboardType.SLOTS_FOR_STUDENTS: slots_for_students,
     KeyboardType.SUCCESS_SLOT_BIND: success_slot_bind,
     KeyboardType.SPECIFY_WEEK: specify_week,
-    KeyboardType.LESSONS_OPERATION: lessons_operation,
+    KeyboardType.LESSONS_OPERATION: lesson_operation,
     KeyboardType.CONFIRM_DELETION: confirm_deletion,
     KeyboardType.SPECS_TO_UPDATE: specs_to_update,
 }
