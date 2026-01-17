@@ -1,8 +1,11 @@
 import calendar
 
-from aiogram.filters.callback_data import CallbackData
-
-from app.keyboard.callback_factories.lesson import LessonCallback
+from app.keyboard.callback_factories.lesson import (
+    LessonCallback,
+    LessonDeleteCallback,
+    LessonInfoCallback,
+    LessonUpdateCallback,
+)
 from app.keyboard.callback_factories.menu import MenuCallback
 from app.keyboard.callback_factories.slot import (
     DaysForStudents,
@@ -11,22 +14,27 @@ from app.keyboard.callback_factories.slot import (
     SlotCallback,
     SlotsForStudents,
 )
-from app.keyboard.callback_factories.student import StudentCallback
+from app.keyboard.callback_factories.student import (
+    StudentCallback,
+    StudentDeleteCallback,
+    StudentInfoCallback,
+    StudentUpdateCallback,
+)
 from app.keyboard.callback_factories.teacher import TeacherCallback
 from app.keyboard.context import (
     ConfirmDeletionKeyboardContext,
     DaysForStudentsKeyboardContext,
-    LessonOperationKeyboardContext,
+    EntitiesListKeyboardContext,
+    EntityOperationsKeyboardContext,
     SendSlotsKeyboardContext,
     SlotsForStudentsKeyboardContext,
     SpecifyWeekKeyboardContext,
     SpecsToUpdateKeyboardContext,
-    StudentOperationKeyboardContext,
     SuccessSlotBindKeyboardContext,
 )
 from app.utils.bot_strings import BotStrings
 from app.utils.datetime_utils import WEEKDAYS, day_format, time_format_HM
-from app.utils.enums.bot_values import ActionType, WeekFlag
+from app.utils.enums.bot_values import ActionType, EntityType, WeekFlag
 from app.utils.enums.menu_type import MenuType
 
 
@@ -61,8 +69,6 @@ def teacher_sub_menu_student(*args, **kwargs) -> tuple[list, int]:
     buttons = [
         ("Мои ученики", StudentCallback(action=ActionType.LIST)),
         ("Добавить ученика", StudentCallback(action=ActionType.CREATE)),
-        ("Изменить ученика", StudentCallback(action=ActionType.UPDATE)),
-        ("Удалить ученика", StudentCallback(action=ActionType.DELETE)),
         (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER)),
     ]
     adjust = 1
@@ -84,8 +90,6 @@ def teacher_sub_menu_lesson(*args, **kwargs) -> tuple[list, int]:
     buttons = [
         ("Мои предметы", LessonCallback(action=ActionType.LIST)),
         ("Добавить предмет", LessonCallback(action=ActionType.CREATE)),
-        ("Изменить предмет", LessonCallback(action=ActionType.UPDATE)),
-        ("Удалить предмет", LessonCallback(action=ActionType.DELETE)),
         (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER)),
     ]
     adjust = 1
@@ -196,37 +200,6 @@ def specify_week(
     return buttons, adjust
 
 
-def student_operation(
-    context: StudentOperationKeyboardContext, *args, **kwargs
-) -> tuple[list, int]:
-    buttons = [
-        (
-            " ".join([student.firstname, student.lastname or ""]),
-            context.operation_callback_cls(uuid=student.uuid),
-        )
-        for student in context.students
-    ]
-    buttons.append(
-        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER_STUDENT))
-    )
-    adjust = 1
-    return buttons, adjust
-
-
-def lesson_operation(
-    context: LessonOperationKeyboardContext, *args, **kwargs
-) -> tuple[list, int]:
-    buttons = [
-        (lesson.label, context.operation_callback_cls(uuid=lesson.uuid))
-        for lesson in context.lessons
-    ]
-    buttons.append(
-        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER_LESSON))
-    )
-    adjust = 1
-    return buttons, adjust
-
-
 def confirm_deletion(
     context: ConfirmDeletionKeyboardContext, *args, **kwargs
 ) -> tuple[list, int]:
@@ -250,5 +223,60 @@ def specs_to_update(
         for spec, label in context.specs.items()
     ]
     buttons.append((BotStrings.Menu.BACK, LessonCallback(action=ActionType.UPDATE)))
+    adjust = 1
+    return buttons, adjust
+
+
+def entities_list(context: EntitiesListKeyboardContext, *args, **kwargs):
+    buttons_by_entity_type = {
+        EntityType.STUDENT: _student_buttons,
+        EntityType.LESSON: _lesson_buttons,
+    }
+    buttons_fab = buttons_by_entity_type[context.entity_type]
+    return buttons_fab(context.entities)
+
+
+def _student_buttons(students: list) -> tuple[list, int]:
+    buttons = [
+        (
+            " ".join([student.firstname, student.lastname or ""]),
+            StudentInfoCallback(uuid=student.uuid),
+        )
+        for student in students
+    ]
+    buttons.append(
+        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER_STUDENT))
+    )
+    adjust = 1
+    return buttons, adjust
+
+
+def _lesson_buttons(lessons: list) -> tuple[list, int]:
+    buttons = [
+        (lesson.label, LessonInfoCallback(uuid=lesson.uuid)) for lesson in lessons
+    ]
+    buttons.append(
+        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER_LESSON))
+    )
+    adjust = 1
+    return buttons, adjust
+
+
+def entity_operations(context: EntityOperationsKeyboardContext, *args, **kwargs) -> tuple[list, int]:
+    operations = {
+        EntityType.STUDENT: {
+            BotStrings.Menu.UPDATE: StudentUpdateCallback,
+            BotStrings.Menu.DELETE: StudentDeleteCallback,
+        },
+        EntityType.LESSON: {
+            BotStrings.Menu.UPDATE: LessonUpdateCallback,
+            BotStrings.Menu.DELETE: LessonDeleteCallback,
+        },
+    }
+    buttons = [
+        (name, allowed_operation(uuid=context.uuid))
+        for name, allowed_operation in operations[context.entity_type].items()
+    ]
+    buttons.append((BotStrings.Menu.CANCEL, MenuCallback(menu_type=MenuType.NEW)))
     adjust = 1
     return buttons, adjust

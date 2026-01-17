@@ -13,11 +13,19 @@ class ActionType(StrEnum):
     UPDATE = "update"
     DELETE = "delete"
     LIST = "list"
+    INFO = "info"
 
 
 class WeekFlag(StrEnum):
     CURRENT = "0"
     NEXT = "1"
+
+
+class EntityType(StrEnum):
+    STUDENT = "student"
+    SLOT = "slot"
+    LESSON = "lesson"
+    TEACHER = "teacher"
 
 
 class KeyboardType(StrEnum):
@@ -40,3 +48,5 @@ class KeyboardType(StrEnum):
     LESSON_OPERATION = "lesson_operation"
     CONFIRM_DELETION = "confirm_deletion"
     SPECS_TO_UPDATE = "specs_to_update"
+    ENTITIES_LIST = "entities_list"
+    ENTITY_OPERATIONS = "entity_operations"

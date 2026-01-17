@@ -89,6 +89,8 @@ class BotStrings:
         BACK = "Назад"
         CANCEL = "Отмена"
         SEND = "Отправить"
+        UPDATE = "Изменить"
+        DELETE = "Удалить"
         BIND_ANOTHER_SLOT = "Записаться ещё"
         CURRENT_WEEK = "Текущая"
         NEXT_WEEK = "Следующая"

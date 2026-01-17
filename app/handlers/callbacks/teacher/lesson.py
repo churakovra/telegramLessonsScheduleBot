@@ -6,9 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.keyboard.builder import MarkupBuilder
 from app.keyboard.callback_factories.lesson import (
     LessonCallback,
-    LessonDelete,
-    LessonList,
-    LessonUpdate,
+    LessonDeleteCallback,
+    LessonListCallback,
+    LessonUpdateCallback,
 )
 from app.keyboard.context import (
     ConfirmDeletionKeyboardContext,
@@ -67,7 +67,7 @@ async def select_lesson(callback: CallbackQuery, session: AsyncSession) -> None:
         teacher = await teacher_service.get_teacher(teacher_username)
         lessons = await lesson_service.get_teacher_lessons(teacher.uuid)
         message_text = BotStrings.Teacher.TEACHER_LESSON_UPDATE
-        markup_context = LessonOperationKeyboardContext(lessons, LessonUpdate)
+        markup_context = LessonOperationKeyboardContext(lessons, LessonUpdateCallback)
         markup = MarkupBuilder.build(KeyboardType.LESSON_OPERATION, markup_context)
     except UserNotFoundException as e:
         logger.error(e.message)
@@ -80,8 +80,8 @@ async def select_lesson(callback: CallbackQuery, session: AsyncSession) -> None:
     await callback.answer()
 
 
-@router.callback_query(LessonUpdate.filter(F.spec == None))
-async def select_spec(callback: CallbackQuery, callback_data: LessonUpdate) -> None:
+@router.callback_query(LessonUpdateCallback.filter(F.spec == None))
+async def select_spec(callback: CallbackQuery, callback_data: LessonUpdateCallback) -> None:
     lesson_specs = {
         "label": "Название",  # TODO mv spec key in enum or smth
         "duration": "Продолжительность",
@@ -90,7 +90,7 @@ async def select_spec(callback: CallbackQuery, callback_data: LessonUpdate) -> N
     markup_context = SpecsToUpdateKeyboardContext(
         lesson_uuid=callback_data.uuid,
         specs=lesson_specs,
-        callback_data_cls=LessonUpdate,
+        callback_data_cls=LessonUpdateCallback,
     )
     markup = MarkupBuilder.build(KeyboardType.SPECS_TO_UPDATE, markup_context)
     text = BotStrings.Teacher.TEACHER_LESSON_UPDATE_SELECT_SPEC
@@ -98,9 +98,9 @@ async def select_spec(callback: CallbackQuery, callback_data: LessonUpdate) -> N
     await callback.answer()
 
 
-@router.callback_query(LessonUpdate.filter(F.spec.in_(["label", "duration", "price"])))
+@router.callback_query(LessonUpdateCallback.filter(F.spec.in_(["label", "duration", "price"])))
 async def update_lesson_by_spec(
-    callback: CallbackQuery, callback_data: LessonUpdate, state: FSMContext
+    callback: CallbackQuery, callback_data: LessonUpdateCallback, state: FSMContext
 ) -> None:
     spec_to_message = {
         "label": BotStrings.Teacher.TEACHER_LESSON_ADD_LABEL,
@@ -114,10 +114,10 @@ async def update_lesson_by_spec(
     await callback.answer()
 
 
-@router.callback_query(LessonUpdate.filter(F.spec == "all"))
+@router.callback_query(LessonUpdateCallback.filter(F.spec == "all"))
 async def update_whole_lesson(
     callback: CallbackQuery,
-    callback_data: LessonUpdate,
+    callback_data: LessonUpdateCallback,
     state: FSMContext,
     session: AsyncSession,
 ) -> None:
@@ -132,7 +132,7 @@ async def update_whole_lesson(
     await callback.answer()
 
 
-@router.callback_query(LessonCallback.filter(F.action == ActionType.LIST))
+@router.callback_query(LessonCallback.filter(F.action == ActionType.LIST)) #TODO изменить клаву и поведение как у ученика
 async def list(callback: CallbackQuery, session: AsyncSession):
     teacher_service = TeacherService(session)
     lesson_service = LessonService(session)
@@ -143,7 +143,7 @@ async def list(callback: CallbackQuery, session: AsyncSession):
         teacher = await teacher_service.get_teacher(teacher_username)
         lessons = await lesson_service.get_teacher_lessons(teacher.uuid)
         message_text = BotStrings.Teacher.TEACHER_LESSON_LIST
-        markup_context = LessonOperationKeyboardContext(lessons, LessonList)
+        markup_context = LessonOperationKeyboardContext(lessons, LessonListCallback)
         markup = MarkupBuilder.build(KeyboardType.LESSON_OPERATION, markup_context)
     except UserNotFoundException as e:
         logger.error(e.message)
@@ -156,9 +156,9 @@ async def list(callback: CallbackQuery, session: AsyncSession):
     await callback.answer()
 
 
-@router.callback_query(LessonList.filter())
+@router.callback_query(LessonListCallback.filter())
 async def get_lesson_info(
-    callback: CallbackQuery, callback_data: LessonList, session: AsyncSession
+    callback: CallbackQuery, callback_data: LessonListCallback, session: AsyncSession
 ):
     lesson_service = LessonService(session)
     lesson = await lesson_service.get_lesson(callback_data.uuid)
@@ -181,7 +181,7 @@ async def delete(
         teacher = await teacher_service.get_teacher(teacher_username)
         lessons = await lesson_service.get_teacher_lessons(teacher.uuid)
         message_text = BotStrings.Teacher.TEACHER_LESSON_DELETE
-        markup_context = LessonOperationKeyboardContext(lessons, LessonDelete)
+        markup_context = LessonOperationKeyboardContext(lessons, LessonDeleteCallback)
         markup = MarkupBuilder.build(KeyboardType.LESSON_OPERATION, markup_context)
     except UserNotFoundException as e:
         logger.error(e.message)
@@ -194,19 +194,19 @@ async def delete(
     await callback.answer()
 
 
-@router.callback_query(LessonDelete.filter(F.confirmed == False))
+@router.callback_query(LessonDeleteCallback.filter(F.confirmed == False))
 async def request_delete_confirmation(
-    callback: CallbackQuery, callback_data: LessonDelete
+    callback: CallbackQuery, callback_data: LessonDeleteCallback
 ):
-    markup_context = ConfirmDeletionKeyboardContext(LessonDelete, callback_data)
+    markup_context = ConfirmDeletionKeyboardContext(LessonDeleteCallback, callback_data)
     markup = MarkupBuilder.build(KeyboardType.CONFIRM_DELETION, markup_context)
     await callback.message.answer(**mt.confirm_lesson_deletion(markup))
     await callback.answer()
 
 
-@router.callback_query(LessonDelete.filter(F.confirmed == True))
+@router.callback_query(LessonDeleteCallback.filter(F.confirmed == True))
 async def delete_lesson(
-    callback: CallbackQuery, callback_data: LessonDelete, session: AsyncSession
+    callback: CallbackQuery, callback_data: LessonDeleteCallback, session: AsyncSession
 ):
     lesson_service = LessonService(session)
     await lesson_service.detach_lesson(callback_data.uuid)

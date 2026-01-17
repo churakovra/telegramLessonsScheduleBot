@@ -4,11 +4,11 @@ from uuid import UUID
 from app.schemas.lesson_dto import LessonDTO
 from app.schemas.slot_dto import SlotDTO
 from app.schemas.student_dto import StudentDTO
-from app.utils.enums.bot_values import ActionType, UserRole
+from app.utils.enums.bot_values import ActionType, EntityType, UserRole
 from app.keyboard.callback_factories.common import (
-    BaseDelete,
+    BaseDeleteCallback,
     BaseOperationCallback,
-    BaseUpdate,
+    BaseUpdateCallback,
 )
 from app.keyboard.callback_factories.mixins import SpecifyWeekMixin
 
@@ -50,6 +50,17 @@ class SpecifyWeekKeyboardContext(KeyboardContext):
 
 
 @dataclass
+class EntitiesListKeyboardContext(KeyboardContext):
+    entities: list
+    entity_type: EntityType
+
+@dataclass
+class EntityOperationsKeyboardContext(KeyboardContext):
+    uuid: UUID
+    entity_type: EntityType
+
+
+@dataclass
 class StudentOperationKeyboardContext(KeyboardContext):
     students: list[StudentDTO]
     operation_callback_cls: type[BaseOperationCallback]
@@ -63,12 +74,12 @@ class LessonOperationKeyboardContext(KeyboardContext):
 
 @dataclass
 class ConfirmDeletionKeyboardContext(KeyboardContext):
-    callback_data_cls: type[BaseDelete]
-    callback_data: BaseDelete
+    callback_data_cls: type[BaseDeleteCallback]
+    callback_data: BaseDeleteCallback
 
 
 @dataclass
 class SpecsToUpdateKeyboardContext(KeyboardContext):
     lesson_uuid: UUID
     specs: dict[str, str]
-    callback_data_cls: type[BaseUpdate]
+    callback_data_cls: type[BaseUpdateCallback]

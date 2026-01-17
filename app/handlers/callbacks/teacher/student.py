@@ -6,11 +6,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.keyboard.builder import MarkupBuilder
 from app.keyboard.callback_factories.student import (
     StudentCallback,
-    StudentDelete,
-    StudentList,
+    StudentDeleteCallback,
+    StudentInfoCallback,
+    StudentListCallback,
 )
 from app.keyboard.context import (
     ConfirmDeletionKeyboardContext,
+    EntitiesListKeyboardContext,
+    EntityOperationsKeyboardContext,
     StudentOperationKeyboardContext,
 )
 from app.services.lesson_service import LessonService
@@ -21,7 +24,7 @@ from app.services.user_service import UserService
 from app.states.schedule_states import ScheduleStates
 from app.utils import message_template as mt
 from app.utils.bot_strings import BotStrings
-from app.utils.enums.bot_values import ActionType, KeyboardType
+from app.utils.enums.bot_values import ActionType, EntityType, KeyboardType
 from app.utils.exceptions.teacher_exceptions import TeacherStudentsNotFound
 from app.utils.exceptions.user_exceptions import UserNotFoundException
 from app.utils.logger import setup_logger
@@ -59,8 +62,8 @@ async def list(callback: CallbackQuery, session: AsyncSession) -> None:
         teacher = await teacher_service.get_teacher(username)
         students = await student_service.get_students_by_teacher_uuid(teacher.uuid)
         message_text = BotStrings.Teacher.TEACHER_STUDENTS_LIST
-        markup_context = StudentOperationKeyboardContext(students, StudentList)
-        markup = MarkupBuilder.build(KeyboardType.STUDENT_OPERATION, markup_context)
+        markup_context = EntitiesListKeyboardContext(students, EntityType.STUDENT)
+        markup = MarkupBuilder.build(KeyboardType.ENTITIES_LIST, markup_context)
     except UserNotFoundException as e:
         error_msg = f"Not enough rights. User {e.data} must have Teacher role."
         logger.error(error_msg, e)
@@ -72,58 +75,37 @@ async def list(callback: CallbackQuery, session: AsyncSession) -> None:
     await callback.answer()
 
 
-@router.callback_query(StudentList.filter())
+@router.callback_query(StudentInfoCallback.filter())
 async def get_student_info(
-    callback: CallbackQuery, callback_data: StudentList, session: AsyncSession
+    callback: CallbackQuery, callback_data: StudentInfoCallback, session: AsyncSession
 ):
     student_service = StudentService(session)
     lesson_service = LessonService(session)
     student = await student_service.get_student_by_uuid(callback_data.uuid)
     lessons = await lesson_service.get_student_lessons(student.uuid)
     response_msg = await student_service.get_student_info(student, lessons)
-    await callback.message.answer(response_msg)
+    markup_context = EntityOperationsKeyboardContext(uuid=callback_data.uuid, entity_type=EntityType.STUDENT)
+    markup = MarkupBuilder.build(KeyboardType.ENTITY_OPERATIONS, markup_context)
+    await callback.message.answer(text=response_msg, reply_markup=markup)
     await callback.answer()
 
 
 # TODO add student update
 
 
-@router.callback_query(StudentCallback.filter(F.action == ActionType.DELETE))
-async def delete(callback: CallbackQuery, session: AsyncSession):
-    teacher_service = TeacherService(session)
-    student_service = StudentService(session)
-    username = callback.from_user.username
-    try:
-        markup = None
-        teacher = await teacher_service.get_teacher(username)
-        students = await student_service.get_students_by_teacher_uuid(teacher.uuid)
-        message_text = BotStrings.Teacher.TEACHER_STUDENT_DELETE
-        markup_context = StudentOperationKeyboardContext(students, StudentDelete)
-        markup = MarkupBuilder.build(KeyboardType.STUDENT_OPERATION, markup_context)
-    except UserNotFoundException as e:
-        error_msg = f"Not enough rights. User {e.data} must have Teacher role."
-        logger.error(error_msg, e)
-        message_text = BotStrings.Common.NOT_ENOUGH_RIGHTS
-    except TeacherStudentsNotFound as e:
-        logger.error(e)
-        message_text = BotStrings.Teacher.TEACHER_STUDENTS_NOT_FOUND
-    await callback.message.answer(text=message_text, reply_markup=markup)
-    await callback.answer()
-
-
-@router.callback_query(StudentDelete.filter(F.confirmed == False))
+@router.callback_query(StudentDeleteCallback.filter(F.confirmed == False))
 async def request_delete_confirmation(
-    callback: CallbackQuery, callback_data: StudentDelete
+    callback: CallbackQuery, callback_data: StudentDeleteCallback
 ):
-    markup_context = ConfirmDeletionKeyboardContext(StudentDelete, callback_data)
+    markup_context = ConfirmDeletionKeyboardContext(StudentDeleteCallback, callback_data)
     markup = MarkupBuilder.build(KeyboardType.CONFIRM_DELETION, markup_context)
     await callback.message.answer(**mt.confirm_student_deletion(markup))
     await callback.answer()
 
 
-@router.callback_query(StudentDelete.filter(F.confirmed == True))
+@router.callback_query(StudentDeleteCallback.filter(F.confirmed == True))
 async def delete_lesson(
-    callback: CallbackQuery, callback_data: StudentDelete, session: AsyncSession
+    callback: CallbackQuery, callback_data: StudentDeleteCallback, session: AsyncSession
 ):
     teacher_service = TeacherService(session)
     slot_service = SlotService(session)

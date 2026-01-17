@@ -1,8 +1,9 @@
 from app.keyboard.callback_factories.common import (
     BaseCallback,
-    BaseDelete,
-    BaseList,
-    BaseUpdate,
+    BaseDeleteCallback,
+    BaseInfoCallback,
+    BaseListCallback,
+    BaseUpdateCallback,
 )
 
 
@@ -10,13 +11,17 @@ class LessonCallback(BaseCallback, prefix="lesson"):
     pass
 
 
-class LessonList(BaseList, prefix="list-l"):
+class LessonInfoCallback(BaseInfoCallback, prefix="info-l"):
     pass
 
 
-class LessonDelete(BaseDelete, prefix="delete-l"):
+class LessonListCallback(BaseListCallback, prefix="list-l"):
     pass
 
 
-class LessonUpdate(BaseUpdate, prefix="update-l"):
+class LessonDeleteCallback(BaseDeleteCallback, prefix="delete-l"):
+    pass
+
+
+class LessonUpdateCallback(BaseUpdateCallback, prefix="update-l"):
     pass

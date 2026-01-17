@@ -13,15 +13,19 @@ class BaseOperationCallback(CallbackData, prefix="b-o"):
     uuid: UUID
 
 
-class BaseList(BaseOperationCallback, prefix="list-b"):
+class BaseInfoCallback(BaseOperationCallback, prefix="info-b"):
     uuid: UUID
 
 
-class BaseUpdate(BaseOperationCallback, prefix="update-b"):
+class BaseListCallback(BaseOperationCallback, prefix="list-b"):
+    uuid: UUID
+
+
+class BaseUpdateCallback(BaseOperationCallback, prefix="update-b"):
     uuid: UUID
     spec: str | None = None
 
 
-class BaseDelete(BaseOperationCallback, prefix="delete-b"):
+class BaseDeleteCallback(BaseOperationCallback, prefix="delete-b"):
     uuid: UUID
     confirmed: bool = False
