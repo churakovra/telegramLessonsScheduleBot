@@ -206,6 +206,9 @@ def student_operation(
         )
         for student in context.students
     ]
+    buttons.append(
+        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER_STUDENT))
+    )
     adjust = 1
     return buttons, adjust
 

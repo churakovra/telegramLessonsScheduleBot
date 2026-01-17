@@ -8,6 +8,10 @@ from app.database.orm.slot import Slot
 from app.database.orm.teacher_student import TeacherStudent
 from app.database.orm.user import User
 from app.schemas.user_dto import UserDTO
+from app.utils.logger import setup_logger
+
+
+logger = setup_logger(__name__)
 
 
 class TeacherRepository:
@@ -66,6 +70,17 @@ class TeacherRepository:
         except IntegrityError as e:
             raise ValueError(str(e)) from e
 
+    async def detach_student(self, student_uuid: UUID, teacher_uuid: UUID):
+        stmt = delete(TeacherStudent).where(
+            and_(
+                TeacherStudent.uuid_teacher == teacher_uuid,
+                TeacherStudent.uuid_student == student_uuid,
+            )
+        )
+        logger.debug(f"delete stmt {stmt}, {teacher_uuid}, {student_uuid}")
+        await self._db.execute(stmt)
+        await self._db.commit()
+
     async def get_unsigned_students(self, teacher_uuid: UUID) -> list[UserDTO]:
         users = list()
         ts_subquery = (
@@ -87,13 +102,3 @@ class TeacherRepository:
         for user in await self._db.scalars(stmt):
             users.append(UserDTO.model_validate(user))
         return users
-
-    async def delete_students(self, students_uuid: list[UUID], teacher_uuid: UUID):
-        stmt = delete(TeacherStudent).where(
-            and_(
-                TeacherStudent.uuid_teacher == teacher_uuid,
-                TeacherStudent.uuid_student.in_(students_uuid),
-            )
-        )
-        await self._db.execute(stmt)
-        await self._db.commit()

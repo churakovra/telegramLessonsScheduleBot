@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import select, update
+from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.orm.lesson import Lesson
@@ -59,3 +59,12 @@ class UserRepository:
         await self._db.execute(stmt)
         await self._db.commit()
         # TODO add log to db with initiator_user, dt of changing status etc
+
+
+    async def delete_user(self, user_uuid: UUID):
+        stmt = (
+            delete(User)
+            .where(User.uuid == user_uuid)
+        )
+        await self._db.execute(stmt)
+        await self._db.commit()

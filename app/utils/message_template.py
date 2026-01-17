@@ -61,6 +61,12 @@ def specify_week_message(markup: InlineKeyboardMarkup) -> BotMessage:
 def confirm_lesson_deletion(markup: InlineKeyboardMarkup) -> BotMessage:
     return BotMessage(text=BotStrings.Teacher.TEACHER_LESSON_DELETE_CONFIRMATION_REQUEST, reply_markup=markup)
 
+def confirm_student_deletion(markup: InlineKeyboardMarkup) -> BotMessage:
+    return BotMessage(text=BotStrings.Teacher.TEACHER_STUDENT_DELETE_CONFIRMATION_REQUEST, reply_markup=markup)
+
 
 def lesson_deletion_success() -> BotMessage:
     return BotMessage(text=BotStrings.Teacher.TEACHER_LESSON_DELETE_SUCCESS, reply_markup=None)
+
+def student_deletion_success() -> BotMessage:
+    return BotMessage(text=BotStrings.Teacher.TEACHER_STUDENT_DELETE_SUCCESS, reply_markup=None)

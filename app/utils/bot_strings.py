@@ -16,11 +16,9 @@ class BotStrings:
         )
 
         # * Unbind user
-        TEACHER_STUDENT_DELETE = "Отправь логин ученика без @, например `kdianitta`\nЛибо отправь несколько учеников через пробел:: `kdianitta1 kdianitta2...`"
-        TEACHER_STUDENT_DELETE_UNKNOWN_STUDENTS = "Смогу удалить всех кроме {student}\nПроверь, правильно ли указаны их логины"
-        TEACHER_STUDENT_DELETE_UNKNOWN_STUDENT = (
-            "Смогу удалить всех кроме {student}\nПроверь, правильно ли указан логин"
-        )
+        TEACHER_STUDENT_DELETE = "Выбери ученика для удаления: "
+        TEACHER_STUDENT_DELETE_CONFIRMATION_REQUEST = "Вы уверены, что хотите удалить ученика?"
+        TEACHER_STUDENT_DELETE_SUCCESS = "Ученик успешно удален!"
 
         TEACHER_STUDENTS_NOT_FOUND = (
             "Студенты не найдены\n Проверь, правильно ли указаны данные"

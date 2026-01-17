@@ -223,3 +223,7 @@ class SlotService:
         response.write(f"Итого: ЗАНЯТИЙ {week_lessons_cnt} ДОХОД {week_earning}")
 
         return response.getvalue()
+
+
+    async def delete_slots_attached_to_student(self, student_uuid: UUID):
+        await self._repository.delete_slots_attached_to_student(student_uuid)

@@ -75,3 +75,7 @@ class UserService:
             result = BotStrings.User.USER_INFO_ERROR
 
         return result
+    
+
+    async def delete_user(self, user_uuid: UUID):
+        await self._repository.delete_user(user_uuid)
