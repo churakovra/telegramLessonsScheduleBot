@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import select, and_, update, func, not_, delete
+from sqlalchemy import and_, delete, func, not_, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -30,16 +30,7 @@ class TeacherRepository:
         else:
             condition = User.username == data
 
-        stmt = (
-            select(User)
-            .where(
-                and_(
-                    condition,
-                    User.is_teacher == True
-
-                )
-            )
-        )
+        stmt = select(User).where(and_(condition, User.is_teacher == True))
         teacher = await self._db.scalar(stmt)
         return teacher
 
@@ -59,12 +50,14 @@ class TeacherRepository:
         await self._db.execute(stmt)
         await self._db.commit()
 
-    async def attach_student(self, teacher_uuid: UUID, student_uuid: UUID, uuid_lesson: UUID | None) -> TeacherStudent:
+    async def attach_student(
+        self, teacher_uuid: UUID, student_uuid: UUID, uuid_lesson: UUID | None
+    ) -> TeacherStudent:
         try:
             teacher_student = TeacherStudent(
-                uuid_teacher=teacher_uuid, 
-                uuid_student=student_uuid, 
-                uuid_lesson=uuid_lesson
+                uuid_teacher=teacher_uuid,
+                uuid_student=student_uuid,
+                uuid_lesson=uuid_lesson,
             )
             self._db.add(teacher_student)
             await self._db.commit()
@@ -73,20 +66,6 @@ class TeacherRepository:
         except IntegrityError as e:
             raise ValueError(str(e)) from e
 
-    async def get_students(self, teacher_uuid: UUID) -> list[UserDTO]:
-        users = list()
-        stmt = (
-            select(User)
-            .join(TeacherStudent, User.uuid == TeacherStudent.uuid_student)
-            .where(TeacherStudent.uuid_teacher == teacher_uuid)
-        )
-        for user in await self._db.scalars(stmt):
-            users.append(
-                UserDTO.model_validate(user)
-            )
-
-        return users
-
     async def get_unsigned_students(self, teacher_uuid: UUID) -> list[UserDTO]:
         users = list()
         ts_subquery = (
@@ -94,39 +73,26 @@ class TeacherRepository:
             .where(
                 and_(
                     TeacherStudent.uuid_teacher == teacher_uuid,
-                    TeacherStudent.lesson != None
+                    TeacherStudent.lesson != None,
                 )
             )
             .scalar_subquery()
         )
         slots_subquery = (
-            select(Slot.uuid_student)
-            .where(Slot.dt_add > func.now())
-            .scalar_subquery()
+            select(Slot.uuid_student).where(Slot.dt_add > func.now()).scalar_subquery()
         )
-        stmt = (
-            select(User)
-            .where(
-                and_(
-                    User.uuid.in_(ts_subquery),
-                    not_(User.uuid.in_(slots_subquery))
-                )
-            )
+        stmt = select(User).where(
+            and_(User.uuid.in_(ts_subquery), not_(User.uuid.in_(slots_subquery)))
         )
         for user in await self._db.scalars(stmt):
-            users.append(
-                UserDTO.model_validate(user)
-            )
+            users.append(UserDTO.model_validate(user))
         return users
 
     async def delete_students(self, students_uuid: list[UUID], teacher_uuid: UUID):
-        stmt = (
-            delete(TeacherStudent)
-            .where(
-                and_(
-                    TeacherStudent.uuid_teacher == teacher_uuid,
-                    TeacherStudent.uuid_student.in_(students_uuid)
-                )
+        stmt = delete(TeacherStudent).where(
+            and_(
+                TeacherStudent.uuid_teacher == teacher_uuid,
+                TeacherStudent.uuid_student.in_(students_uuid),
             )
         )
         await self._db.execute(stmt)

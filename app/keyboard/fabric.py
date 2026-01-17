@@ -1,13 +1,8 @@
 import calendar
 
 from aiogram.filters.callback_data import CallbackData
+
 from app.keyboard.callback_factories.lesson import LessonCallback
-from app.keyboard.callback_factories.student import StudentCallback
-from app.keyboard.callback_factories.teacher import TeacherCallback
-from app.utils.bot_strings import BotStrings
-from app.utils.datetime_utils import WEEKDAYS, day_format, time_format_HM
-from app.utils.enums.bot_values import ActionType, WeekFlag
-from app.utils.enums.menu_type import MenuType
 from app.keyboard.callback_factories.menu import MenuCallback
 from app.keyboard.callback_factories.slot import (
     DaysForStudents,
@@ -16,6 +11,8 @@ from app.keyboard.callback_factories.slot import (
     SlotCallback,
     SlotsForStudents,
 )
+from app.keyboard.callback_factories.student import StudentCallback
+from app.keyboard.callback_factories.teacher import TeacherCallback
 from app.keyboard.context import (
     ConfirmDeletionKeyboardContext,
     DaysForStudentsKeyboardContext,
@@ -27,6 +24,10 @@ from app.keyboard.context import (
     StudentOperationKeyboardContext,
     SuccessSlotBindKeyboardContext,
 )
+from app.utils.bot_strings import BotStrings
+from app.utils.datetime_utils import WEEKDAYS, day_format, time_format_HM
+from app.utils.enums.bot_values import ActionType, WeekFlag
+from app.utils.enums.menu_type import MenuType
 
 
 def teacher_main_menu(*args, **kwargs) -> tuple[list, int]:
@@ -200,7 +201,7 @@ def student_operation(
 ) -> tuple[list, int]:
     buttons = [
         (
-            "".join([student.firstname, student.lastname or ""]),
+            " ".join([student.firstname, student.lastname or ""]),
             context.operation_callback_cls(uuid=student.uuid),
         )
         for student in context.students

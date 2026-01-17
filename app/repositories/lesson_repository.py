@@ -9,7 +9,6 @@ from app.schemas.lesson_dto import CreateLessonDTO, LessonDTO
 from app.schemas.slot_dto import SlotDTO
 from app.utils.logger import setup_logger
 
-
 logger = setup_logger(__name__)
 
 
@@ -51,7 +50,17 @@ class LessonRepository:
             .order_by(Lesson.label.asc())
         )
         for lesson in await self._db.scalars(stmt):
-            logger.debug(f"lesson {lesson}")
+            lessons.append(LessonDTO.model_validate(lesson))
+        return lessons
+
+    async def get_student_lessons(self, student_uuid: UUID) -> list[LessonDTO]:
+        lessons = list()
+        stmt = (
+            select(Lesson)
+            .join(TeacherStudent, Lesson.uuid == TeacherStudent.uuid_lesson)
+            .where(TeacherStudent.uuid_student == student_uuid)
+        )
+        for lesson in await self._db.scalars(stmt):
             lessons.append(LessonDTO.model_validate(lesson))
         return lessons
 
@@ -69,12 +78,10 @@ class LessonRepository:
         await self._db.execute(stmt)
         await self._db.commit()
 
-
     async def update_lesson(self, lesson_uuid: UUID, values: dict) -> None:
         stmt = update(Lesson).where(Lesson.uuid == lesson_uuid).values(values)
         await self._db.execute(stmt)
         await self._db.commit()
-
 
     async def get_lesson_or_none(self, lesson_uuid: UUID) -> Lesson | None:
         stmt = select(Lesson).where(Lesson.uuid == lesson_uuid)
