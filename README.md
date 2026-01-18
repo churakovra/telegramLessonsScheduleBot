@@ -1,17 +1,15 @@
-# Инглиш пинглиш бот
-___
-`@EnglishPinglish_bot` _Version: 0.0.4_
-___
+# Slotty 
+_Version: 0.0.4_
 ## Возможности
 ### Преподаватель:
-- Вносить проводимые им предметы (напр. Английский; 1 час; 1000р)
+- Вносить проводимые им предметы
 - Прикреплять к себе учеников - пользователей бота
 - Автоматически рассылать окошки на следующую неделю всем своим ученикам
-- Вести учёт проведенных уроков; видеть статистику по часам и доходам
 - Автоматически рассылать новостные сообщения всем своим ученикам
+- Вести учёт проведенных уроков; видеть статистику по часам и доходам
 ### Ученик
 - Получать свободные окошки от своего преподавателя(-ей)
-- Записываться на урок; отменять запись об уроке
+- Записываться на урок; отменять запись
 - Получать информацию о прошедших и запланированных занятиях
 ### Администратор
 - Давать статус "Преподаватель" пользователю
@@ -21,97 +19,63 @@ ___
 
 |        Модуль        | Технология                                                         |
 |:--------------------:|:-------------------------------------------------------------------|
-|       **APP**        | aiogram  <br>async  <br>pydantic  <br>python-dotenv <br>colorlog   |
-|        **DB**        | asyncpg  <br>greenlet  <br>pg  <br>psycopg2-binary  <br>sqlalchemy |
-|       **TEST**       | pytest                                                             |
-| **DEPLOY & <br>PROJECT** | docker <br>docker-compose <br>uv <br>alembic                   |
+|       **APP**        | Aiogram 3.21.0                                                     |
+|        **DB**        | PostgreSQL 15<br>SQLAlchemy 2.0.41                                 |
+|       **TEST**       | Pytest 8.4.1                                                       |
+| **DEPLOY & <br>PROJECT** | docker<br>docker-compose<br>uv<br>alembic                      |
 ___
 ## Структура 
 ```
-scheduler/
-|--app/                           # Сервис
-|  |--db/
-|      |--orm/                    # ORM модели
-|      |--database.py             # Файл инициализации БД
-|  |--handlers/                   # Хендлеры действий пользователя
-|      |--callback                # Хендлеры коллбеков
-|      |--commands                # Хендлеры комманд
-|      |--states                  # Хендлеры событий в рамках состояний
-|  |--middlewares/                # Мидлвари
-|  |--notifiers/                  # Сервисы для отправки сообщений пользователям
-|  |--repositories/               # Репозитории для работы с БД
-|  |--schemas/                    # Pydantic схемы
-|  |--services/                   # Сервисы, реализующие бизнес-логику
-|  |--states/                     # Инициализация состояний
+slotty/
+|--app/
+|  |--database/
+|      |--alembic/                # Migrations
+|      |--orm/                    # ORM models
+|      |--database.py             # DB init
+|  |--handlers/
+|      |--callback                # Callback handlers
+|      |--commands                # Command handlers
+|      |--states                  # State handlers
+|  |--keyboard/                   # Keyboard operations
+|  |--middlewares/                # Middlewares
+|  |--notifier/                   # Notifier service
+|  |--repositories/               # DB repositories
+|  |--schemas/                    # Pydantic schemas
+|  |--services/                   # Services
+|  |--states/                     # States initional files
 |  |--utils/
-|      |--config/                 # Пакет с настройками, получением .env
-|      |--enums/                  # Енумы
-|      |--exceptions/             # Кастомные ошибки
-|      |--keyboards/              # Инициализация клавиатур
-|      |--bot_strings.py          # Строки для отправки сообщений и клавиатур
-|      |--datetime_utils.py       # Хелперы для работы с datetime
-|      |--message_template.py     # Класс, содержащий темплейты сообщений бота
-|  |--main.py                     # Точка входа
-|--tests/                         # Автотесты pytest
-|--alembic/                       # Миграции БД
-|--.env.example                   # Пример .env
-|--.python-version                # Требуемая версия python
-|--docker-compose.yml             # Собирает и запускает сервис
-|--Dockerfile                     # Docker образ бота
-|--pyproject.toml                 # Зависимости
-|--README.md                      # Readme
-|--uv.lock                        # Установленные зависимости
+|      |--config/                 # Package that contains settings.py
+|      |--enums/                  # Enums
+|      |--exceptions/             # Custom exceptions
+|      |--bot_strings.py          # Bot strings
+|      |--datetime_utils.py       # Datetime helpers
+|      |--message_template.py     # Bot message templates
+|  |--main.py                     # Entrypoint
+|--tests/                         # Unittests
+|--.env.example
+|--.python-version
+|--docker-compose.yml
+|--Dockerfile
+|--pyproject.toml
+|--README.md
+|--uv.lock
 ```
 ___
 ### Запуск
 Перед запуском и клонированием проекта нужно создать собственного бота и получить `token`  
 Сделать это можно по [офф. документации](https://core.telegram.org/bots/api#authorizing-your-bot)
 
-1. Создать папку приложения и перейти в неё  
+1. Склонировать репозиторий  
 ```bash
-mkdir app && cd app
+git clone https://github.com/churakovra/slotty.git
 ```
-2. Склонировать репозиторий  
-```bash
-git clone https://github.com/churakovra/telegramLessonsScheduleBot.git .
-```
-3. Открыть и заполнить .env.example файл затем переименовать его в .env
-4. Запустить сборку проекта
+2. Открыть и заполнить .env.example файл затем переименовать его в .env
+3. Запустить сборку проекта
 ```bash
 docker-compose up --build
 ```
-5. *Если докер компоуз не хочет заводиться, можно почистить кеш volume
+4. \* Если докер компоуз не хочет заводиться, можно почистить кеш volume
 ```bash
 docker-compose down -v
 docker-compose up --build
 ```
-Далее перейти в Вашего телеграмм бота, ввести /start и пользоваться
-
-___
-### Changelog
-___
-_Version 0.0.4_
-- Добавлены миграции БД, подключен Alembic
-___
-_Version 0.0.3_
-- Добавлена автогенерируемая клавиатура /menu для всех типов пользователей
-- Добавлен функционал:
-  - Создание слотов учителем
-  - Прикрепление ученика учителем
-  - Создание предметов учителем
-  - Запись на слот учеников
-- Реализована корректная работа кнопки "Назад"
-- Проект переехал на uv
-___
-_Version 0.0.2_
-- Рефакторинг проекта:
-  - Добавлены сервисы
-  - Добавлены репозитории
-  - Добавлены Pydantic модели
-  - Оптимизированы сборка образа через Docker и запуск через docker-compose
-___
-_Version 0.0.1_
-- Разработаны основные ORM
-- Настроено подключение к БД
-- Реализована сборка и запуск через docker & docker-compose
-- Добавлен базовый функционал
