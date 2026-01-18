@@ -2,13 +2,13 @@ import asyncio
 
 from aiogram import Bot, Dispatcher
 
-from app.utils.logger import setup_logger
 from app.config.settings import BOT_TOKEN
 from app.handlers import register_routers
 from app.middlewares.setup import setup_middlewares
-from app.notifiers.telegram_notifier import TelegramNotifier
+from app.notifier.telegram_notifier import TelegramNotifier
+from app.utils.logger import setup_logger
 
-logger = setup_logger("bot")
+logger = setup_logger(__name__)
 
 
 async def main():
@@ -23,8 +23,9 @@ async def main():
     logger.info("Setup middlewares & dispatcher")
 
     await bot.delete_webhook(drop_pending_updates=True)
+    logger.info("Bot successfully has been started!")
     await dp.start_polling(bot)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

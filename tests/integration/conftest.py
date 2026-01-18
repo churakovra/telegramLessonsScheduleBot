@@ -3,9 +3,9 @@ import pytest_asyncio
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
 
-from app.db.database import url
+from app.database.database import url
 from app.repositories.user_repository import UserRepository
-from app.schemas.user_dto import UserDTO
+from app.schemas.user_dto import CreateUserDTO
 from app.utils.enums.bot_values import UserRole
 
 
@@ -39,7 +39,7 @@ def new_user():
         role: UserRole = UserRole.STUDENT,
         cnt: int = 1,
     ):
-        return UserDTO.new_dto(
+        return CreateUserDTO(
             username=f"{username}_{cnt}",
             firstname=f"firstname_{cnt}",
             lastname=f"lastname_{cnt}",

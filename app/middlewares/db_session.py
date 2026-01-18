@@ -4,7 +4,7 @@ from collections.abc import Callable, Awaitable
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
 
-from app.db.database import async_session_factory
+from app.database.database import async_session_factory
 
 
 class DBSessionMiddleware(BaseMiddleware):
