@@ -9,7 +9,7 @@ from tabulate import tabulate
 
 from app.repositories.slot_repository import SlotRepository
 from app.schemas.lesson_dto import LessonDTO
-from app.schemas.slot_dto import SlotDTO
+from app.schemas.slot_dto import CreateSlotDTO, SlotDTO
 from app.schemas.user_dto import UserDTO
 from app.utils.datetime_utils import WEEKDAYS
 from app.utils.enums.bot_values import WeekFlag
@@ -20,22 +20,17 @@ from app.utils.exceptions.slot_exceptions import (
 )
 from app.utils.logger import setup_logger
 
-logger = setup_logger("SlotService")
+logger = setup_logger(__name__)
 
 
 class SlotService:
     def __init__(self, session: AsyncSession):
         self._repository = SlotRepository(session)
 
-    async def add_slots(self, slots: list[SlotDTO]):
-        for slot in slots:
-            try:
-                await self._repository.add_slot(slot)
-            except ValueError as e:
-                logger.error(e)
-                pass
+    async def add_slots(self, slots: list[CreateSlotDTO]):
+        await self._repository.add_slots(slots)
 
-    async def update_slots(self, slots: list[SlotDTO], teacher_uuid: UUID):
+    async def update_slots(self, slots: list[CreateSlotDTO], teacher_uuid: UUID):
         week = slots[0].dt_start.isocalendar().week
         existing_slots = await self._repository.get_slots(
             teacher_uuid=teacher_uuid, week=week
@@ -54,7 +49,7 @@ class SlotService:
         slots_to_add = [slot for slot in slots if slot.dt_start in to_add]
 
         await self._repository.delete_slots(slots=slots_to_delete)
-        await self._repository.add_slots(slots=slots_to_add)
+        await self._repository.add_slots(slots_dto=slots_to_add)
 
     async def get_slot(self, slot_uuid: UUID) -> SlotDTO:
         slot = await self._repository.get_slot(slot_uuid)
@@ -90,15 +85,15 @@ class SlotService:
     @staticmethod
     async def parse_slots(
         message_text: str, uuid_teacher: UUID, week_flag: WeekFlag
-    ) -> list[SlotDTO]:
+    ) -> list[CreateSlotDTO]:
         # Split message on day and time
         raw_mt = [word.strip(string.punctuation) for word in message_text.split()]
-        slots = list[SlotDTO]()
+        slots = list[CreateSlotDTO]()
         days_delta = 0 if week_flag == WeekFlag.CURRENT else 7
         weekday_index = 0
         for word in raw_mt:
             try:
-                # If word is Time -> create SlotDTO, else raises ValueError
+                # If word is Time -> create CreateSlotDTO, else raise ValueError
                 time = datetime.strptime(word, "%H:%M")
                 today = datetime.today()
                 # Count slot's date
@@ -113,7 +108,7 @@ class SlotService:
                     minute=time.minute,
                 )
                 slots.append(
-                    SlotDTO.new_dto(
+                    CreateSlotDTO(
                         uuid_teacher=uuid_teacher,
                         dt_start=slot_dt,
                         uuid_student=None,
@@ -228,3 +223,7 @@ class SlotService:
         response.write(f"Итого: ЗАНЯТИЙ {week_lessons_cnt} ДОХОД {week_earning}")
 
         return response.getvalue()
+
+
+    async def delete_slots_attached_to_student(self, student_uuid: UUID):
+        await self._repository.delete_slots_attached_to_student(student_uuid)

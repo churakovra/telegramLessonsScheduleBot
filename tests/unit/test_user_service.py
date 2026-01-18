@@ -3,13 +3,13 @@ from uuid import UUID
 import pytest
 from pydantic import ValidationError
 
-from app.schemas.user_dto import UserDTO
+from app.schemas.user_dto import CreateUserDTO
 from app.services.user_service import UserService
 from app.utils.enums.bot_values import UserRole
 from app.utils.exceptions.user_exceptions import UserChangeRoleException, UserNotFoundException
 
 
-valid_user = UserDTO.new_dto(
+valid_user = CreateUserDTO(
         username="test-username",
         firstname="test-firstname",
         lastname="test-lastname",

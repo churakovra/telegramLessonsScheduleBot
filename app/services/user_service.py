@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.user_repository import UserRepository
-from app.schemas.user_dto import UserDTO
+from app.schemas.user_dto import CreateUserDTO, UserDTO
 from app.utils.bot_strings import BotStrings
 from app.utils.datetime_utils import day_format
 from app.utils.enums.bot_values import UserRole
@@ -26,15 +26,15 @@ class UserService:
         role: UserRole,
         chat_id: int,
     ) -> UUID:
-        new_user = UserDTO.new_dto(
+        new_user = CreateUserDTO(
             username=username,
             firstname=firstname,
             lastname=lastname,
             role=role,
-            chat_id=chat_id,
+            chat_id=chat_id
         )
-        await self._repository.add_user(new_user)
-        return new_user.uuid
+        user = await self._repository.add_user(new_user)
+        return user.uuid
 
     async def add_role(self, initiator_username: str, username: str, role: UserRole):
         initiator = await self._repository.get_user(initiator_username.strip())
@@ -43,12 +43,10 @@ class UserService:
             raise UserNotFoundException(initiator_username, UserRole.ADMIN)
         elif not user:
             raise UserNotFoundException(username, role)
-
         if not initiator.is_admin:
             raise UserChangeRoleException(
                 user.username, UserRole.ADMIN, initiator_username
             )
-
         try:
             await self._repository.edit_role(user.uuid, role, True)
         except ValueError:
@@ -71,9 +69,13 @@ class UserService:
             result = (
                 f"Пользователь {user.firstname} {user.lastname}\n"
                 f"Имя пользователя {user.username}\n"
-                f"Дата регистрации {user.dt_reg.strftime(day_format)}\n"
+                f"Дата регистрации {user.created_at.strftime(day_format)}\n"
             )
         except Exception:
             result = BotStrings.User.USER_INFO_ERROR
 
         return result
+    
+
+    async def delete_user(self, user_uuid: UUID):
+        await self._repository.delete_user(user_uuid)

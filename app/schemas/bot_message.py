@@ -1,9 +1,8 @@
-from dataclasses import dataclass
+from typing import TypedDict
 
 from aiogram.types import InlineKeyboardMarkup
 
 
-@dataclass
-class BotMessage:
-    message_text: str
+class BotMessage(TypedDict):
+    text: str
     reply_markup: InlineKeyboardMarkup | None

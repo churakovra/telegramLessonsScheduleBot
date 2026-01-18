@@ -3,7 +3,8 @@ from uuid import UUID
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.orm.user import User
+from app.database.orm.teacher_student import TeacherStudent
+from app.database.orm.user import User
 from app.schemas.student_dto import StudentDTO
 
 
@@ -22,19 +23,22 @@ class StudentRepository:
         student = await self._get_student(username)
         if student is None:
             return student
-        return StudentDTO(
-            uuid=student.uuid,
-            username=student.username,
-            firstname=student.firstname,
-            lastname=student.lastname,
-            is_student=student.is_student,
-            is_teacher=student.is_teacher,
-            is_admin=student.is_admin,
-            chat_id=student.chat_id,
-            dt_reg=student.dt_reg,
-            dt_edit=student.dt_edit,
-        )
+        return StudentDTO.model_validate(student)
 
     async def get_student_by_uuid(self, uuid: UUID):
         stmt = select(User).where(and_(User.uuid == uuid, User.is_student == True))
         return StudentDTO.model_validate(await self._db.scalar(stmt))
+
+    async def get_students_by_teacher_uuid(
+        self, teacher_uuid: UUID
+    ) -> list[StudentDTO]:
+        users = list()
+        stmt = (
+            select(User)
+            .join(TeacherStudent, User.uuid == TeacherStudent.uuid_student)
+            .where(TeacherStudent.uuid_teacher == teacher_uuid)
+        )
+        for user in await self._db.scalars(stmt):
+            users.append(StudentDTO.model_validate(user))
+
+        return users

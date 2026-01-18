@@ -1,42 +1,33 @@
-from datetime import datetime, timezone
 from uuid import UUID
 
-from sqlalchemy import select, update
+from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.orm.lesson import Lesson
-from app.db.orm.user import User
+from app.database.orm.lesson import Lesson
+from app.database.orm.user import User
 from app.utils.enums.bot_values import UserRole
-from app.schemas.user_dto import UserDTO
+from app.schemas.user_dto import CreateUserDTO, UserDTO
 
 
 class UserRepository:
     def __init__(self, session: AsyncSession):
         self._db = session
 
-    async def add_user(self, user_dto: UserDTO):
-        user = User(**user_dto.model_dump())
+    async def add_user(self, user_dto: CreateUserDTO) -> User:
+        user = User(**user_dto.model_dump(exclude="role"))
         self._db.add(user)
         await self._db.commit()
         await self._db.refresh(user)
+        return user
 
     async def get_user(self, username: str) -> UserDTO | None:
         stmt = select(User).where(User.username == username)
         user = await self._db.scalar(stmt)
         if user is None:
             return user
-        return UserDTO(
-            uuid=user.uuid,
-            username=user.username,
-            firstname=user.firstname,
-            lastname=user.lastname,
-            is_student=user.is_student,
-            is_teacher=user.is_teacher,
-            is_admin=user.is_admin,
-            chat_id=user.chat_id,
-            dt_reg=user.dt_reg,
-            dt_edit=user.dt_edit
-        )
+        return UserDTO.model_validate(user)
+    
+
 
     async def edit_role(self, user_uuid: UUID, role: UserRole, status: bool):
         if role == UserRole.TEACHER:
@@ -44,8 +35,7 @@ class UserRepository:
                 update(User)
                 .where(User.uuid == user_uuid)
                 .values(
-                    is_teacher=status,
-                    dt_edit=datetime.now(timezone.utc).astimezone()
+                    is_teacher=status
                 )
             )
         elif role == UserRole.ADMIN:
@@ -53,8 +43,7 @@ class UserRepository:
                 update(User)
                 .where(User.uuid == user_uuid)
                 .values(
-                    is_admin=status,
-                    dt_edit=datetime.now(timezone.utc).astimezone()
+                    is_admin=status
                 )
             )
         elif role == UserRole.STUDENT:
@@ -62,8 +51,7 @@ class UserRepository:
                 update(User)
                 .where(User.uuid == user_uuid)
                 .values(
-                    is_student=status,
-                    dt_edit=datetime.now(timezone.utc).astimezone()
+                    is_student=status
                 )
             )
         else:
@@ -71,3 +59,12 @@ class UserRepository:
         await self._db.execute(stmt)
         await self._db.commit()
         # TODO add log to db with initiator_user, dt of changing status etc
+
+
+    async def delete_user(self, user_uuid: UUID):
+        stmt = (
+            delete(User)
+            .where(User.uuid == user_uuid)
+        )
+        await self._db.execute(stmt)
+        await self._db.commit()
