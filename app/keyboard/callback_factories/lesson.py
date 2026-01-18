@@ -1,5 +1,6 @@
 from app.keyboard.callback_factories.common import (
     BaseCallback,
+    BaseCreateCallback,
     BaseDeleteCallback,
     BaseInfoCallback,
     BaseListCallback,
@@ -7,7 +8,7 @@ from app.keyboard.callback_factories.common import (
 )
 
 
-class LessonCallback(BaseCallback, prefix="lesson"):
+class LessonCreateCallback(BaseCreateCallback, prefix="create-l"):
     pass
 
 

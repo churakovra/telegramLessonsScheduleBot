@@ -1,9 +1,10 @@
 import calendar
 
 from app.keyboard.callback_factories.lesson import (
-    LessonCallback,
+    LessonCreateCallback,
     LessonDeleteCallback,
     LessonInfoCallback,
+    LessonListCallback,
     LessonUpdateCallback,
 )
 from app.keyboard.callback_factories.menu import MenuCallback
@@ -89,8 +90,8 @@ def teacher_sub_menu_slot(*args, **kwargs) -> tuple[list, int]:
 
 def teacher_sub_menu_lesson(*args, **kwargs) -> tuple[list, int]:
     buttons = [
-        ("Мои предметы", LessonCallback(action=ActionType.LIST)),
-        ("Добавить предмет", LessonCallback(action=ActionType.CREATE)),
+        ("Мои предметы", LessonListCallback()),
+        ("Добавить предмет", LessonCreateCallback()),
         (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER)),
     ]
     adjust = 1
@@ -223,7 +224,7 @@ def specs_to_update(
         (label, context.callback_data_cls(uuid=context.lesson_uuid, spec=spec))
         for spec, label in context.specs.items()
     ]
-    buttons.append((BotStrings.Menu.BACK, LessonCallback(action=ActionType.UPDATE)))
+    buttons.append((BotStrings.Menu.BACK, LessonListCallback()))
     adjust = 1
     return buttons, adjust
 
