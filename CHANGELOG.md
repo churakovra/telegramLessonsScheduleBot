@@ -1,6 +1,15 @@
 ___
 ### Changelog
 ___
+_Version 0.0.5_  
+### Big refactor:
+  - ORM & repositories refactor
+    - keyboard flow && callbacks refactor
+    - build
+  - Features:
+    - Lesson CRUD improve
+    - Student CRUD improve
+___
 _Version 0.0.4_
 - Добавлены миграции БД, подключен Alembic
 ___
