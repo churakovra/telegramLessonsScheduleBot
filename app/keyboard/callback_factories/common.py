@@ -10,7 +10,11 @@ class BaseCallback(CallbackData, prefix="b"):
 
 
 class BaseOperationCallback(CallbackData, prefix="b-o"):
-    uuid: UUID
+    pass
+
+
+class BaseCreateCallback(BaseOperationCallback, prefix="create-b"):
+    pass
 
 
 class BaseInfoCallback(BaseOperationCallback, prefix="info-b"):
@@ -18,7 +22,7 @@ class BaseInfoCallback(BaseOperationCallback, prefix="info-b"):
 
 
 class BaseListCallback(BaseOperationCallback, prefix="list-b"):
-    uuid: UUID
+    pass
 
 
 class BaseUpdateCallback(BaseOperationCallback, prefix="update-b"):

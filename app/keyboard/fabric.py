@@ -15,9 +15,10 @@ from app.keyboard.callback_factories.slot import (
     SlotsForStudents,
 )
 from app.keyboard.callback_factories.student import (
-    StudentCallback,
+    StudentCreateCallback,
     StudentDeleteCallback,
     StudentInfoCallback,
+    StudentListCallback,
     StudentUpdateCallback,
 )
 from app.keyboard.callback_factories.teacher import TeacherCallback
@@ -67,8 +68,8 @@ def admin_main_menu(*args, **kwargs) -> tuple[list, int]:
 
 def teacher_sub_menu_student(*args, **kwargs) -> tuple[list, int]:
     buttons = [
-        ("Мои ученики", StudentCallback(action=ActionType.LIST)),
-        ("Добавить ученика", StudentCallback(action=ActionType.CREATE)),
+        ("Мои ученики", StudentListCallback()),
+        ("Добавить ученика", StudentCreateCallback()),
         (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER)),
     ]
     adjust = 1
