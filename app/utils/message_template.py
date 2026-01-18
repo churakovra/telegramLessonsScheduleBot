@@ -7,9 +7,9 @@ from app.utils.bot_strings import BotStrings
 #TODO rework & update all outcoming messages from bot
 
 
-def main_menu_message(username: str, markup: InlineKeyboardMarkup) -> BotMessage:
+def main_menu_message(markup: InlineKeyboardMarkup) -> BotMessage:
     return BotMessage(
-        text=BotStrings.Common.MENU.format(user=username),
+        text=BotStrings.Common.MENU,
         reply_markup=markup,
     )
 

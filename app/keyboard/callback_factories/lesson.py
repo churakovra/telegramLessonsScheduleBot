@@ -1,5 +1,4 @@
 from app.keyboard.callback_factories.common import (
-    BaseCallback,
     BaseCreateCallback,
     BaseDeleteCallback,
     BaseInfoCallback,

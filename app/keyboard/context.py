@@ -1,16 +1,16 @@
 from dataclasses import dataclass
 from uuid import UUID
 
-from app.schemas.lesson_dto import LessonDTO
-from app.schemas.slot_dto import SlotDTO
-from app.schemas.student_dto import StudentDTO
-from app.utils.enums.bot_values import ActionType, EntityType, UserRole
 from app.keyboard.callback_factories.common import (
     BaseDeleteCallback,
     BaseOperationCallback,
     BaseUpdateCallback,
 )
 from app.keyboard.callback_factories.mixins import SpecifyWeekMixin
+from app.schemas.lesson_dto import LessonDTO
+from app.schemas.slot_dto import SlotDTO
+from app.schemas.student_dto import StudentDTO
+from app.utils.enums.bot_values import ActionType, EntityType, UserRole
 
 
 @dataclass
@@ -21,7 +21,6 @@ class KeyboardContext:
 @dataclass
 class SendSlotsKeyboardContext(KeyboardContext):
     teacher_uuid: UUID
-    operation_type: ActionType
 
 
 @dataclass
@@ -46,13 +45,14 @@ class SuccessSlotBindKeyboardContext(KeyboardContext):
 
 @dataclass
 class SpecifyWeekKeyboardContext(KeyboardContext):
-    callback_data: type[SpecifyWeekMixin]
+    callback_cls: type[SpecifyWeekMixin]
 
 
 @dataclass
 class EntitiesListKeyboardContext(KeyboardContext):
     entities: list
     entity_type: EntityType
+
 
 @dataclass
 class EntityOperationsKeyboardContext(KeyboardContext):

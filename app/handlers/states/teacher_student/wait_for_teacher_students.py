@@ -3,6 +3,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.keyboard import markup_type_by_role
+from app.keyboard.builder import MarkupBuilder
 from app.notifier.telegram_notifier import TelegramNotifier
 from app.services.student_service import StudentService
 from app.services.teacher_service import TeacherService
@@ -10,9 +12,7 @@ from app.services.user_service import UserService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
 from app.utils.exceptions.teacher_exceptions import TeacherAlreadyHasStudentException
-from app.keyboard.builder import MarkupBuilder
 from app.utils.message_template import main_menu_message
-from app.keyboard import markup_type_by_role
 
 router = Router()
 
@@ -63,7 +63,7 @@ async def handle_state(
     username = getattr(message.from_user, "username", "") or ""
     user = await user_service.get_user(username)
     markup = MarkupBuilder.build(markup_type_by_role[user.role])
-    bot_message = main_menu_message(user.username, markup)
+    bot_message = main_menu_message(markup)
     await notifier.send_message(
         bot_message=bot_message, receiver_chat_id=message.chat.id
     )

@@ -2,24 +2,39 @@ from uuid import UUID
 
 from aiogram.filters.callback_data import CallbackData
 
-from app.keyboard.callback_factories.common import BaseCallback
-from app.utils.enums.bot_values import ActionType
+from app.keyboard.callback_factories.common import (
+    BaseCreateCallback,
+    BaseDeleteCallback,
+    BaseInfoCallback,
+    BaseListCallback,
+    BaseUpdateCallback,
+)
 from app.keyboard.callback_factories.mixins import SpecifyWeekMixin
+from app.utils.enums.bot_values import ActionType
 
 
-class SlotCallback(BaseCallback, prefix="slot"):
+class SlotCreateCallback(BaseCreateCallback, SpecifyWeekMixin, prefix="create-sl"):
     pass
 
-class SlotsUpdate(SpecifyWeekMixin, prefix="update-slots"):
+
+class SlotInfoCallback(BaseInfoCallback, prefix="info-sl"):
     pass
 
 
-class SlotsList(SpecifyWeekMixin, prefix="list-slots"):
+class SlotListCallback(BaseListCallback, SpecifyWeekMixin, prefix="list-sl"):
     pass
+
+
+class SlotUpdateCallback(BaseUpdateCallback, prefix="update-sl"):
+    pass
+
+
+class SlotDeleteCallback(BaseDeleteCallback, prefix="delete-sl"):
+    pass
+
 
 class SendSlots(CallbackData, prefix="send-slots-to-students"):
     teacher_uuid: UUID
-    operation_type: ActionType
 
 
 class ResendSlots(CallbackData, prefix="resend-s-t-s"):
@@ -34,5 +49,3 @@ class DaysForStudents(CallbackData, prefix="days-for-students"):
 
 class SlotsForStudents(CallbackData, prefix="fabslots"):
     uuid_slot: UUID
-
-

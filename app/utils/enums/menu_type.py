@@ -12,3 +12,4 @@ class MenuType(StrEnum):
     ADMIN = "A"
     ADMIN_TEMP = "A-TEMP"
     NEW = "NEW"
+    CONFIRMATION = "CNFRM"

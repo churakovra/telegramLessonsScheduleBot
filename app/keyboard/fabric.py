@@ -1,5 +1,7 @@
 import calendar
 
+from ..utils.datetime_utils import full_format_no_sec 
+
 from app.keyboard.callback_factories.lesson import (
     LessonCreateCallback,
     LessonDeleteCallback,
@@ -7,13 +9,17 @@ from app.keyboard.callback_factories.lesson import (
     LessonListCallback,
     LessonUpdateCallback,
 )
-from app.keyboard.callback_factories.menu import MenuCallback
+from app.keyboard.callback_factories.menu import ConfirmMenuCallback, MenuCallback
 from app.keyboard.callback_factories.slot import (
     DaysForStudents,
     ResendSlots,
     SendSlots,
-    SlotCallback,
+    SlotCreateCallback,
+    SlotDeleteCallback,
+    SlotInfoCallback,
+    SlotListCallback,
     SlotsForStudents,
+    SlotUpdateCallback,
 )
 from app.keyboard.callback_factories.student import (
     StudentCreateCallback,
@@ -34,6 +40,7 @@ from app.keyboard.context import (
     SpecsToUpdateKeyboardContext,
     SuccessSlotBindKeyboardContext,
 )
+from app.schemas.slot_dto import SlotDTO
 from app.utils.bot_strings import BotStrings
 from app.utils.datetime_utils import WEEKDAYS, day_format, time_format_HM
 from app.utils.enums.bot_values import ActionType, EntityType, WeekFlag
@@ -43,7 +50,7 @@ from app.utils.enums.menu_type import MenuType
 def teacher_main_menu(*args, **kwargs) -> tuple[list, int]:
     buttons = [
         ("Ученики", MenuCallback(menu_type=MenuType.TEACHER_STUDENT)),
-        ("Расписание", MenuCallback(menu_type=MenuType.TEACHER_SLOT)),
+        ("Окошки", MenuCallback(menu_type=MenuType.TEACHER_SLOT)),
         ("Предметы", MenuCallback(menu_type=MenuType.TEACHER_LESSON)),
     ]
     adjust = 1
@@ -79,9 +86,8 @@ def teacher_sub_menu_student(*args, **kwargs) -> tuple[list, int]:
 
 def teacher_sub_menu_slot(*args, **kwargs) -> tuple[list, int]:
     buttons = [
-        ("Моё расписание", SlotCallback(action=ActionType.LIST)),
-        ("Добавить окошки", SlotCallback(action=ActionType.CREATE)),
-        ("Изменить окошки", SlotCallback(action=ActionType.UPDATE)),
+        ("Моё расписание", SlotListCallback()),
+        ("Добавить окошки", SlotCreateCallback()),
         (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER)),
     ]
     adjust = 1
@@ -109,7 +115,7 @@ def student_sub_menu_teacher(*args, **kwargs) -> tuple[list, int]:
 
 def student_sub_menu_slot(*args, **kwargs) -> tuple[list, int]:
     buttons = [
-        ("Заглушка", SlotCallback(action=ActionType.LIST)),
+        ("Заглушка", SlotListCallback()),
         (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.STUDENT)),
     ]
     adjust = 1
@@ -127,8 +133,8 @@ def admin_sub_menu_temp(*args, **kwargs) -> tuple[list, int]:
 
 def is_slots_correct_markup(*args, **kwargs) -> tuple[list, int]:
     buttons = [
-        (BotStrings.Menu.YES, BotStrings.Teacher.CALLBACK_SLOTS_CORRECT),
-        (BotStrings.Menu.NO, BotStrings.Teacher.CALLBACK_SLOTS_INCORRECT),
+        (BotStrings.Menu.YES, ConfirmMenuCallback(confirm=True)),
+        (BotStrings.Menu.NO, ConfirmMenuCallback(confirm=False)),
     ]
     adjust = 2
     return buttons, adjust
@@ -136,7 +142,7 @@ def is_slots_correct_markup(*args, **kwargs) -> tuple[list, int]:
 
 def send_slots(context: SendSlotsKeyboardContext, *args, **kwargs) -> tuple[list, int]:
     buttons = [
-        (BotStrings.Menu.SEND, SendSlots(**context)),
+        (BotStrings.Menu.SEND, SendSlots(teacher_uuid=context.teacher_uuid)),
         (BotStrings.Menu.CANCEL, MenuCallback(menu_type=MenuType.TEACHER)),
     ]
     adjust = 1
@@ -193,9 +199,9 @@ def specify_week(
     buttons = [
         (
             BotStrings.Menu.CURRENT_WEEK,
-            context.callback_data(week_flag=WeekFlag.CURRENT),
+            context.callback_cls(week_flag=WeekFlag.CURRENT),
         ),
-        (BotStrings.Menu.NEXT_WEEK, context.callback_data(week_flag=WeekFlag.NEXT)),
+        (BotStrings.Menu.NEXT_WEEK, context.callback_cls(week_flag=WeekFlag.NEXT)),
         (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER_SLOT)),
     ]
     adjust = 2
@@ -233,6 +239,7 @@ def entities_list(context: EntitiesListKeyboardContext, *args, **kwargs):
     buttons_by_entity_type = {
         EntityType.STUDENT: _student_buttons,
         EntityType.LESSON: _lesson_buttons,
+        EntityType.SLOT: _slot_buttons,
     }
     buttons_fab = buttons_by_entity_type[context.entity_type]
     return buttons_fab(context.entities)
@@ -264,7 +271,21 @@ def _lesson_buttons(lessons: list) -> tuple[list, int]:
     return buttons, adjust
 
 
-def entity_operations(context: EntityOperationsKeyboardContext, *args, **kwargs) -> tuple[list, int]:
+def _slot_buttons(slots: list[SlotDTO]) -> tuple[list, int]:
+    buttons = [
+        (slot.dt_start.strftime(full_format_no_sec), SlotInfoCallback(uuid=slot.uuid))
+        for slot in slots
+    ]
+    buttons.append(
+        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER_SLOT))
+    )
+    adjust = 1
+    return buttons, adjust
+
+
+def entity_operations(
+    context: EntityOperationsKeyboardContext, *args, **kwargs
+) -> tuple[list, int]:
     operations = {
         EntityType.STUDENT: {
             BotStrings.Menu.UPDATE: StudentUpdateCallback,
@@ -273,6 +294,10 @@ def entity_operations(context: EntityOperationsKeyboardContext, *args, **kwargs)
         EntityType.LESSON: {
             BotStrings.Menu.UPDATE: LessonUpdateCallback,
             BotStrings.Menu.DELETE: LessonDeleteCallback,
+        },
+        EntityType.SLOT: {
+            BotStrings.Menu.UPDATE: SlotUpdateCallback,
+            BotStrings.Menu.DELETE: SlotDeleteCallback,
         },
     }
     buttons = [

@@ -1,4 +1,3 @@
-from app.utils.enums.bot_values import KeyboardType, UserRole
 from app.keyboard.fabric import (
     admin_main_menu,
     admin_sub_menu_temp,
@@ -20,6 +19,7 @@ from app.keyboard.fabric import (
     teacher_sub_menu_slot,
     teacher_sub_menu_student,
 )
+from app.utils.enums.bot_values import KeyboardType, UserRole
 
 keyboard_registry: dict = {
     KeyboardType.TEACHER_MAIN: teacher_main_menu,
@@ -40,7 +40,7 @@ keyboard_registry: dict = {
     KeyboardType.CONFIRM_DELETION: confirm_deletion,
     KeyboardType.SPECS_TO_UPDATE: specs_to_update,
     KeyboardType.ENTITIES_LIST: entities_list,
-    KeyboardType.ENTITY_OPERATIONS: entity_operations
+    KeyboardType.ENTITY_OPERATIONS: entity_operations,
 }
 
 

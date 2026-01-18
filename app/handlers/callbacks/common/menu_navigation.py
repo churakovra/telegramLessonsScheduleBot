@@ -1,10 +1,11 @@
 from aiogram import F, Router
 from aiogram.types import CallbackQuery
 
-from app.utils.enums.bot_values import KeyboardType
-from app.utils.enums.menu_type import MenuType
 from app.keyboard.builder import MarkupBuilder
 from app.keyboard.callback_factories.menu import MenuCallback
+from app.utils.bot_strings import BotStrings
+from app.utils.enums.bot_values import KeyboardType
+from app.utils.enums.menu_type import MenuType
 from app.utils.logger import setup_logger
 
 router = Router()
@@ -24,11 +25,19 @@ markup_type_by_menu_type = {
     MenuType.ADMIN_TEMP: KeyboardType.ADMIN_SUB_TEMP,
 }
 
+main_menus = [MenuType.TEACHER, MenuType.STUDENT, MenuType.ADMIN]
+
 
 @router.callback_query(MenuCallback.filter(F.menu_type.in_(markup_type_by_menu_type)))
 async def handle_teacher_menu(
     callback: CallbackQuery, callback_data: MenuCallback
 ) -> None:
-    markup = MarkupBuilder.build(markup_type_by_menu_type[callback_data.menu_type])
-    await callback.message.answer(text="Select", reply_markup=markup)
+    menu_type = callback_data.menu_type
+    markup = MarkupBuilder.build(markup_type_by_menu_type[menu_type])
+    message_text = (
+        BotStrings.Common.MENU
+        if menu_type in main_menus
+        else BotStrings.Common.SUB_MENU
+    )
+    await callback.message.answer(text=message_text, reply_markup=markup)
     await callback.answer()

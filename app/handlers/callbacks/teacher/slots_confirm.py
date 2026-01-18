@@ -3,23 +3,22 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.keyboard.builder import MarkupBuilder
+from app.keyboard.callback_factories.menu import ConfirmMenuCallback
+from app.keyboard.context import SendSlotsKeyboardContext
 from app.schemas.slot_dto import CreateSlotDTO
 from app.services.slot_service import SlotService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
-from app.utils.enums.bot_values import KeyboardType, ActionType
-from app.keyboard.builder import MarkupBuilder
-from app.keyboard.context import SendSlotsKeyboardContext
+from app.utils.enums.bot_values import KeyboardType
 from app.utils.logger import setup_logger
 
+router = Router()
 logger = setup_logger(__name__)
 
 
-router = Router()
-
-
 @router.callback_query(
-    F.data == BotStrings.Teacher.CALLBACK_SLOTS_CORRECT,
+    ConfirmMenuCallback.filter(F.confirm == True),
     ScheduleStates.wait_for_confirmation,
 )
 async def reply_and_save_to_db(
@@ -28,24 +27,23 @@ async def reply_and_save_to_db(
     data = await state.get_data()
     slots: list[CreateSlotDTO] = data["slots"]
     teacher_uuid = data["teacher_uuid"]
-    operation_type = data["operation_type"]
 
     slot_service = SlotService(session)
-    if operation_type == ActionType.CREATE:
-        await slot_service.add_slots(slots)
-    elif operation_type == ActionType.UPDATE:
-        await slot_service.update_slots(slots=slots, teacher_uuid=teacher_uuid)
-    else:
-        logger.error("Unknown type of operation")
-        await callback.message.answer(
-            text="Unknown type of operation",
-        )
+    await slot_service.add_slots(slots)
     logger.info(f"Teacher {teacher_uuid} successfully added slots")
-    markup_context = SendSlotsKeyboardContext(teacher_uuid, operation_type)
+    markup_context = SendSlotsKeyboardContext(teacher_uuid)
     await callback.message.answer(
         text=BotStrings.Teacher.SLOTS_PROCESSING_SUCCESS,
         reply_markup=MarkupBuilder.build(KeyboardType.SEND_SLOTS, markup_context),
     )
 
     await state.clear()
+    await callback.answer()
+
+
+@router.callback_query(ConfirmMenuCallback.filter(F.confirm == False))
+async def handle_callback(callback: CallbackQuery, state: FSMContext):
+    await callback.message.answer(BotStrings.Teacher.SLOTS_FAILURE)
+    await state.set_state(ScheduleStates.wait_for_slots)
+    await callback.message.delete()
     await callback.answer()

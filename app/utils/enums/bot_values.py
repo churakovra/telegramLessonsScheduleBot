@@ -17,8 +17,9 @@ class ActionType(StrEnum):
 
 
 class WeekFlag(StrEnum):
-    CURRENT = "0"
-    NEXT = "1"
+    CURRENT = "current"
+    NEXT = "next"
+    UNKNOWN = "unknown"
 
 
 class EntityType(StrEnum):

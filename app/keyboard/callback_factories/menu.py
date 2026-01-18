@@ -5,3 +5,7 @@ from app.utils.enums.menu_type import MenuType
 
 class MenuCallback(CallbackData, prefix="menu"):
     menu_type: MenuType
+
+
+class ConfirmMenuCallback(CallbackData, prefix="menu-confirm"):
+    confirm: bool
