@@ -3,8 +3,10 @@ from app.keyboard.callback_factories.common import (
     BaseDeleteCallback,
     BaseInfoCallback,
     BaseListCallback,
+    BaseOperationCallback,
     BaseUpdateCallback,
 )
+from app.utils.enums.bot_values import ActionType
 
 
 class StudentCreateCallback(BaseCreateCallback, prefix="create-s"):
@@ -24,4 +26,12 @@ class StudentDeleteCallback(BaseDeleteCallback, prefix="delete-s"):
 
 
 class StudentUpdateCallback(BaseUpdateCallback, prefix="update-s"):
+    pass
+
+
+class StudentAttachCallback(BaseOperationCallback, prefix="attach-s"):
+    pass
+
+
+class StudentDetachCallback(BaseOperationCallback, prefix="detach-s"):
     pass

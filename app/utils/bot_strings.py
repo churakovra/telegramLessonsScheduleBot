@@ -92,6 +92,8 @@ class BotStrings:
         CANCEL = "Отмена"
         SEND = "Отправить"
         UPDATE = "Изменить"
+        ATTACH = "Прикрепить"
+        DETACH = "Открепить"
         DELETE = "Удалить"
         BIND_ANOTHER_SLOT = "Записаться ещё"
         CURRENT_WEEK = "Текущая"

@@ -1,13 +1,9 @@
 import calendar
 
-from ..utils.datetime_utils import full_format_no_sec 
-
 from app.keyboard.callback_factories.lesson import (
     LessonCreateCallback,
-    LessonDeleteCallback,
     LessonInfoCallback,
     LessonListCallback,
-    LessonUpdateCallback,
 )
 from app.keyboard.callback_factories.menu import ConfirmMenuCallback, MenuCallback
 from app.keyboard.callback_factories.slot import (
@@ -15,18 +11,14 @@ from app.keyboard.callback_factories.slot import (
     ResendSlots,
     SendSlots,
     SlotCreateCallback,
-    SlotDeleteCallback,
     SlotInfoCallback,
     SlotListCallback,
     SlotsForStudents,
-    SlotUpdateCallback,
 )
 from app.keyboard.callback_factories.student import (
     StudentCreateCallback,
-    StudentDeleteCallback,
     StudentInfoCallback,
     StudentListCallback,
-    StudentUpdateCallback,
 )
 from app.keyboard.callback_factories.teacher import TeacherCallback
 from app.keyboard.context import (
@@ -45,6 +37,9 @@ from app.utils.bot_strings import BotStrings
 from app.utils.datetime_utils import WEEKDAYS, day_format, time_format_HM
 from app.utils.enums.bot_values import ActionType, EntityType, WeekFlag
 from app.utils.enums.menu_type import MenuType
+
+from ..utils.datetime_utils import full_format_no_sec
+from . import operations
 
 
 def teacher_main_menu(*args, **kwargs) -> tuple[list, int]:
@@ -286,20 +281,6 @@ def _slot_buttons(slots: list[SlotDTO]) -> tuple[list, int]:
 def entity_operations(
     context: EntityOperationsKeyboardContext, *args, **kwargs
 ) -> tuple[list, int]:
-    operations = {
-        EntityType.STUDENT: {
-            BotStrings.Menu.UPDATE: StudentUpdateCallback,
-            BotStrings.Menu.DELETE: StudentDeleteCallback,
-        },
-        EntityType.LESSON: {
-            BotStrings.Menu.UPDATE: LessonUpdateCallback,
-            BotStrings.Menu.DELETE: LessonDeleteCallback,
-        },
-        EntityType.SLOT: {
-            BotStrings.Menu.UPDATE: SlotUpdateCallback,
-            BotStrings.Menu.DELETE: SlotDeleteCallback,
-        },
-    }
     buttons = [
         (name, allowed_operation(uuid=context.uuid))
         for name, allowed_operation in operations[context.entity_type].items()

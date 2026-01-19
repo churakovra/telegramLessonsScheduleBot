@@ -90,9 +90,6 @@ async def get_student_info(
     await callback.answer()
 
 
-# TODO add student update
-
-
 @router.callback_query(StudentDeleteCallback.filter(F.confirmed == False))
 async def request_delete_confirmation(
     callback: CallbackQuery, callback_data: StudentDeleteCallback
