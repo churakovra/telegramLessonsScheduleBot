@@ -1,3 +1,4 @@
+from uuid import UUID
 from app.keyboard.callback_factories.common import (
     BaseCreateCallback,
     BaseDeleteCallback,
@@ -6,7 +7,6 @@ from app.keyboard.callback_factories.common import (
     BaseOperationCallback,
     BaseUpdateCallback,
 )
-from app.utils.enums.bot_values import ActionType
 
 
 class StudentCreateCallback(BaseCreateCallback, prefix="create-s"):
@@ -30,8 +30,10 @@ class StudentUpdateCallback(BaseUpdateCallback, prefix="update-s"):
 
 
 class StudentAttachCallback(BaseOperationCallback, prefix="attach-s"):
-    pass
+    uuid_student: UUID
+    uuid_lesson: UUID | None = None
 
 
 class StudentDetachCallback(BaseOperationCallback, prefix="detach-s"):
-    pass
+    uuid_student: UUID
+    uuid_lesson: UUID | None = None

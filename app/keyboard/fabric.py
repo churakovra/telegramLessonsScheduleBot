@@ -16,6 +16,7 @@ from app.keyboard.callback_factories.slot import (
     SlotsForStudents,
 )
 from app.keyboard.callback_factories.student import (
+    StudentAttachCallback,
     StudentCreateCallback,
     StudentInfoCallback,
     StudentListCallback,
@@ -26,6 +27,7 @@ from app.keyboard.context import (
     DaysForStudentsKeyboardContext,
     EntitiesListKeyboardContext,
     EntityOperationsKeyboardContext,
+    LessonsToAttachKeyboardContext,
     SendSlotsKeyboardContext,
     SlotsForStudentsKeyboardContext,
     SpecifyWeekKeyboardContext,
@@ -286,5 +288,16 @@ def entity_operations(
         for name, allowed_operation in operations[context.entity_type].items()
     ]
     buttons.append((BotStrings.Menu.CANCEL, MenuCallback(menu_type=MenuType.NEW)))
+    adjust = 1
+    return buttons, adjust
+
+
+def lessons_to_attach(
+    context: LessonsToAttachKeyboardContext, *args, **kwargs
+) -> tuple[list, int]:
+    buttons = [
+        (lesson.label, StudentAttachCallback(uuid_student=context.student_uuid, uuid_lesson=lesson.uuid))
+        for lesson in context.lessons
+    ]
     adjust = 1
     return buttons, adjust

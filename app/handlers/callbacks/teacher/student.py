@@ -5,8 +5,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.keyboard.builder import MarkupBuilder
 from app.keyboard.callback_factories.student import (
+    StudentAttachCallback,
     StudentCreateCallback,
     StudentDeleteCallback,
+    StudentDetachCallback,
     StudentInfoCallback,
     StudentListCallback,
 )
@@ -14,6 +16,7 @@ from app.keyboard.context import (
     ConfirmDeletionKeyboardContext,
     EntitiesListKeyboardContext,
     EntityOperationsKeyboardContext,
+    LessonsToAttachKeyboardContext,
 )
 from app.services.lesson_service import LessonService
 from app.services.slot_service import SlotService
@@ -116,3 +119,29 @@ async def delete_lesson(
     await slot_service.delete_slots_attached_to_student(student_uuid)
     await callback.message.answer(**mt.student_deletion_success())
     await callback.answer()
+
+
+@router.callback_query(StudentAttachCallback.filter(F.lesson_uuid == None))
+async def list_lessons_to_attach(callback: CallbackQuery, callback_data: StudentAttachCallback, session: AsyncSession):
+    student_service = StudentService(session)
+    lesson_service = LessonService(session)
+    username = callback.from_user.username
+    
+    student = await student_service.get_student_by_username(username)
+    lessons = await lesson_service.get_lessons_to_attach(student)
+    makrup_context = LessonsToAttachKeyboardContext(student.uuid, lessons)
+    markup = MakrupBuilder.build(KeyboardType.LESSONS_TO_ATTACH, markup_context)
+    pass
+
+
+@router.callback_query(StudentAttachCallback.filter(F.lesson_uuid != None)):
+async def attach(callback: CallbackQuery, callback_data: StudentAttachCallback): ...
+
+
+
+@router.callback_query(StudentDetachCallback.filter(F.lesson_uuid == None))
+async def list_lessons_to_detach(callback: CallbackQuery, callback_data: StudentDetachCallback): ...
+
+
+@router.callback_query(StudentDetachCallback.filter(F.lesson_uuid != None)):
+async def detach(callback: CallbackQuery, callback_data: StudentDetachCallback): ...

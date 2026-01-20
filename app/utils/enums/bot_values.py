@@ -51,3 +51,4 @@ class KeyboardType(StrEnum):
     SPECS_TO_UPDATE = "specs_to_update"
     ENTITIES_LIST = "entities_list"
     ENTITY_OPERATIONS = "entity_operations"
+    LESSONS_TO_ATTACH = "lessons_to_attach"
