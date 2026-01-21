@@ -134,8 +134,8 @@ async def list_lessons_to_attach(callback: CallbackQuery, callback_data: Student
     pass
 
 
-@router.callback_query(StudentAttachCallback.filter(F.lesson_uuid != None)):
-async def attach(callback: CallbackQuery, callback_data: StudentAttachCallback): ...
+@router.callback_query(StudentAttachCallback.filter(F.lesson_uuid != None))
+async def attach(callback: CallbackQuery, callback_data: StudentAttachCallback, session: AsyncSession): ...
 
 
 
@@ -143,5 +143,5 @@ async def attach(callback: CallbackQuery, callback_data: StudentAttachCallback):
 async def list_lessons_to_detach(callback: CallbackQuery, callback_data: StudentDetachCallback): ...
 
 
-@router.callback_query(StudentDetachCallback.filter(F.lesson_uuid != None)):
+@router.callback_query(StudentDetachCallback.filter(F.lesson_uuid != None))
 async def detach(callback: CallbackQuery, callback_data: StudentDetachCallback): ...
