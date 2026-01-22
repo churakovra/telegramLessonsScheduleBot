@@ -122,26 +122,37 @@ async def delete_lesson(
 
 
 @router.callback_query(StudentAttachCallback.filter(F.lesson_uuid == None))
-async def list_lessons_to_attach(callback: CallbackQuery, callback_data: StudentAttachCallback, session: AsyncSession):
-    student_service = StudentService(session)
+async def list_lessons_to_attach(
+    callback: CallbackQuery, callback_data: StudentAttachCallback, session: AsyncSession
+):
+    logger.debug("im in list_lessons_to_attach")
+    teacher_service = TeacherService(session)
     lesson_service = LessonService(session)
     username = callback.from_user.username
-    
-    student = await student_service.get_student_by_username(username)
-    lessons = await lesson_service.get_lessons_to_attach(student)
-    makrup_context = LessonsToAttachKeyboardContext(student.uuid, lessons)
-    markup = MakrupBuilder.build(KeyboardType.LESSONS_TO_ATTACH, markup_context)
-    pass
+
+    teacher = await teacher_service.get_teacher(username)
+    lessons = await lesson_service.get_lessons_to_attach(callback_data.uuid, teacher.uuid)
+    markup_context = LessonsToAttachKeyboardContext(callback_data.uuid, teacher.uuid, lessons)
+    markup = MarkupBuilder.build(KeyboardType.LESSONS_TO_ATTACH, markup_context)
+    await callback.message.answer(text=BotStrings.Teacher.STUDENT_ATTACH_LESSONS_LIST, reply_markup=markup)
+    await callback.answer()
 
 
-@router.callback_query(StudentAttachCallback.filter(F.lesson_uuid != None))
-async def attach(callback: CallbackQuery, callback_data: StudentAttachCallback, session: AsyncSession): ...
+@router.callback_query(StudentAttachCallback.filter(F.uuid_lesson != None))
+async def attach(
+    callback: CallbackQuery, callback_data: StudentAttachCallback, session: AsyncSession
+): 
+    lesson_service = LessonService(session)
+    await lesson_service.attach_lesson(callback_data.uuid, callback_data.uuid_teacher, callback_data.uuid_lesson)
+    await callback.message.answer(BotStrings.Teacher.STUDENT_ATTACH_SUCCESS)
+    await callback.answer()
 
 
+@router.callback_query(StudentDetachCallback.filter(F.uuid_lesson == None))
+async def list_lessons_to_detach(
+    callback: CallbackQuery, callback_data: StudentDetachCallback
+): ...
 
-@router.callback_query(StudentDetachCallback.filter(F.lesson_uuid == None))
-async def list_lessons_to_detach(callback: CallbackQuery, callback_data: StudentDetachCallback): ...
 
-
-@router.callback_query(StudentDetachCallback.filter(F.lesson_uuid != None))
+@router.callback_query(StudentDetachCallback.filter(F.uuid_lesson != None))
 async def detach(callback: CallbackQuery, callback_data: StudentDetachCallback): ...
