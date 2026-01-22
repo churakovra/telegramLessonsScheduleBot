@@ -1,6 +1,3 @@
-from app.keyboard.callback_factories.lesson import LessonDeleteCallback, LessonUpdateCallback
-from app.keyboard.callback_factories.slot import SlotDeleteCallback, SlotUpdateCallback
-from app.keyboard.callback_factories.student import StudentAttachCallback, StudentDeleteCallback, StudentDetachCallback, StudentUpdateCallback
 from app.keyboard.fabric import (
     admin_main_menu,
     admin_sub_menu_temp,
@@ -23,8 +20,7 @@ from app.keyboard.fabric import (
     teacher_sub_menu_slot,
     teacher_sub_menu_student,
 )
-from app.utils.bot_strings import BotStrings
-from app.utils.enums.bot_values import EntityType, KeyboardType, UserRole
+from app.utils.enums.bot_values import KeyboardType, UserRole
 
 keyboard_registry: dict = {
     KeyboardType.TEACHER_MAIN: teacher_main_menu,
@@ -55,20 +51,3 @@ markup_type_by_role = {
     UserRole.STUDENT: KeyboardType.STUDENT_MAIN,
     UserRole.ADMIN: KeyboardType.ADMIN_MAIN,
 }
-
-
-operations = {
-        EntityType.STUDENT: {
-            BotStrings.Menu.ATTACH: StudentAttachCallback,
-            BotStrings.Menu.DETACH: StudentDetachCallback,
-            BotStrings.Menu.DELETE: StudentDeleteCallback,
-        },
-        EntityType.LESSON: {
-            BotStrings.Menu.UPDATE: LessonUpdateCallback,
-            BotStrings.Menu.DELETE: LessonDeleteCallback,
-        },
-        EntityType.SLOT: {
-            BotStrings.Menu.UPDATE: SlotUpdateCallback,
-            BotStrings.Menu.DELETE: SlotDeleteCallback,
-        },
-    }

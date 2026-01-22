@@ -2,8 +2,10 @@ import calendar
 
 from app.keyboard.callback_factories.lesson import (
     LessonCreateCallback,
+    LessonDeleteCallback,
     LessonInfoCallback,
     LessonListCallback,
+    LessonUpdateCallback,
 )
 from app.keyboard.callback_factories.menu import ConfirmMenuCallback, MenuCallback
 from app.keyboard.callback_factories.slot import (
@@ -11,13 +13,17 @@ from app.keyboard.callback_factories.slot import (
     ResendSlots,
     SendSlots,
     SlotCreateCallback,
+    SlotDeleteCallback,
     SlotInfoCallback,
     SlotListCallback,
     SlotsForStudents,
+    SlotUpdateCallback,
 )
 from app.keyboard.callback_factories.student import (
     StudentAttachCallback,
     StudentCreateCallback,
+    StudentDeleteCallback,
+    StudentDetachCallback,
     StudentInfoCallback,
     StudentListCallback,
 )
@@ -41,7 +47,22 @@ from app.utils.enums.bot_values import ActionType, EntityType, WeekFlag
 from app.utils.enums.menu_type import MenuType
 
 from ..utils.datetime_utils import full_format_no_sec
-from . import operations
+
+operations = {
+    EntityType.STUDENT: {
+        BotStrings.Menu.ATTACH: StudentAttachCallback,
+        BotStrings.Menu.DETACH: StudentDetachCallback,
+        BotStrings.Menu.DELETE: StudentDeleteCallback,
+    },
+    EntityType.LESSON: {
+        BotStrings.Menu.UPDATE: LessonUpdateCallback,
+        BotStrings.Menu.DELETE: LessonDeleteCallback,
+    },
+    EntityType.SLOT: {
+        BotStrings.Menu.UPDATE: SlotUpdateCallback,
+        BotStrings.Menu.DELETE: SlotDeleteCallback,
+    },
+}
 
 
 def teacher_main_menu(*args, **kwargs) -> tuple[list, int]:
@@ -296,8 +317,18 @@ def lessons_to_attach(
     context: LessonsToAttachKeyboardContext, *args, **kwargs
 ) -> tuple[list, int]:
     buttons = [
-        (lesson.label, StudentAttachCallback(uuid_student=context.student_uuid, uuid_lesson=lesson.uuid))
+        (
+            lesson.label,
+            StudentAttachCallback(
+                uuid=context.student_uuid,
+                uuid_teacher=context.teacher_uuid,
+                uuid_lesson=lesson.uuid,
+            ),
+        )
         for lesson in context.lessons
     ]
+    buttons.append(
+        (BotStrings.Menu.CANCEL, MenuCallback(menu_type=MenuType.TEACHER_STUDENT))
+    )
     adjust = 1
     return buttons, adjust
