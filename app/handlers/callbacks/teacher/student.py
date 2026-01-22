@@ -121,17 +121,17 @@ async def delete_lesson(
     await callback.answer()
 
 
-@router.callback_query(StudentAttachCallback.filter(F.lesson_uuid == None))
+@router.callback_query(StudentAttachCallback.filter(F.uuid_lesson == None))
 async def list_lessons_to_attach(
     callback: CallbackQuery, callback_data: StudentAttachCallback, session: AsyncSession
 ):
-    logger.debug("im in list_lessons_to_attach")
     teacher_service = TeacherService(session)
     lesson_service = LessonService(session)
     username = callback.from_user.username
 
     teacher = await teacher_service.get_teacher(username)
-    lessons = await lesson_service.get_lessons_to_attach(callback_data.uuid, teacher.uuid)
+    logger.debug(f"{callback_data.uuid, teacher.uuid}")
+    lessons = await lesson_service.get_lessons_to_attach(student_uuid=callback_data.uuid, teacher_uuid=teacher.uuid)
     markup_context = LessonsToAttachKeyboardContext(callback_data.uuid, teacher.uuid, lessons)
     markup = MarkupBuilder.build(KeyboardType.LESSONS_TO_ATTACH, markup_context)
     await callback.message.answer(text=BotStrings.Teacher.STUDENT_ATTACH_LESSONS_LIST, reply_markup=markup)

@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import and_, delete, select, update
+from sqlalchemy import and_, exists, not_, delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.orm.lesson import Lesson
@@ -96,14 +96,22 @@ class LessonRepository:
             select(Lesson)
             .join(TeacherStudent, Lesson.uuid == TeacherStudent.uuid_lesson)
             .where(
-                and_(
-                    TeacherStudent.uuid_student == student_uuid,
-                    TeacherStudent.uuid_teacher == teacher_uuid,
-                    TeacherStudent.uuid_lesson == None,
+                not_(
+                    exists()
+                    .where(
+                        and_(
+                            Lesson.uuid == TeacherStudent.uuid_lesson,
+                            TeacherStudent.uuid_teacher == teacher_uuid,
+                            TeacherStudent.uuid_student == student_uuid,
+
+                        )
+                    )
                 )
             )
         )
+        logger.debug(stmt)
         for lesson in await self.database.scalars(stmt):
+            logger.debug(lesson)
             lessons.append(LessonDTO.model_validate(lesson))
         return lessons
 
