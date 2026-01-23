@@ -94,20 +94,15 @@ class LessonRepository:
         lessons = []
         stmt = (
             select(Lesson)
-            .join(TeacherStudent, Lesson.uuid == TeacherStudent.uuid_lesson)
-            .where(
-                not_(
-                    exists()
-                    .where(
-                        and_(
-                            Lesson.uuid == TeacherStudent.uuid_lesson,
-                            TeacherStudent.uuid_teacher == teacher_uuid,
-                            TeacherStudent.uuid_student == student_uuid,
-
-                        )
-                    )
+            .outerjoin(
+                TeacherStudent,
+                and_(
+                    Lesson.uuid == TeacherStudent.uuid_lesson,
+                    TeacherStudent.uuid_student == student_uuid,
+                    TeacherStudent.uuid_teacher == teacher_uuid
                 )
             )
+            .where(TeacherStudent.uuid_lesson.is_(None))
         )
         logger.debug(stmt)
         for lesson in await self.database.scalars(stmt):
