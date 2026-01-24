@@ -1,6 +1,7 @@
 from app.keyboard.fabric import (
     admin_main_menu,
     admin_sub_menu_temp,
+    cancel_markup,
     confirm_deletion,
     days_for_students,
     entities_list,
@@ -42,7 +43,8 @@ keyboard_registry: dict = {
     KeyboardType.SPECS_TO_UPDATE: specs_to_update,
     KeyboardType.ENTITIES_LIST: entities_list,
     KeyboardType.ENTITY_OPERATIONS: entity_operations,
-    KeyboardType.LESSONS_TO_ATTACH: lessons_to_attach
+    KeyboardType.LESSONS_TO_ATTACH: lessons_to_attach,
+    KeyboardType.CANCEL: cancel_markup
 }
 
 

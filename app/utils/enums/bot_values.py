@@ -52,3 +52,4 @@ class KeyboardType(StrEnum):
     ENTITIES_LIST = "entities_list"
     ENTITY_OPERATIONS = "entity_operations"
     LESSONS_TO_ATTACH = "lessons_to_attach"
+    CANCEL = "cancel"

@@ -331,3 +331,9 @@ def lessons_to_attach(
     )
     adjust = 1
     return buttons, adjust
+
+
+def cancel_markup(*args, **kwargs) -> tuple[list, int]:
+    buttons = [(BotStrings.Menu.CANCEL, MenuCallback(menu_type=MenuType.CANCEL))]
+    adjust = 1
+    return buttons, adjust

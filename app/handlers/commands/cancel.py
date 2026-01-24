@@ -5,7 +5,7 @@ from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-from app.handlers.commands.menu import markup_type_by_role
+from app.keyboard import markup_type_by_role
 from app.keyboard.builder import MarkupBuilder
 from app.services.user_service import UserService
 from app.utils import message_template
