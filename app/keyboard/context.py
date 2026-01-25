@@ -10,7 +10,7 @@ from app.keyboard.callback_factories.mixins import SpecifyWeekMixin
 from app.schemas.lesson_dto import LessonDTO
 from app.schemas.slot_dto import SlotDTO
 from app.schemas.student_dto import StudentDTO
-from app.utils.enums.bot_values import ActionType, EntityType, UserRole
+from app.utils.enums.bot_values import EntityType, UserRole
 
 
 @dataclass
@@ -83,3 +83,9 @@ class SpecsToUpdateKeyboardContext(KeyboardContext):
     lesson_uuid: UUID
     specs: dict[str, str]
     callback_data_cls: type[BaseUpdateCallback]
+
+
+@dataclass
+class LessonsToAttachKeyboardContext(KeyboardContext):
+    student_uuid: UUID
+    lessons: list[LessonDTO]

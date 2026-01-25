@@ -1,8 +1,10 @@
+from uuid import UUID
 from app.keyboard.callback_factories.common import (
     BaseCreateCallback,
     BaseDeleteCallback,
     BaseInfoCallback,
     BaseListCallback,
+    BaseOperationCallback,
     BaseUpdateCallback,
 )
 
@@ -25,3 +27,13 @@ class StudentDeleteCallback(BaseDeleteCallback, prefix="delete-s"):
 
 class StudentUpdateCallback(BaseUpdateCallback, prefix="update-s"):
     pass
+
+
+class StudentAttachCallback(BaseOperationCallback, prefix="attach-s"):
+    uuid: UUID
+    uuid_lesson: UUID | None = None
+
+
+class StudentDetachCallback(BaseOperationCallback, prefix="detach-s"):
+    uuid: UUID
+    uuid_lesson: UUID | None = None
