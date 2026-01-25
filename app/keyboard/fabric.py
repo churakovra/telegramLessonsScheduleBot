@@ -1,7 +1,5 @@
 import calendar
 
-from ..utils.datetime_utils import full_format_no_sec 
-
 from app.keyboard.callback_factories.lesson import (
     LessonCreateCallback,
     LessonDeleteCallback,
@@ -22,11 +20,12 @@ from app.keyboard.callback_factories.slot import (
     SlotUpdateCallback,
 )
 from app.keyboard.callback_factories.student import (
+    StudentAttachCallback,
     StudentCreateCallback,
     StudentDeleteCallback,
+    StudentDetachCallback,
     StudentInfoCallback,
     StudentListCallback,
-    StudentUpdateCallback,
 )
 from app.keyboard.callback_factories.teacher import TeacherCallback
 from app.keyboard.context import (
@@ -34,6 +33,7 @@ from app.keyboard.context import (
     DaysForStudentsKeyboardContext,
     EntitiesListKeyboardContext,
     EntityOperationsKeyboardContext,
+    LessonsToAttachKeyboardContext,
     SendSlotsKeyboardContext,
     SlotsForStudentsKeyboardContext,
     SpecifyWeekKeyboardContext,
@@ -45,6 +45,24 @@ from app.utils.bot_strings import BotStrings
 from app.utils.datetime_utils import WEEKDAYS, day_format, time_format_HM
 from app.utils.enums.bot_values import ActionType, EntityType, WeekFlag
 from app.utils.enums.menu_type import MenuType
+
+from ..utils.datetime_utils import full_format_no_sec
+
+operations = {
+    EntityType.STUDENT: {
+        BotStrings.Menu.ATTACH: StudentAttachCallback,
+        BotStrings.Menu.DETACH: StudentDetachCallback,
+        BotStrings.Menu.DELETE: StudentDeleteCallback,
+    },
+    EntityType.LESSON: {
+        BotStrings.Menu.UPDATE: LessonUpdateCallback,
+        BotStrings.Menu.DELETE: LessonDeleteCallback,
+    },
+    EntityType.SLOT: {
+        BotStrings.Menu.UPDATE: SlotUpdateCallback,
+        BotStrings.Menu.DELETE: SlotDeleteCallback,
+    },
+}
 
 
 def teacher_main_menu(*args, **kwargs) -> tuple[list, int]:
@@ -286,24 +304,36 @@ def _slot_buttons(slots: list[SlotDTO]) -> tuple[list, int]:
 def entity_operations(
     context: EntityOperationsKeyboardContext, *args, **kwargs
 ) -> tuple[list, int]:
-    operations = {
-        EntityType.STUDENT: {
-            BotStrings.Menu.UPDATE: StudentUpdateCallback,
-            BotStrings.Menu.DELETE: StudentDeleteCallback,
-        },
-        EntityType.LESSON: {
-            BotStrings.Menu.UPDATE: LessonUpdateCallback,
-            BotStrings.Menu.DELETE: LessonDeleteCallback,
-        },
-        EntityType.SLOT: {
-            BotStrings.Menu.UPDATE: SlotUpdateCallback,
-            BotStrings.Menu.DELETE: SlotDeleteCallback,
-        },
-    }
     buttons = [
         (name, allowed_operation(uuid=context.uuid))
         for name, allowed_operation in operations[context.entity_type].items()
     ]
     buttons.append((BotStrings.Menu.CANCEL, MenuCallback(menu_type=MenuType.NEW)))
+    adjust = 1
+    return buttons, adjust
+
+
+def lessons_to_attach(
+    context: LessonsToAttachKeyboardContext, *args, **kwargs
+) -> tuple[list, int]:
+    buttons = [
+        (
+            lesson.label,
+            StudentAttachCallback(
+                uuid=context.student_uuid,
+                uuid_lesson=lesson.uuid,
+            ),
+        )
+        for lesson in context.lessons
+    ]
+    buttons.append(
+        (BotStrings.Menu.CANCEL, MenuCallback(menu_type=MenuType.TEACHER_STUDENT))
+    )
+    adjust = 1
+    return buttons, adjust
+
+
+def cancel_markup(*args, **kwargs) -> tuple[list, int]:
+    buttons = [(BotStrings.Menu.CANCEL, MenuCallback(menu_type=MenuType.CANCEL))]
     adjust = 1
     return buttons, adjust

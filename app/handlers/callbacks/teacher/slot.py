@@ -53,7 +53,8 @@ async def create(
 ):
     await state.set_state(ScheduleStates.wait_for_slots)
     await state.update_data(week_flag=callback_data.week_flag)
-    await callback.message.answer(BotStrings.Teacher.SLOTS_ADD)
+    markup = MarkupBuilder.build(KeyboardType.CANCEL)
+    await callback.message.answer(text=BotStrings.Teacher.SLOTS_ADD, reply_markup=markup)
     await callback.answer()
     logger.info("Add slot flow has been started")
 

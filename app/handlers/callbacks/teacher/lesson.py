@@ -44,8 +44,9 @@ async def create(
         await state.update_data(operation_type=ActionType.CREATE)
         await state.set_state(ScheduleStates.wait_for_teacher_lesson_label)
         await callback.message.delete()
+        markup = MarkupBuilder.build(KeyboardType.CANCEL)
         message = await callback.message.answer(
-            BotStrings.Teacher.TEACHER_LESSON_ADD_LABEL
+            text=BotStrings.Teacher.TEACHER_LESSON_ADD_LABEL, reply_markup=markup
         )
         await state.update_data(previous_message_id=message.message_id)
     except UserNotFoundException:

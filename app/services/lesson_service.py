@@ -7,6 +7,8 @@ from app.schemas.lesson_dto import CreateLessonDTO, LessonDTO, UpdateLessonDTO
 from app.schemas.slot_dto import SlotDTO
 from app.utils.exceptions.lesson_exceptions import LessonsNotFoundException
 from app.utils.logger import setup_logger
+from app.schemas.student_dto import StudentDTO
+
 
 logger = setup_logger(__name__)
 
@@ -70,3 +72,14 @@ class LessonService:
         duration = f"Длительность {lesson.duration} мин"
         price = f"Стоимость {lesson.price} руб"
         return f"{label}\n{duration}\n{price}"
+    
+
+    async def get_lessons_to_attach(self, student_uuid: UUID, teacher_uuid: UUID) -> list[LessonDTO]:
+        lessons = await self._repository.get_lessons_to_attach(student_uuid=student_uuid, teacher_uuid=teacher_uuid)
+        return lessons
+
+
+    async def attach_lesson(self, student_uuid: UUID, teacher_uuid: UUID, lesson_uuid: UUID) -> None:
+        await self._repository.attach_lesson(student_uuid, teacher_uuid, lesson_uuid)
+
+    async def get_lessons_to_detach(self, student: StudentDTO): ...

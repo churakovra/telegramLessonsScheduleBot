@@ -1,11 +1,13 @@
 from app.keyboard.fabric import (
     admin_main_menu,
     admin_sub_menu_temp,
+    cancel_markup,
     confirm_deletion,
     days_for_students,
     entities_list,
     entity_operations,
     is_slots_correct_markup,
+    lessons_to_attach,
     send_slots,
     slots_for_students,
     specify_week,
@@ -41,6 +43,8 @@ keyboard_registry: dict = {
     KeyboardType.SPECS_TO_UPDATE: specs_to_update,
     KeyboardType.ENTITIES_LIST: entities_list,
     KeyboardType.ENTITY_OPERATIONS: entity_operations,
+    KeyboardType.LESSONS_TO_ATTACH: lessons_to_attach,
+    KeyboardType.CANCEL: cancel_markup
 }
 
 
