@@ -321,7 +321,7 @@ def lessons_to_attach(
             lesson.label,
             StudentAttachCallback(
                 uuid=context.student_uuid,
-                uuid_lesson=lesson.uuid,
+                id_lesson=lesson.id,
             ),
         )
         for lesson in context.lessons

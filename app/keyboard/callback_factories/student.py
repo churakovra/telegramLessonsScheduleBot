@@ -31,7 +31,7 @@ class StudentUpdateCallback(BaseUpdateCallback, prefix="update-s"):
 
 class StudentAttachCallback(BaseOperationCallback, prefix="attach-s"):
     uuid: UUID
-    uuid_lesson: UUID | None = None
+    id_lesson: int | None = None
 
 
 class StudentDetachCallback(BaseOperationCallback, prefix="detach-s"):

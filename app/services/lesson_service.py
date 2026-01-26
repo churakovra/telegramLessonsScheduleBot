@@ -79,7 +79,7 @@ class LessonService:
         return lessons
 
 
-    async def attach_lesson(self, student_uuid: UUID, teacher_uuid: UUID, lesson_uuid: UUID) -> None:
-        await self._repository.attach_lesson(student_uuid, teacher_uuid, lesson_uuid)
+    async def attach_lesson(self, student_uuid: UUID, teacher_uuid: UUID, lesson_id: int) -> None:
+        await self._repository.attach_lesson(student_uuid, teacher_uuid, lesson_id)
 
     async def get_lessons_to_detach(self, student: StudentDTO): ...
