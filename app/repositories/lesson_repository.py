@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import and_, exists, not_, delete, select, update
+from sqlalchemy import and_, delete, exists, not_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.orm.lesson import Lesson
@@ -99,8 +99,8 @@ class LessonRepository:
                 and_(
                     Lesson.uuid == TeacherStudent.uuid_lesson,
                     TeacherStudent.uuid_student == student_uuid,
-                    TeacherStudent.uuid_teacher == teacher_uuid
-                )
+                    TeacherStudent.uuid_teacher == teacher_uuid,
+                ),
             )
             .where(TeacherStudent.uuid_lesson.is_(None))
         )
@@ -110,6 +110,22 @@ class LessonRepository:
             lessons.append(LessonDTO.model_validate(lesson))
         return lessons
 
+    async def get_lessons_to_detach(
+        self, teacher_uuid: UUID, student_uuid: UUID
+    ) -> list[LessonDTO]:
+        stmt = (
+            select(Lesson)
+            .join(TeacherStudent, Lesson.uuid == TeacherStudent.uuid_lesson)
+            .where(
+                TeacherStudent.uuid_student == student_uuid,
+                TeacherStudent.uuid_teacher == teacher_uuid,
+            )
+        )
+        return [
+            LessonDTO.model_validate(lesson)
+            for lesson in await self.database.scalars(stmt)
+            if lesson
+        ]
 
     async def attach_lesson(
         self, student_uuid: UUID, teacher_uuid: UUID, lesson_uuid: UUID
@@ -127,12 +143,23 @@ class LessonRepository:
         await self.database.execute(stmt)
         await self.database.commit()
 
+    async def detach_specific_lesson(
+        self, student_uuid: UUID, teacher_uuid: UUID, lesson_uuid: UUID
+    ) -> None:
+        stmt = (
+            update(TeacherStudent)
+            .where(
+                and_(
+                    TeacherStudent.uuid_teacher == teacher_uuid,
+                    TeacherStudent.uuid_student == student_uuid,
+                    TeacherStudent.uuid_lesson == lesson_uuid,
+                )
+            )
+            .values({"uuid_lesson": None})
+        )
+        await self.database.execute(stmt)
+        await self.database.commit()
 
     async def get_lesson_by_id(self, lesson_id: int) -> Lesson | None:
-        stmt = (
-            select(Lesson)
-            .where(
-                Lesson.id == lesson_id
-            )
-        )
+        stmt = select(Lesson).where(Lesson.id == lesson_id)
         return await self.database.scalar(stmt)

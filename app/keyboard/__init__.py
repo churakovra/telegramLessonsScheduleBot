@@ -7,7 +7,7 @@ from app.keyboard.fabric import (
     entities_list,
     entity_operations,
     is_slots_correct_markup,
-    lessons_to_attach,
+    lessons_to_assign,
     send_slots,
     slots_for_students,
     specify_week,
@@ -43,7 +43,7 @@ keyboard_registry: dict = {
     KeyboardType.SPECS_TO_UPDATE: specs_to_update,
     KeyboardType.ENTITIES_LIST: entities_list,
     KeyboardType.ENTITY_OPERATIONS: entity_operations,
-    KeyboardType.LESSONS_TO_ATTACH: lessons_to_attach,
+    KeyboardType.LESSONS_TO_ASSIGN: lessons_to_assign,
     KeyboardType.CANCEL: cancel_markup
 }
 
