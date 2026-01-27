@@ -126,3 +126,13 @@ class LessonRepository:
         )
         await self.database.execute(stmt)
         await self.database.commit()
+
+
+    async def get_lesson_by_id(self, lesson_id: int) -> Lesson | None:
+        stmt = (
+            select(Lesson)
+            .where(
+                Lesson.id == lesson_id
+            )
+        )
+        return await self.database.scalar(stmt)

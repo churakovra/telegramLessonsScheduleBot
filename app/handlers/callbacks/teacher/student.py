@@ -19,6 +19,7 @@ from app.keyboard.context import (
     EntityOperationsKeyboardContext,
     LessonsToAttachKeyboardContext,
 )
+from app.keyboard.fabric import MenuType
 from app.services.lesson_service import LessonService
 from app.services.slot_service import SlotService
 from app.services.student_service import StudentService
@@ -131,11 +132,9 @@ async def list_lessons_to_attach(
     username = callback.from_user.username
 
     teacher = await teacher_service.get_teacher(username)
-    logger.debug(f"{callback_data.uuid, teacher.uuid}")
     lessons = await lesson_service.get_lessons_to_attach(student_uuid=callback_data.uuid, teacher_uuid=teacher.uuid)
     markup_context = LessonsToAttachKeyboardContext(callback_data.uuid, lessons)
     markup = MarkupBuilder.build(KeyboardType.LESSONS_TO_ATTACH, markup_context)
-    logger.debug(lessons, markup)
     await callback.message.answer(text=BotStrings.Teacher.STUDENT_ATTACH_LESSONS_LIST, reply_markup=markup)
     await callback.answer()
 
@@ -147,16 +146,18 @@ async def attach(
     teacher_service = TeacherService(session)
     lesson_service = LessonService(session)
     teacher = await teacher_service.get_teacher(callback.from_user.username)
-    await lesson_service.attach_lesson(callback_data.uuid, teacher.uuid, callback_data.id_lesson)
-    await callback.message.answer(BotStrings.Teacher.STUDENT_ATTACH_SUCCESS)
+    lesson = await lesson_service.get_lesson_by_id(callback_data.id_lesson)
+    await lesson_service.attach_lesson(callback_data.uuid, teacher.uuid, lesson.uuid)
+    markup = MarkupBuilder.build(KeyboardType.TEACHER_SUB_STUDENT)
+    await callback.message.answer(text=BotStrings.Teacher.STUDENT_ATTACH_SUCCESS, reply_markup=markup)
     await callback.answer()
 
 
-@router.callback_query(StudentDetachCallback.filter(F.id_lesson == None))
+@router.callback_query(StudentDetachCallback.filter(F.id_lesson.is_(None)))
 async def list_lessons_to_detach(
     callback: CallbackQuery, callback_data: StudentDetachCallback
 ): ...
 
 
-@router.callback_query(StudentDetachCallback.filter(F.id_lesson != None))
+@router.callback_query(StudentDetachCallback.filter(F.id_lesson.is_not(None)))
 async def detach(callback: CallbackQuery, callback_data: StudentDetachCallback): ...
