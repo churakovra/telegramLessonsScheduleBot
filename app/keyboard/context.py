@@ -86,6 +86,6 @@ class SpecsToUpdateKeyboardContext(KeyboardContext):
 
 
 @dataclass
-class LessonsToAttachKeyboardContext(KeyboardContext):
+class LessonsAssignKeyboardContext(KeyboardContext):
     student_uuid: UUID
     lessons: list[LessonDTO]

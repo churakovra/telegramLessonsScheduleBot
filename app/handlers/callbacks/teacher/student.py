@@ -1,3 +1,4 @@
+
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
@@ -16,7 +17,7 @@ from app.keyboard.context import (
     ConfirmDeletionKeyboardContext,
     EntitiesListKeyboardContext,
     EntityOperationsKeyboardContext,
-    LessonsToAttachKeyboardContext,
+    LessonsAssignKeyboardContext,
 )
 from app.services.lesson_service import LessonService
 from app.services.slot_service import SlotService
@@ -79,7 +80,7 @@ async def list(callback: CallbackQuery, session: AsyncSession) -> None:
 @router.callback_query(StudentInfoCallback.filter())
 async def get_student_info(
     callback: CallbackQuery, callback_data: StudentInfoCallback, session: AsyncSession
-):
+) -> None:
     student_service = StudentService(session)
     lesson_service = LessonService(session)
     student = await student_service.get_student_by_uuid(callback_data.uuid)
@@ -96,7 +97,7 @@ async def get_student_info(
 @router.callback_query(StudentDeleteCallback.filter(F.confirmed == False))
 async def request_delete_confirmation(
     callback: CallbackQuery, callback_data: StudentDeleteCallback
-):
+) -> None:
     markup_context = ConfirmDeletionKeyboardContext(
         StudentDeleteCallback, callback_data
     )
@@ -108,7 +109,7 @@ async def request_delete_confirmation(
 @router.callback_query(StudentDeleteCallback.filter(F.confirmed == True))
 async def delete_lesson(
     callback: CallbackQuery, callback_data: StudentDeleteCallback, session: AsyncSession
-):
+) -> None:
     teacher_service = TeacherService(session)
     slot_service = SlotService(session)
     teacher = await teacher_service.get_teacher(callback.from_user.username)
@@ -121,40 +122,57 @@ async def delete_lesson(
     await callback.answer()
 
 
-@router.callback_query(StudentAttachCallback.filter(F.uuid_lesson.is_(None)))
+@router.callback_query(StudentAttachCallback.filter(F.id_lesson.is_(None)))
 async def list_lessons_to_attach(
     callback: CallbackQuery, callback_data: StudentAttachCallback, session: AsyncSession
-):
+) -> None:
     teacher_service = TeacherService(session)
     lesson_service = LessonService(session)
     username = callback.from_user.username
-
     teacher = await teacher_service.get_teacher(username)
-    logger.debug(f"{callback_data.uuid, teacher.uuid}")
     lessons = await lesson_service.get_lessons_to_attach(student_uuid=callback_data.uuid, teacher_uuid=teacher.uuid)
-    markup_context = LessonsToAttachKeyboardContext(callback_data.uuid, lessons)
-    markup = MarkupBuilder.build(KeyboardType.LESSONS_TO_ATTACH, markup_context)
+    markup_context = LessonsAssignKeyboardContext(callback_data.uuid, lessons)
+    markup = MarkupBuilder.build(KeyboardType.LESSONS_TO_ASSIGN, markup_context)
     await callback.message.answer(text=BotStrings.Teacher.STUDENT_ATTACH_LESSONS_LIST, reply_markup=markup)
     await callback.answer()
 
 
-@router.callback_query(StudentAttachCallback.filter(F.uuid_lesson.is_not(None)))
+@router.callback_query(StudentAttachCallback.filter(F.id_lesson.is_not(None)))
 async def attach(
     callback: CallbackQuery, callback_data: StudentAttachCallback, session: AsyncSession
-): 
+) -> None: 
     teacher_service = TeacherService(session)
     lesson_service = LessonService(session)
     teacher = await teacher_service.get_teacher(callback.from_user.username)
-    await lesson_service.attach_lesson(callback_data.uuid, teacher.uuid, callback_data.uuid_lesson)
-    await callback.message.answer(BotStrings.Teacher.STUDENT_ATTACH_SUCCESS)
+    lesson = await lesson_service.get_lesson_by_id(callback_data.id_lesson)
+    await lesson_service.attach_lesson(callback_data.uuid, teacher.uuid, lesson.uuid)
+    markup = MarkupBuilder.build(KeyboardType.TEACHER_SUB_STUDENT)
+    await callback.message.answer(text=BotStrings.Teacher.STUDENT_ATTACH_SUCCESS, reply_markup=markup)
     await callback.answer()
 
 
-@router.callback_query(StudentDetachCallback.filter(F.uuid_lesson == None))
+@router.callback_query(StudentDetachCallback.filter(F.id_lesson.is_(None)))
 async def list_lessons_to_detach(
-    callback: CallbackQuery, callback_data: StudentDetachCallback
-): ...
+    callback: CallbackQuery, callback_data: StudentDetachCallback, session: AsyncSession
+) -> None:
+    teacher_service = TeacherService(session)
+    lesson_service = LessonService(session)
+    username = callback.from_user.username
+    teacher = await teacher_service.get_teacher(username)
+    lessons = await lesson_service.get_lessons_to_detach(student_uuid=callback_data.uuid, teacher_uuid=teacher.uuid)
+    markup_context = LessonsAssignKeyboardContext(callback_data.uuid, lessons)
+    markup = MarkupBuilder.build(KeyboardType.LESSONS_TO_ASSIGN, markup_context)
+    await callback.message.answer(text=BotStrings.Teacher.STUDENT_ATTACH_LESSONS_LIST, reply_markup=markup)
+    await callback.answer()
+    
 
-
-@router.callback_query(StudentDetachCallback.filter(F.uuid_lesson != None))
-async def detach(callback: CallbackQuery, callback_data: StudentDetachCallback): ...
+@router.callback_query(StudentDetachCallback.filter(F.id_lesson.is_not(None)))
+async def detach(callback: CallbackQuery, callback_data: StudentDetachCallback, session: AsyncSession) -> None:
+    teacher_service = TeacherService(session)
+    lesson_service = LessonService(session)
+    teacher = await teacher_service.get_teacher(callback.from_user.username)
+    lesson = await lesson_service.get_lesson_by_id(callback_data.id_lesson)
+    await lesson_service.detach_specific_lesson(callback_data.uuid, teacher.uuid, lesson.uuid)
+    markup = MarkupBuilder.build(KeyboardType.TEACHER_SUB_STUDENT)
+    await callback.message.answer(text=BotStrings.Teacher.STUDENT_ATTACH_SUCCESS, reply_markup=markup)
+    await callback.answer()
