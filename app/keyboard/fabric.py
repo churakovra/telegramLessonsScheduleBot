@@ -323,7 +323,7 @@ def lessons_to_assign(
     buttons = [
         (
             lesson.label,
-            BaseAssignCallback(
+            context.assign_callback(
                 uuid=context.student_uuid,
                 id_lesson=lesson.id,
             ),

@@ -131,7 +131,7 @@ async def list_lessons_to_attach(
     username = callback.from_user.username
     teacher = await teacher_service.get_teacher(username)
     lessons = await lesson_service.get_lessons_to_attach(student_uuid=callback_data.uuid, teacher_uuid=teacher.uuid)
-    markup_context = LessonsAssignKeyboardContext(callback_data.uuid, lessons)
+    markup_context = LessonsAssignKeyboardContext(callback_data.uuid, StudentAttachCallback, lessons)
     markup = MarkupBuilder.build(KeyboardType.LESSONS_TO_ASSIGN, markup_context)
     await callback.message.answer(text=BotStrings.Teacher.STUDENT_ATTACH_LESSONS_LIST, reply_markup=markup)
     await callback.answer()
@@ -160,8 +160,9 @@ async def list_lessons_to_detach(
     username = callback.from_user.username
     teacher = await teacher_service.get_teacher(username)
     lessons = await lesson_service.get_lessons_to_detach(student_uuid=callback_data.uuid, teacher_uuid=teacher.uuid)
-    markup_context = LessonsAssignKeyboardContext(callback_data.uuid, lessons)
+    markup_context = LessonsAssignKeyboardContext(callback_data.uuid, StudentDetachCallback, lessons)
     markup = MarkupBuilder.build(KeyboardType.LESSONS_TO_ASSIGN, markup_context)
+    logger.debug(markup)
     await callback.message.answer(text=BotStrings.Teacher.STUDENT_ATTACH_LESSONS_LIST, reply_markup=markup)
     await callback.answer()
     

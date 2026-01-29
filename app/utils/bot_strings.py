@@ -28,7 +28,8 @@ class BotStrings:
         TEACHER_STUDENTS_LIST = "Ваши ученики:"
 
         STUDENT_ATTACH_LESSONS_LIST = "Выбери урок:"
-        STUDENT_ATTACH_SUCCESS = "Ученик записан на предмет"
+        STUDENT_ATTACH_SUCCESS = "Ученик успешно записан на предмет"
+        STUDENT_DETACH_SUCCESS = "Ученик успешно откреплён!"
 
         # * Lessons
         TEACHER_LESSON_ADD_LABEL = "Как называется предмет?"
