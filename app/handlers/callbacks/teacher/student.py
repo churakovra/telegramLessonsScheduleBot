@@ -44,7 +44,8 @@ async def create(
         teacher = await teacher_service.get_teacher(callback.from_user.username)
         await state.update_data(teacher_uuid=teacher.uuid)
         await state.set_state(ScheduleStates.wait_for_teacher_students)
-        message = await callback.message.answer(BotStrings.Teacher.TEACHER_STUDENT_ADD)
+        markup = MarkupBuilder.build(KeyboardType.CANCEL)
+        message = await callback.message.answer(text=BotStrings.Teacher.TEACHER_STUDENT_ADD, reply_markup=markup)
         await state.update_data(previous_message_id=message.message_id)
     except UserNotFoundException:
         await callback.message.answer(BotStrings.Teacher.NOT_ENOUGH_RIGHTS)
@@ -70,9 +71,11 @@ async def list(callback: CallbackQuery, session: AsyncSession) -> None:
         error_msg = f"Not enough rights. User {e.data} must have Teacher role."
         logger.error(error_msg, e)
         message_text = BotStrings.Common.NOT_ENOUGH_RIGHTS
+        markup = MarkupBuilder.build(KeyboardType.TEACHER_MAIN)
     except TeacherStudentsNotFound as e:
         logger.error(e)
         message_text = BotStrings.Teacher.TEACHER_STUDENTS_NOT_FOUND
+        markup = MarkupBuilder.build(KeyboardType.TEACHER_MAIN)
     await callback.message.answer(text=message_text, reply_markup=markup)
     await callback.answer()
 
@@ -94,7 +97,7 @@ async def get_student_info(
     await callback.answer()
 
 
-@router.callback_query(StudentDeleteCallback.filter(F.confirmed == False))
+@router.callback_query(StudentDeleteCallback.filter(F.confirmed.is_(False)))
 async def request_delete_confirmation(
     callback: CallbackQuery, callback_data: StudentDeleteCallback
 ) -> None:
@@ -106,7 +109,7 @@ async def request_delete_confirmation(
     await callback.answer()
 
 
-@router.callback_query(StudentDeleteCallback.filter(F.confirmed == True))
+@router.callback_query(StudentDeleteCallback.filter(F.confirmed.is_(True)))
 async def delete_lesson(
     callback: CallbackQuery, callback_data: StudentDeleteCallback, session: AsyncSession
 ) -> None:
@@ -118,7 +121,8 @@ async def delete_lesson(
         teacher_uuid=teacher.uuid, student_uuid=student_uuid
     )
     await slot_service.delete_slots_attached_to_student(student_uuid)
-    await callback.message.answer(**mt.student_deletion_success())
+    markup = MarkupBuilder.build(KeyboardType.TEACHER_MAIN)
+    await callback.message.answer(**mt.student_deletion_success(markup))
     await callback.answer()
 
 
@@ -175,5 +179,5 @@ async def detach(callback: CallbackQuery, callback_data: StudentDetachCallback, 
     lesson = await lesson_service.get_lesson_by_id(callback_data.id_lesson)
     await lesson_service.detach_specific_lesson(callback_data.uuid, teacher.uuid, lesson.uuid)
     markup = MarkupBuilder.build(KeyboardType.TEACHER_SUB_STUDENT)
-    await callback.message.answer(text=BotStrings.Teacher.STUDENT_ATTACH_SUCCESS, reply_markup=markup)
+    await callback.message.answer(text=BotStrings.Teacher.STUDENT_DETACH_SUCCESS, reply_markup=markup)
     await callback.answer()

@@ -51,7 +51,6 @@ async def handle_teacher_menu(
 @router.callback_query(MenuCallback.filter(F.menu_type == MenuType.CANCEL))
 async def handle_cancel(
     callback: CallbackQuery,
-    callback_data: MenuCallback,
     session: AsyncSession,
     state: FSMContext,
 ):
