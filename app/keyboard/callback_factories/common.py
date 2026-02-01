@@ -33,3 +33,8 @@ class BaseUpdateCallback(BaseOperationCallback, prefix="update-b"):
 class BaseDeleteCallback(BaseOperationCallback, prefix="delete-b"):
     uuid: UUID
     confirmed: bool = False
+
+
+class BaseAssignCallback(BaseOperationCallback, prefix="assign-s"):
+    uuid: UUID
+    id_lesson: int | None = None

@@ -68,5 +68,5 @@ def confirm_student_deletion(markup: InlineKeyboardMarkup) -> BotMessage:
 def lesson_deletion_success() -> BotMessage:
     return BotMessage(text=BotStrings.Teacher.TEACHER_LESSON_DELETE_SUCCESS, reply_markup=None)
 
-def student_deletion_success() -> BotMessage:
-    return BotMessage(text=BotStrings.Teacher.TEACHER_STUDENT_DELETE_SUCCESS, reply_markup=None)
+def student_deletion_success(markup: InlineKeyboardMarkup) -> BotMessage:
+    return BotMessage(text=BotStrings.Teacher.TEACHER_STUDENT_DELETE_SUCCESS, reply_markup=markup)

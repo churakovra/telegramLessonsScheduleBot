@@ -1,4 +1,5 @@
 import calendar
+from typing import Any
 
 from app.keyboard.callback_factories.lesson import (
     LessonCreateCallback,
@@ -33,7 +34,7 @@ from app.keyboard.context import (
     DaysForStudentsKeyboardContext,
     EntitiesListKeyboardContext,
     EntityOperationsKeyboardContext,
-    LessonsToAttachKeyboardContext,
+    LessonsAssignKeyboardContext,
     SendSlotsKeyboardContext,
     SlotsForStudentsKeyboardContext,
     SpecifyWeekKeyboardContext,
@@ -48,7 +49,7 @@ from app.utils.enums.menu_type import MenuType
 
 from ..utils.datetime_utils import full_format_no_sec
 
-operations = {
+operations: dict[str, Any] = {
     EntityType.STUDENT: {
         BotStrings.Menu.ATTACH: StudentAttachCallback,
         BotStrings.Menu.DETACH: StudentDetachCallback,
@@ -313,15 +314,15 @@ def entity_operations(
     return buttons, adjust
 
 
-def lessons_to_attach(
-    context: LessonsToAttachKeyboardContext, *args, **kwargs
+def lessons_to_assign(
+    context: LessonsAssignKeyboardContext, *args, **kwargs
 ) -> tuple[list, int]:
     buttons = [
         (
             lesson.label,
-            StudentAttachCallback(
+            context.assign_callback(
                 uuid=context.student_uuid,
-                uuid_lesson=lesson.uuid,
+                id_lesson=lesson.id,
             ),
         )
         for lesson in context.lessons
