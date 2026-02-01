@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from uuid import UUID
 
 from app.keyboard.callback_factories.common import (
+    BaseAssignCallback,
     BaseDeleteCallback,
     BaseOperationCallback,
     BaseUpdateCallback,
@@ -88,4 +89,5 @@ class SpecsToUpdateKeyboardContext(KeyboardContext):
 @dataclass
 class LessonsAssignKeyboardContext(KeyboardContext):
     student_uuid: UUID
+    assign_callback: type[BaseAssignCallback]
     lessons: list[LessonDTO]

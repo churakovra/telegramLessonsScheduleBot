@@ -1,9 +1,6 @@
 import calendar
 from typing import Any
 
-from aiogram.filters.callback_data import CallbackData
-
-from app.keyboard.callback_factories.common import BaseAssignCallback
 from app.keyboard.callback_factories.lesson import (
     LessonCreateCallback,
     LessonDeleteCallback,
@@ -323,7 +320,7 @@ def lessons_to_assign(
     buttons = [
         (
             lesson.label,
-            BaseAssignCallback(
+            context.assign_callback(
                 uuid=context.student_uuid,
                 id_lesson=lesson.id,
             ),

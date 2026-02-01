@@ -29,8 +29,8 @@ logger = setup_logger(__name__)
 
 @router.callback_query(
     or_f(
-        SlotCreateCallback.filter(F.week_flag == None),
-        SlotListCallback.filter(F.week_flag == None),
+        SlotCreateCallback.filter(F.week_flag.is_(None)),
+        SlotListCallback.filter(F.week_flag.is_(None)),
     )
 )
 async def specify_week(
@@ -51,6 +51,7 @@ async def create(
     callback_data: SlotCreateCallback,
     state: FSMContext,
 ):
+    logger.debug('In SlotCreate')
     await state.set_state(ScheduleStates.wait_for_slots)
     await state.update_data(week_flag=callback_data.week_flag)
     markup = MarkupBuilder.build(KeyboardType.CANCEL)
@@ -65,6 +66,7 @@ async def create(
 async def list(
     callback: CallbackQuery, callback_data: SlotListCallback, session: AsyncSession
 ) -> None:
+    logger.debug('In SlotList')
     teacher_service = TeacherService(session)
     slot_service = SlotService(session)
     try:
@@ -77,10 +79,12 @@ async def list(
     except UserNotFoundException as e:
         error_msg = f"Not enough rights. User {e.data} must have Teacher role."
         logger.error(error_msg, e)
+        markup = MarkupBuilder.build(KeyboardType.ADMIN_MAIN)
         message_text = BotStrings.Common.NOT_ENOUGH_RIGHTS
     except SlotsNotFoundException as e:
         logger.error(e)
-        message_text = BotStrings.Teacher.SLOTS_FAILURE
+        markup = MarkupBuilder.build(KeyboardType.ADMIN_MAIN)
+        message_text = BotStrings.Teacher.SLOTS_NOT_FOUND
     await callback.message.answer(text=message_text, reply_markup=markup)
     await callback.answer()
 
