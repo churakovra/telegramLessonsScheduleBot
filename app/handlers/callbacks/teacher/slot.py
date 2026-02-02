@@ -10,7 +10,7 @@ from app.keyboard.callback_factories.slot import (
     SlotInfoCallback,
     SlotListCallback,
 )
-from app.keyboard.context import EntitiesListKeyboardContext, SpecifyWeekKeyboardContext
+from app.keyboard.context import EntitiesListKeyboardContext, EntityOperationsKeyboardContext, SpecifyWeekKeyboardContext
 from app.services.lesson_service import LessonService
 from app.services.slot_service import SlotService
 from app.services.student_service import StudentService
@@ -22,7 +22,7 @@ from app.utils.exceptions.lesson_exceptions import LessonsNotFoundException
 from app.utils.exceptions.slot_exceptions import SlotsNotFoundException
 from app.utils.exceptions.user_exceptions import UserNotFoundException
 from app.utils.logger import setup_logger
-from app.utils.message_template import specify_week_message
+from app.utils import message_template as mt
 
 router = Router()
 logger = setup_logger(__name__)
@@ -39,7 +39,7 @@ async def specify_week(
 ) -> None:
     markup_context = SpecifyWeekKeyboardContext(type(callback_data))
     markup = MarkupBuilder.build(KeyboardType.SPECIFY_WEEK, markup_context)
-    message = specify_week_message(markup=markup)
+    message = mt.specify_week_message(markup=markup)
     await callback.message.answer(**message)
     await callback.answer()
 
@@ -92,7 +92,13 @@ async def list(
 
 @router.callback_query(SlotInfoCallback.filter())
 async def info(callback: CallbackQuery, callback_data: SlotInfoCallback, session: AsyncSession) -> None:
-    pass
+    # TODO add slot info str; add slot update callback; slot delete callback handlers
+    slot_service = SlotService(session)
+    slot = await slot_service.get_slot(callback_data.uuid)
+    markup_context = EntityOperationsKeyboardContext(callback_data.uuid, EntityType.SLOT)
+    markup = MarkupBuilder.build(KeyboardType.ENTITY_OPERATIONS, markup_context)
+    await callback.message.answer(**mt.slot_info(markup))
+    await callback.answer()
 
 
 @router.callback_query(SlotListCallback.filter(F.week_flag.in_([WeekFlag.UNKNOWN])))

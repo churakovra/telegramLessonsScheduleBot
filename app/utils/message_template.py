@@ -3,8 +3,7 @@ from aiogram.types import InlineKeyboardMarkup
 from app.schemas.bot_message import BotMessage
 from app.utils.bot_strings import BotStrings
 
-
-#TODO rework & update all outcoming messages from bot
+# TODO rework & update all outcoming messages from bot
 
 
 def main_menu_message(markup: InlineKeyboardMarkup) -> BotMessage:
@@ -59,14 +58,35 @@ def specify_week_message(markup: InlineKeyboardMarkup) -> BotMessage:
 
 
 def confirm_lesson_deletion(markup: InlineKeyboardMarkup) -> BotMessage:
-    return BotMessage(text=BotStrings.Teacher.TEACHER_LESSON_DELETE_CONFIRMATION_REQUEST, reply_markup=markup)
+    return BotMessage(
+        text=BotStrings.Teacher.TEACHER_LESSON_DELETE_CONFIRMATION_REQUEST,
+        reply_markup=markup,
+    )
+
 
 def confirm_student_deletion(markup: InlineKeyboardMarkup) -> BotMessage:
-    return BotMessage(text=BotStrings.Teacher.TEACHER_STUDENT_DELETE_CONFIRMATION_REQUEST, reply_markup=markup)
+    return BotMessage(
+        text=BotStrings.Teacher.TEACHER_STUDENT_DELETE_CONFIRMATION_REQUEST,
+        reply_markup=markup,
+    )
 
 
 def lesson_deletion_success() -> BotMessage:
-    return BotMessage(text=BotStrings.Teacher.TEACHER_LESSON_DELETE_SUCCESS, reply_markup=None)
+    return BotMessage(
+        text=BotStrings.Teacher.TEACHER_LESSON_DELETE_SUCCESS,
+        reply_markup=None,
+    )
+
 
 def student_deletion_success(markup: InlineKeyboardMarkup) -> BotMessage:
-    return BotMessage(text=BotStrings.Teacher.TEACHER_STUDENT_DELETE_SUCCESS, reply_markup=markup)
+    return BotMessage(
+        text=BotStrings.Teacher.TEACHER_STUDENT_DELETE_SUCCESS,
+        reply_markup=markup,
+    )
+
+
+def slot_info(markup: InlineKeyboardMarkup) -> BotMessage:
+    return BotMessage(
+        text=BotStrings.Teacher.SLOT_INFO,
+        reply_markup=markup,
+    )

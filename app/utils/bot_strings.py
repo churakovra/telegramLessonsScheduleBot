@@ -63,6 +63,7 @@ class BotStrings:
         SLOT_IS_TAKEN = "@{student} записался на урок {slot_time}"
         CALLBACK_SLOTS_CORRECT = "slots_correct"
         CALLBACK_SLOTS_INCORRECT = "slots_incorrect"
+        SLOT_INFO = "Информация об окошке"
 
     class Student:
         SLOTS_ADDED = "Привет! Выбери окошки на следующую неделю:"
