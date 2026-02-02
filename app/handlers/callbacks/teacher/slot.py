@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.keyboard.builder import MarkupBuilder
 from app.keyboard.callback_factories.slot import (
     SlotCreateCallback,
+    SlotInfoCallback,
     SlotListCallback,
 )
 from app.keyboard.context import EntitiesListKeyboardContext, SpecifyWeekKeyboardContext
@@ -79,14 +80,19 @@ async def list(
     except UserNotFoundException as e:
         error_msg = f"Not enough rights. User {e.data} must have Teacher role."
         logger.error(error_msg, e)
-        markup = MarkupBuilder.build(KeyboardType.ADMIN_MAIN)
+        markup = MarkupBuilder.build(KeyboardType.CANCEL)
         message_text = BotStrings.Common.NOT_ENOUGH_RIGHTS
     except SlotsNotFoundException as e:
         logger.error(e)
-        markup = MarkupBuilder.build(KeyboardType.ADMIN_MAIN)
+        markup = MarkupBuilder.build(KeyboardType.CANCEL)
         message_text = BotStrings.Teacher.SLOTS_NOT_FOUND
     await callback.message.answer(text=message_text, reply_markup=markup)
     await callback.answer()
+
+
+@router.callback_query(SlotInfoCallback.filter())
+async def info(callback: CallbackQuery, callback_data: SlotInfoCallback, session: AsyncSession) -> None:
+    pass
 
 
 @router.callback_query(SlotListCallback.filter(F.week_flag.in_([WeekFlag.UNKNOWN])))
