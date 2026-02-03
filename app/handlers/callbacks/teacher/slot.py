@@ -97,7 +97,8 @@ async def info(callback: CallbackQuery, callback_data: SlotInfoCallback, session
     slot = await slot_service.get_slot(callback_data.uuid)
     markup_context = EntityOperationsKeyboardContext(callback_data.uuid, EntityType.SLOT)
     markup = MarkupBuilder.build(KeyboardType.ENTITY_OPERATIONS, markup_context)
-    await callback.message.answer(**mt.slot_info(markup))
+    message_text = slot_service.get_slot_info_response(slot)
+    await callback.message.answer(**mt.slot_info(message_text, markup))
     await callback.answer()
 
 

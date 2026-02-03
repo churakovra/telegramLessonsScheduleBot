@@ -85,8 +85,8 @@ def student_deletion_success(markup: InlineKeyboardMarkup) -> BotMessage:
     )
 
 
-def slot_info(markup: InlineKeyboardMarkup) -> BotMessage:
+def slot_info(message_text: str, markup: InlineKeyboardMarkup) -> BotMessage:
     return BotMessage(
-        text=BotStrings.Teacher.SLOT_INFO,
+        text=message_text,
         reply_markup=markup,
     )
