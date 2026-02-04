@@ -10,7 +10,6 @@ from app.keyboard.callback_factories.common import (
     BaseUpdateCallback,
 )
 from app.keyboard.callback_factories.mixins import SpecifyWeekMixin
-from app.utils.enums.bot_values import ActionType
 
 
 class SlotCreateCallback(BaseCreateCallback, SpecifyWeekMixin, prefix="create-sl"):

@@ -97,7 +97,7 @@ async def get_lesson_info(
     await callback.answer()
 
 
-@router.callback_query(LessonUpdateCallback.filter(F.spec == None))
+@router.callback_query(LessonUpdateCallback.filter(F.spec.is_(None)))
 async def select_spec(
     callback: CallbackQuery, callback_data: LessonUpdateCallback
 ) -> None:
@@ -153,7 +153,7 @@ async def update_whole_lesson(
     await callback.answer()
 
 
-@router.callback_query(LessonDeleteCallback.filter(F.confirmed == False))
+@router.callback_query(LessonDeleteCallback.filter(not F.confirmed))
 async def request_delete_confirmation(
     callback: CallbackQuery, callback_data: LessonDeleteCallback
 ):
@@ -163,7 +163,7 @@ async def request_delete_confirmation(
     await callback.answer()
 
 
-@router.callback_query(LessonDeleteCallback.filter(F.confirmed == True))
+@router.callback_query(LessonDeleteCallback.filter(F.confirmed))
 async def delete_lesson(
     callback: CallbackQuery, callback_data: LessonDeleteCallback, session: AsyncSession
 ):

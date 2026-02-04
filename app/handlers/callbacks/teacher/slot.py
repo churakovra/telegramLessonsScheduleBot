@@ -9,8 +9,13 @@ from app.keyboard.callback_factories.slot import (
     SlotCreateCallback,
     SlotInfoCallback,
     SlotListCallback,
+    SlotUpdateCallback,
 )
-from app.keyboard.context import EntitiesListKeyboardContext, EntityOperationsKeyboardContext, SpecifyWeekKeyboardContext
+from app.keyboard.context import (
+    EntitiesListKeyboardContext,
+    EntityOperationsKeyboardContext,
+    SpecifyWeekKeyboardContext,
+)
 from app.services.lesson_service import LessonService
 from app.services.slot_service import SlotService
 from app.services.student_service import StudentService
@@ -52,11 +57,13 @@ async def create(
     callback_data: SlotCreateCallback,
     state: FSMContext,
 ):
-    logger.debug('In SlotCreate')
+    logger.debug("In SlotCreate")
     await state.set_state(ScheduleStates.wait_for_slots)
     await state.update_data(week_flag=callback_data.week_flag)
     markup = MarkupBuilder.build(KeyboardType.CANCEL)
-    await callback.message.answer(text=BotStrings.Teacher.SLOTS_ADD, reply_markup=markup)
+    await callback.message.answer(
+        text=BotStrings.Teacher.SLOTS_ADD, reply_markup=markup
+    )
     await callback.answer()
     logger.info("Add slot flow has been started")
 
@@ -67,7 +74,7 @@ async def create(
 async def list(
     callback: CallbackQuery, callback_data: SlotListCallback, session: AsyncSession
 ) -> None:
-    logger.debug('In SlotList')
+    logger.debug("In SlotList")
     teacher_service = TeacherService(session)
     slot_service = SlotService(session)
     try:
@@ -91,15 +98,26 @@ async def list(
 
 
 @router.callback_query(SlotInfoCallback.filter())
-async def info(callback: CallbackQuery, callback_data: SlotInfoCallback, session: AsyncSession) -> None:
+async def info(
+    callback: CallbackQuery, callback_data: SlotInfoCallback, session: AsyncSession
+) -> None:
     # TODO add slot info str; add slot update callback; slot delete callback handlers
     slot_service = SlotService(session)
     slot = await slot_service.get_slot(callback_data.uuid)
-    markup_context = EntityOperationsKeyboardContext(callback_data.uuid, EntityType.SLOT)
+    markup_context = EntityOperationsKeyboardContext(
+        callback_data.uuid, EntityType.SLOT
+    )
     markup = MarkupBuilder.build(KeyboardType.ENTITY_OPERATIONS, markup_context)
     message_text = slot_service.get_slot_info_response(slot)
     await callback.message.answer(**mt.slot_info(message_text, markup))
     await callback.answer()
+
+
+@router.callback_query(SlotUpdateCallback.filter())
+async def update(
+    callback: CallbackQuery, callback_data: SlotUpdateCallback, session: AsyncSession
+) -> None:
+    pass
 
 
 @router.callback_query(SlotListCallback.filter(F.week_flag.in_([WeekFlag.UNKNOWN])))
