@@ -94,7 +94,6 @@ async def list(
 
 @router.callback_query(SlotInfoCallback.filter())
 async def info(callback: CallbackQuery, callback_data: SlotInfoCallback, session: AsyncSession) -> None:
-    # TODO add slot info str; add slot update callback; slot delete callback handlers
     slot_service = SlotService(session)
     slot = await slot_service.get_slot(callback_data.uuid)
     markup_context = EntityOperationsKeyboardContext(callback_data.uuid, EntityType.SLOT)
@@ -109,7 +108,13 @@ async def delete(
         callback_data: SlotDeleteCallback,
         session: AsyncSession
     ):
-    pass 
+    # TODO потестить. Посмотреть, будет ли работать cascade delete.
+    slot_service = SlotService(session) 
+    await slot_service.delete_slot(callback_data.uuid)
+    markup = MarkupBuilder.build(KeyboardType.TEACHER_MAIN)
+    message_text = BotStrings.Teacher.SLOT_DELETE_SUCCESS
+    await callback.message.answer(text=message_text, markup=markup)
+    await callback.answer()
 
 
 @router.callback_query(SlotUpdateCallback.filter())
@@ -118,6 +123,7 @@ async def update(
         callback_data: SlotUpdateCallback,
         session: AsyncSession,
         ):
+    # TODO add slot update handling. Not by state.
     pass
 
 

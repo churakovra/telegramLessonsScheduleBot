@@ -227,3 +227,7 @@ class SlotService:
 
     async def delete_slots_attached_to_student(self, student_uuid: UUID):
         await self._repository.delete_slots_attached_to_student(student_uuid)
+
+
+    async def delete_slot(self, slot_uuid: UUID):
+        await self._repository.delete_slot(slot_uuid)
