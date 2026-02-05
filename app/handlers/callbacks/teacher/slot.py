@@ -7,8 +7,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.keyboard.builder import MarkupBuilder
 from app.keyboard.callback_factories.slot import (
     SlotCreateCallback,
+    SlotDeleteCallback,
     SlotInfoCallback,
     SlotListCallback,
+    SlotUpdateCallback,
 )
 from app.keyboard.context import EntitiesListKeyboardContext, EntityOperationsKeyboardContext, SpecifyWeekKeyboardContext
 from app.services.lesson_service import LessonService
@@ -99,6 +101,24 @@ async def info(callback: CallbackQuery, callback_data: SlotInfoCallback, session
     markup = MarkupBuilder.build(KeyboardType.ENTITY_OPERATIONS, markup_context)
     await callback.message.answer(**mt.slot_info(markup))
     await callback.answer()
+
+
+@router.callback_query(SlotDeleteCallback.filter())
+async def delete(
+        callback: CallbackQuery,
+        callback_data: SlotDeleteCallback,
+        session: AsyncSession
+    ):
+    pass 
+
+
+@router.callback_query(SlotUpdateCallback.filter())
+async def update(
+        callback: CallbackQuery,
+        callback_data: SlotUpdateCallback,
+        session: AsyncSession,
+        ):
+    pass
 
 
 @router.callback_query(SlotListCallback.filter(F.week_flag.in_([WeekFlag.UNKNOWN])))
