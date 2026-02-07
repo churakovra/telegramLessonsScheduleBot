@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.keyboard.builder import MarkupBuilder
 from app.keyboard.callback_factories.slot import (
     SlotCreateCallback,
+    SlotDeleteCallback,
     SlotInfoCallback,
     SlotListCallback,
     SlotUpdateCallback,
@@ -102,6 +103,7 @@ async def info(
     callback: CallbackQuery, callback_data: SlotInfoCallback, session: AsyncSession
 ) -> None:
     # TODO add slot info str; add slot update callback; slot delete callback handlers
+async def info(callback: CallbackQuery, callback_data: SlotInfoCallback, session: AsyncSession) -> None:
     slot_service = SlotService(session)
     slot = await slot_service.get_slot(callback_data.uuid)
     markup_context = EntityOperationsKeyboardContext(
@@ -113,10 +115,28 @@ async def info(
     await callback.answer()
 
 
+@router.callback_query(SlotDeleteCallback.filter())
+async def delete(
+        callback: CallbackQuery,
+        callback_data: SlotDeleteCallback,
+        session: AsyncSession
+    ):
+    # TODO потестить. Посмотреть, будет ли работать cascade delete.
+    slot_service = SlotService(session) 
+    await slot_service.delete_slot(callback_data.uuid)
+    markup = MarkupBuilder.build(KeyboardType.TEACHER_MAIN)
+    message_text = BotStrings.Teacher.SLOT_DELETE_SUCCESS
+    await callback.message.answer(text=message_text, markup=markup)
+    await callback.answer()
+
+
 @router.callback_query(SlotUpdateCallback.filter())
 async def update(
-    callback: CallbackQuery, callback_data: SlotUpdateCallback, session: AsyncSession
-) -> None:
+        callback: CallbackQuery,
+        callback_data: SlotUpdateCallback,
+        session: AsyncSession,
+        ):
+    # TODO add slot update handling. Not by state.
     pass
 
 

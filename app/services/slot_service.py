@@ -234,3 +234,7 @@ class SlotService:
         studnet = slot.uuid_student
         response = f"Slot\nДата/Время: {slot_dt}\n Ученик: {studnet or "Нет"}"
         return response
+
+
+    async def delete_slot(self, slot_uuid: UUID):
+        await self._repository.delete_slot(slot_uuid)

@@ -90,3 +90,9 @@ class SlotRepository:
         stmt = delete(Slot).where(Slot.uuid_student == student_uuid)
         await self._db.execute(stmt)
         await self._db.commit()
+
+
+    async def delete_slot(self, slot_uuid: UUID) -> None:
+        stmt = delete(Slot).where(Slot.uuid == slot_uuid)
+        await self._db.execute(stmt)
+        await self._db.commit()
