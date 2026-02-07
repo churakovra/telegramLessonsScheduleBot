@@ -25,3 +25,6 @@ drop_db:
 run_migrations:
 	export $(APP_VERSION) && \
 	$(RUN) alembic upgrade head
+
+lint:
+	$(RUN) ruff format
