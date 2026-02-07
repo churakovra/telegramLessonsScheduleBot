@@ -24,6 +24,10 @@ class SlotListCallback(BaseListCallback, SpecifyWeekMixin, prefix="list-sl"):
     pass
 
 
+class SlotsUpdateCallback(SlotCreateCallback, SpecifyWeekMixin, prefix="update-slts"):
+    pass
+
+
 class SlotUpdateCallback(BaseUpdateCallback, prefix="update-sl"):
     pass
 

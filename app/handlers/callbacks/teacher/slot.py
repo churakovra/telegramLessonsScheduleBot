@@ -10,7 +10,7 @@ from app.keyboard.callback_factories.slot import (
     SlotDeleteCallback,
     SlotInfoCallback,
     SlotListCallback,
-    SlotUpdateCallback,
+    SlotsUpdateCallback,
 )
 from app.keyboard.context import (
     EntitiesListKeyboardContext,
@@ -33,11 +33,14 @@ from app.utils import message_template as mt
 router = Router()
 logger = setup_logger(__name__)
 
+# TODO check if update slots work
+
 
 @router.callback_query(
     or_f(
         SlotCreateCallback.filter(F.week_flag.is_(None)),
         SlotListCallback.filter(F.week_flag.is_(None)),
+        SlotsUpdateCallback.filter(F.week_flag.is_(None)),
     )
 )
 async def specify_week(
@@ -67,6 +70,23 @@ async def create(
     )
     await callback.answer()
     logger.info("Add slot flow has been started")
+
+
+@router.callback_query(
+    SlotsUpdateCallback.filter(F.week_flag.in_([WeekFlag.CURRENT, WeekFlag.NEXT]))
+)
+async def update(
+    callback: CallbackQuery,
+    callback_data: SlotsUpdateCallback,
+    state: FSMContext,
+):
+    await state.set_state(ScheduleStates.wait_for_slots_update)
+    await state.update_data(week_flag=callback_data.week_flag)
+    markup = MarkupBuilder.build(KeyboardType.CANCEL)
+    await callback.message.answer(
+        text=BotStrings.Teacher.SLOTS_ADD, reply_markup=markup
+    )
+    await callback.answer()
 
 
 @router.callback_query(
@@ -103,7 +123,6 @@ async def info(
     callback: CallbackQuery, callback_data: SlotInfoCallback, session: AsyncSession
 ) -> None:
     # TODO add slot info str; add slot update callback; slot delete callback handlers
-async def info(callback: CallbackQuery, callback_data: SlotInfoCallback, session: AsyncSession) -> None:
     slot_service = SlotService(session)
     slot = await slot_service.get_slot(callback_data.uuid)
     markup_context = EntityOperationsKeyboardContext(
@@ -117,27 +136,15 @@ async def info(callback: CallbackQuery, callback_data: SlotInfoCallback, session
 
 @router.callback_query(SlotDeleteCallback.filter())
 async def delete(
-        callback: CallbackQuery,
-        callback_data: SlotDeleteCallback,
-        session: AsyncSession
-    ):
+    callback: CallbackQuery, callback_data: SlotDeleteCallback, session: AsyncSession
+):
     # TODO потестить. Посмотреть, будет ли работать cascade delete.
-    slot_service = SlotService(session) 
+    slot_service = SlotService(session)
     await slot_service.delete_slot(callback_data.uuid)
     markup = MarkupBuilder.build(KeyboardType.TEACHER_MAIN)
     message_text = BotStrings.Teacher.SLOT_DELETE_SUCCESS
-    await callback.message.answer(text=message_text, markup=markup)
+    await callback.message.answer(text=message_text, reply_markup=markup)
     await callback.answer()
-
-
-@router.callback_query(SlotUpdateCallback.filter())
-async def update(
-        callback: CallbackQuery,
-        callback_data: SlotUpdateCallback,
-        session: AsyncSession,
-        ):
-    # TODO add slot update handling. Not by state.
-    pass
 
 
 @router.callback_query(SlotListCallback.filter(F.week_flag.in_([WeekFlag.UNKNOWN])))
