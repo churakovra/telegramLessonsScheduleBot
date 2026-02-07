@@ -9,5 +9,6 @@ routers.extend(command_routers)
 routers.extend(callback_routers)
 routers.extend(state_routers)
 
+
 def register_routers(dp: Dispatcher):
     [dp.include_router(router) for router in routers]

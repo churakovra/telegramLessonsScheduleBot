@@ -18,7 +18,9 @@ class BotStrings:
 
         # * Unbind user
         TEACHER_STUDENT_DELETE = "Выбери ученика для удаления: "
-        TEACHER_STUDENT_DELETE_CONFIRMATION_REQUEST = "Вы уверены, что хотите удалить ученика?"
+        TEACHER_STUDENT_DELETE_CONFIRMATION_REQUEST = (
+            "Вы уверены, что хотите удалить ученика?"
+        )
         TEACHER_STUDENT_DELETE_SUCCESS = "Ученик успешно удален!"
 
         TEACHER_STUDENTS_NOT_FOUND = (

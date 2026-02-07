@@ -49,6 +49,7 @@ from app.utils.enums.menu_type import MenuType
 
 from ..utils.datetime_utils import full_format_no_sec
 
+
 def teacher_main_menu(*args, **kwargs) -> tuple[list, int]:
     buttons = [
         ("Ученики", MenuCallback(menu_type=MenuType.TEACHER_STUDENT)),

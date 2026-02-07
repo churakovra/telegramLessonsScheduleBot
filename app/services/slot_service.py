@@ -151,7 +151,6 @@ class SlotService:
             )
         return response
 
-
     @staticmethod
     async def get_slots_schedule_reply(
         slots: list[SlotDTO], lessons: dict[UUID, LessonDTO], students: list[UserDTO]
@@ -173,7 +172,9 @@ class SlotService:
                     "student": [s["student"] for s in day_slots],
                     "price": [s["price"] for s in day_slots],
                 }
-                response.write(f"{tabulate(rows, headers=['Время', 'Ученик', 'Цена'])}\n")
+                response.write(
+                    f"{tabulate(rows, headers=['Время', 'Ученик', 'Цена'])}\n"
+                )
                 response.write(f"Уроков {lessons_cnt}, за день {day_earning}\n\n")
 
         for slot in slots:
@@ -199,7 +200,9 @@ class SlotService:
                 continue
 
             if slot.uuid_student not in lessons:
-                logger.error(f"Student {slot.uuid_student} has no lesson, but somehow spotted slot {slot.uuid}")
+                logger.error(
+                    f"Student {slot.uuid_student} has no lesson, but somehow spotted slot {slot.uuid}"
+                )
                 continue
 
             student = student_map.get(slot.uuid_student)
@@ -208,11 +211,13 @@ class SlotService:
                 continue
 
             lesson = lessons[slot.uuid_student]
-            day_slots.append({
-                "time": str(slot_time),
-                "student": student.username,
-                "price": str(lesson.price),
-            })
+            day_slots.append(
+                {
+                    "time": str(slot_time),
+                    "student": student.username,
+                    "price": str(lesson.price),
+                }
+            )
 
             lessons_cnt += 1
             day_earning += lesson.price
@@ -224,17 +229,14 @@ class SlotService:
 
         return response.getvalue()
 
-
     async def delete_slots_attached_to_student(self, student_uuid: UUID):
         await self._repository.delete_slots_attached_to_student(student_uuid)
-
 
     def get_slot_info_response(self, slot: SlotDTO) -> str:
         slot_dt = slot.dt_start
         studnet = slot.uuid_student
-        response = f"Slot\nДата/Время: {slot_dt}\n Ученик: {studnet or "Нет"}"
+        response = f"Slot\nДата/Время: {slot_dt}\n Ученик: {studnet or 'Нет'}"
         return response
-
 
     async def delete_slot(self, slot_uuid: UUID):
         await self._repository.delete_slot(slot_uuid)

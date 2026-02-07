@@ -24,9 +24,22 @@ class User(Base):
     is_admin: Mapped[bool] = mapped_column(default=False)
     chat_id: Mapped[int] = mapped_column(BigInteger)
 
-
-    lessons: Mapped[list["Lesson"]] = relationship(argument="Lesson", back_populates="teacher")
-    teacher_slots: Mapped[list["Slot"]] = relationship(argument="Slot", foreign_keys="[Slot.uuid_teacher]", back_populates="teacher")
-    student_slots: Mapped[list["Slot"]] = relationship(argument="Slot", foreign_keys="[Slot.uuid_student]", back_populates="student")
-    teacher: Mapped[list["TeacherStudent"]] = relationship(argument="TeacherStudent", foreign_keys="[TeacherStudent.uuid_teacher]", back_populates="teacher")
-    student: Mapped[list["TeacherStudent"]] = relationship(argument="TeacherStudent", foreign_keys="[TeacherStudent.uuid_student]", back_populates="student")
+    lessons: Mapped[list["Lesson"]] = relationship(
+        argument="Lesson", back_populates="teacher"
+    )
+    teacher_slots: Mapped[list["Slot"]] = relationship(
+        argument="Slot", foreign_keys="[Slot.uuid_teacher]", back_populates="teacher"
+    )
+    student_slots: Mapped[list["Slot"]] = relationship(
+        argument="Slot", foreign_keys="[Slot.uuid_student]", back_populates="student"
+    )
+    teacher: Mapped[list["TeacherStudent"]] = relationship(
+        argument="TeacherStudent",
+        foreign_keys="[TeacherStudent.uuid_teacher]",
+        back_populates="teacher",
+    )
+    student: Mapped[list["TeacherStudent"]] = relationship(
+        argument="TeacherStudent",
+        foreign_keys="[TeacherStudent.uuid_student]",
+        back_populates="student",
+    )

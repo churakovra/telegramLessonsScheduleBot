@@ -26,45 +26,21 @@ class UserRepository:
         if user is None:
             return user
         return UserDTO.model_validate(user)
-    
-
 
     async def edit_role(self, user_uuid: UUID, role: UserRole, status: bool):
         if role == UserRole.TEACHER:
-            stmt = (
-                update(User)
-                .where(User.uuid == user_uuid)
-                .values(
-                    is_teacher=status
-                )
-            )
+            stmt = update(User).where(User.uuid == user_uuid).values(is_teacher=status)
         elif role == UserRole.ADMIN:
-            stmt = (
-                update(User)
-                .where(User.uuid == user_uuid)
-                .values(
-                    is_admin=status
-                )
-            )
+            stmt = update(User).where(User.uuid == user_uuid).values(is_admin=status)
         elif role == UserRole.STUDENT:
-            stmt = (
-                update(User)
-                .where(User.uuid == user_uuid)
-                .values(
-                    is_student=status
-                )
-            )
+            stmt = update(User).where(User.uuid == user_uuid).values(is_student=status)
         else:
             raise ValueError(f"role {role} is unacceptable")
         await self._db.execute(stmt)
         await self._db.commit()
         # TODO add log to db with initiator_user, dt of changing status etc
 
-
     async def delete_user(self, user_uuid: UUID):
-        stmt = (
-            delete(User)
-            .where(User.uuid == user_uuid)
-        )
+        stmt = delete(User).where(User.uuid == user_uuid)
         await self._db.execute(stmt)
         await self._db.commit()

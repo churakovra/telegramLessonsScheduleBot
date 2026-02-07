@@ -70,21 +70,33 @@ class LessonService:
         duration = f"Длительность {lesson.duration} мин"
         price = f"Стоимость {lesson.price} руб"
         return f"{label}\n{duration}\n{price}"
-    
 
-    async def get_lessons_to_attach(self, student_uuid: UUID, teacher_uuid: UUID) -> list[LessonDTO]:
-        lessons = await self._repository.get_lessons_to_attach(student_uuid=student_uuid, teacher_uuid=teacher_uuid)
+    async def get_lessons_to_attach(
+        self, student_uuid: UUID, teacher_uuid: UUID
+    ) -> list[LessonDTO]:
+        lessons = await self._repository.get_lessons_to_attach(
+            student_uuid=student_uuid, teacher_uuid=teacher_uuid
+        )
         return lessons
 
-
-    async def attach_lesson(self, student_uuid: UUID, teacher_uuid: UUID, lesson_uuid: UUID) -> None:
+    async def attach_lesson(
+        self, student_uuid: UUID, teacher_uuid: UUID, lesson_uuid: UUID
+    ) -> None:
         await self._repository.attach_lesson(student_uuid, teacher_uuid, lesson_uuid)
 
-    async def detach_specific_lesson(self, student_uuid: UUID, teacher_uuid: UUID, lesson_uuid: UUID) -> None:
-        await self._repository.detach_specific_lesson(student_uuid, teacher_uuid, lesson_uuid)
+    async def detach_specific_lesson(
+        self, student_uuid: UUID, teacher_uuid: UUID, lesson_uuid: UUID
+    ) -> None:
+        await self._repository.detach_specific_lesson(
+            student_uuid, teacher_uuid, lesson_uuid
+        )
 
-    async def get_lessons_to_detach(self, student_uuid: UUID, teacher_uuid: UUID) -> list[LessonDTO]:
-        lessons = await self._repository.get_lessons_to_detach(student_uuid=student_uuid, teacher_uuid=teacher_uuid)
+    async def get_lessons_to_detach(
+        self, student_uuid: UUID, teacher_uuid: UUID
+    ) -> list[LessonDTO]:
+        lessons = await self._repository.get_lessons_to_detach(
+            student_uuid=student_uuid, teacher_uuid=teacher_uuid
+        )
         return lessons
 
     async def get_lesson_by_id(self, lesson_id: int) -> LessonDTO:

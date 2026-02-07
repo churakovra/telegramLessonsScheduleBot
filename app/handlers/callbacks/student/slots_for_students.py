@@ -32,16 +32,26 @@ async def handle_callback(
     student_username = callback.from_user.username
     try:
         student_service = StudentService(session=session)
-        student = await student_service.get_student_by_username(username=student_username)
-        assigned_slot = await assign_slot(session=session, student=student, slot_uuid=slot_uuid)
+        student = await student_service.get_student_by_username(
+            username=student_username
+        )
+        assigned_slot = await assign_slot(
+            session=session, student=student, slot_uuid=slot_uuid
+        )
         teacher_service = TeacherService(session=session)
-        teacher = await teacher_service.get_teacher_by_uuid(teacher_uuid=assigned_slot.uuid_teacher)
+        teacher = await teacher_service.get_teacher_by_uuid(
+            teacher_uuid=assigned_slot.uuid_teacher
+        )
     except UserNotFoundException:
         raise ValueError()
 
     slot_time = assigned_slot.dt_start.strftime(full_format_no_sec)
-    await notify_student(teacher=teacher, student=student, slot_time=slot_time, notifier=notifier)
-    await notify_teacher(teacher=teacher, student=student, slot_time=slot_time, notifier=notifier)
+    await notify_student(
+        teacher=teacher, student=student, slot_time=slot_time, notifier=notifier
+    )
+    await notify_teacher(
+        teacher=teacher, student=student, slot_time=slot_time, notifier=notifier
+    )
 
     await callback.message.delete()
     await callback.answer()
@@ -58,7 +68,9 @@ async def assign_slot(
     )
 
 
-async def notify_student(teacher: UserDTO, student: UserDTO, slot_time: str, notifier: TelegramNotifier) -> None:
+async def notify_student(
+    teacher: UserDTO, student: UserDTO, slot_time: str, notifier: TelegramNotifier
+) -> None:
     markup_context = SuccessSlotBindKeyboardContext(
         teacher_uuid=teacher.uuid,
         student_chat_id=student.chat_id,
@@ -66,10 +78,20 @@ async def notify_student(teacher: UserDTO, student: UserDTO, slot_time: str, not
         username=teacher.username,
     )
     markup = MarkupBuilder.build(KeyboardType.SUCCESS_SLOT_BIND, markup_context)
-    bot_message = success_slot_bind_message(teacher=teacher.username, slot_time=slot_time, markup=markup)
-    await notifier.send_message(bot_message=bot_message, receiver_chat_id=student.chat_id)
+    bot_message = success_slot_bind_message(
+        teacher=teacher.username, slot_time=slot_time, markup=markup
+    )
+    await notifier.send_message(
+        bot_message=bot_message, receiver_chat_id=student.chat_id
+    )
 
 
-async def notify_teacher(teacher: UserDTO, student: UserDTO, slot_time: str, notifier: TelegramNotifier) -> None:
-    notify_teacher_message = slot_is_taken_message(student_username=student.username, slot_time=slot_time)
-    await notifier.send_message(bot_message=notify_teacher_message, receiver_chat_id=teacher.chat_id)
+async def notify_teacher(
+    teacher: UserDTO, student: UserDTO, slot_time: str, notifier: TelegramNotifier
+) -> None:
+    notify_teacher_message = slot_is_taken_message(
+        student_username=student.username, slot_time=slot_time
+    )
+    await notifier.send_message(
+        bot_message=notify_teacher_message, receiver_chat_id=teacher.chat_id
+    )

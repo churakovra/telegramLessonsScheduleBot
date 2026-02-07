@@ -44,7 +44,7 @@ keyboard_registry: dict = {
     KeyboardType.ENTITIES_LIST: entities_list,
     KeyboardType.ENTITY_OPERATIONS: entity_operations,
     KeyboardType.LESSONS_TO_ASSIGN: lessons_to_assign,
-    KeyboardType.CANCEL: cancel_markup
+    KeyboardType.CANCEL: cancel_markup,
 }
 
 
