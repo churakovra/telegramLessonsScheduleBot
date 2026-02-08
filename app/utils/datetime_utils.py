@@ -1,11 +1,11 @@
 import calendar
 from datetime import datetime, timedelta
 
-full_format: str = '%d.%m.%Y %H:%M:%S'
-full_format_no_sec: str = '%d.%m.%Y %H:%M'
-day_format: str = '%d.%m.%Y'
-time_format: str = '%H:%M:%S'
-time_format_HM: str = '%H:%M'
+full_format: str = "%d.%m.%Y %H:%M:%S"
+full_format_no_sec: str = "%d.%m.%Y %H:%M"
+day_format: str = "%d.%m.%Y"
+time_format: str = "%H:%M:%S"
+time_format_HM: str = "%H:%M"
 
 h1 = timedelta(hours=1)
 h1_5 = timedelta(hours=1, minutes=30)
@@ -13,11 +13,11 @@ m10 = timedelta(minutes=10)
 m30 = timedelta(minutes=30)
 
 WEEKDAYS = {
-    0: ["Monday", "monday", "Понедельник",  "понедельник", "пн", "пнд"],
+    0: ["Monday", "monday", "Понедельник", "понедельник", "пн", "пнд"],
     1: ["Tuesday", "tuesday", "Вторник", "вторник", "вт"],
     2: ["Wednesday", "wednesday", "Среда", "среда", "ср"],
     3: ["Thursday", "thursday", "Четверг", "четверг", "чт"],
-    4: ["Friday", "friday", "Пятница", "пятница", "пт"]
+    4: ["Friday", "friday", "Пятница", "пятница", "пт"],
 }
 
 

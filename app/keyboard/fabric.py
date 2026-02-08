@@ -49,22 +49,6 @@ from app.utils.enums.menu_type import MenuType
 
 from ..utils.datetime_utils import full_format_no_sec
 
-operations: dict[str, Any] = {
-    EntityType.STUDENT: {
-        BotStrings.Menu.ATTACH: StudentAttachCallback,
-        BotStrings.Menu.DETACH: StudentDetachCallback,
-        BotStrings.Menu.DELETE: StudentDeleteCallback,
-    },
-    EntityType.LESSON: {
-        BotStrings.Menu.UPDATE: LessonUpdateCallback,
-        BotStrings.Menu.DELETE: LessonDeleteCallback,
-    },
-    EntityType.SLOT: {
-        BotStrings.Menu.UPDATE: SlotUpdateCallback,
-        BotStrings.Menu.DELETE: SlotDeleteCallback,
-    },
-}
-
 
 def teacher_main_menu(*args, **kwargs) -> tuple[list, int]:
     buttons = [
@@ -305,6 +289,22 @@ def _slot_buttons(slots: list[SlotDTO]) -> tuple[list, int]:
 def entity_operations(
     context: EntityOperationsKeyboardContext, *args, **kwargs
 ) -> tuple[list, int]:
+    operations: dict[str, Any] = {
+        EntityType.STUDENT: {
+            BotStrings.Menu.ATTACH: StudentAttachCallback,
+            BotStrings.Menu.DETACH: StudentDetachCallback,
+            BotStrings.Menu.DELETE: StudentDeleteCallback,
+        },
+        EntityType.LESSON: {
+            BotStrings.Menu.UPDATE: LessonUpdateCallback,
+            BotStrings.Menu.DELETE: LessonDeleteCallback,
+        },
+        EntityType.SLOT: {
+            BotStrings.Menu.UPDATE: SlotUpdateCallback,
+            BotStrings.Menu.DELETE: SlotDeleteCallback,
+        },
+    }
+
     buttons = [
         (name, allowed_operation(uuid=context.uuid))
         for name, allowed_operation in operations[context.entity_type].items()

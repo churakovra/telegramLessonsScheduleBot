@@ -18,7 +18,9 @@ class BotStrings:
 
         # * Unbind user
         TEACHER_STUDENT_DELETE = "Выбери ученика для удаления: "
-        TEACHER_STUDENT_DELETE_CONFIRMATION_REQUEST = "Вы уверены, что хотите удалить ученика?"
+        TEACHER_STUDENT_DELETE_CONFIRMATION_REQUEST = (
+            "Вы уверены, что хотите удалить ученика?"
+        )
         TEACHER_STUDENT_DELETE_SUCCESS = "Ученик успешно удален!"
 
         TEACHER_STUDENTS_NOT_FOUND = (
@@ -63,6 +65,8 @@ class BotStrings:
         SLOT_IS_TAKEN = "@{student} записался на урок {slot_time}"
         CALLBACK_SLOTS_CORRECT = "slots_correct"
         CALLBACK_SLOTS_INCORRECT = "slots_incorrect"
+        SLOT_INFO = "Информация об окошке"
+        SLOT_DELETE_SUCCESS = "Слот успешно удалён!"
 
     class Student:
         SLOTS_ADDED = "Привет! Выбери окошки на следующую неделю:"

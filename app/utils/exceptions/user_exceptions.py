@@ -5,20 +5,20 @@ from app.utils.enums.bot_values import UserRole
 
 class UserRoleException(Exception):
     def __init__(self, username: str):
-        self.username = username,
+        self.username = (username,)
         self.message = f"User {username} doesn't have access to make an operation"
 
 
 class UserAddException(Exception):
     def __init__(self, username: str):
-        self.username = username,
+        self.username = (username,)
         self.message = f"Error creating user {username}: User already exists"
 
 
 class UserChangeRoleException(Exception):
     def __init__(self, username: str, role: UserRole, initiator_username: str):
-        self.username = username,
-        self.role = role,
+        self.username = (username,)
+        self.role = (role,)
         self.initiator_username = initiator_username
         self.message = (
             f"Can't change {username} role {role}. "

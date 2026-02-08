@@ -27,6 +27,5 @@ class LessonDTO(BaseDTO):
     duration: int
     uuid_teacher: UUID
     price: int
-    
-    model_config = {"from_attributes": True}
 
+    model_config = {"from_attributes": True}

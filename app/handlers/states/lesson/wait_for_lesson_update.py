@@ -14,7 +14,6 @@ router = Router()
 logger = setup_logger(__name__)
 
 
-
 @router.message(ScheduleStates.wait_for_lesson_update)
 async def handle_state(message: Message, state: FSMContext, session: AsyncSession):
     data = await state.get_data()
@@ -22,6 +21,6 @@ async def handle_state(message: Message, state: FSMContext, session: AsyncSessio
     spec = data["spec"]
     new_value = message.text.strip()
     lesson_service = LessonService(session)
-    await lesson_service.update_lesson(lesson_uuid, **{spec:new_value})
+    await lesson_service.update_lesson(lesson_uuid, **{spec: new_value})
     await message.answer(BotStrings.Teacher.TEACHER_LESSON_UPDATE_SUCCESS)
     await state.clear()

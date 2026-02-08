@@ -23,7 +23,6 @@ class CreateUserDTO(BaseModel):
         self.is_teacher = self.role == UserRole.TEACHER
         self.is_admin = self.role == UserRole.ADMIN
         return self
-    
 
 
 class UserDTO(BaseDTO):
@@ -35,9 +34,9 @@ class UserDTO(BaseDTO):
     is_teacher: bool
     is_admin: bool
     chat_id: int
-    
+
     model_config = {"from_attributes": True}
-    
+
     @property
     def role(self) -> UserRole:
         if self.is_admin:

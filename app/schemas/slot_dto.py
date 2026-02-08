@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, field_validator
 from app.schemas.common import BaseDTO
 
 
-class CreateSlotDTO(BaseModel): 
+class CreateSlotDTO(BaseModel):
     uuid: UUID = Field(default_factory=uuid4)
     uuid_teacher: UUID
     dt_start: datetime
@@ -24,7 +24,7 @@ class SlotDTO(BaseDTO):
     dt_spot: datetime | None
 
     model_config = {"from_attributes": True}
-    
+
     @field_validator("dt_start", "dt_add", "dt_spot", mode="before")
     @classmethod
     def convert_to_utc3(cls, value: datetime):

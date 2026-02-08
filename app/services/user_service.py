@@ -31,7 +31,7 @@ class UserService:
             firstname=firstname,
             lastname=lastname,
             role=role,
-            chat_id=chat_id
+            chat_id=chat_id,
         )
         user = await self._repository.add_user(new_user)
         return user.uuid
@@ -75,7 +75,6 @@ class UserService:
             result = BotStrings.User.USER_INFO_ERROR
 
         return result
-    
 
     async def delete_user(self, user_uuid: UUID):
         await self._repository.delete_user(user_uuid)
