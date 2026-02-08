@@ -11,10 +11,7 @@ logger = setup_logger(__name__)
 
 
 @router.message(ScheduleStates.wait_for_teacher_lesson_label)
-async def handle_state(
-        message: Message,
-        state: FSMContext
-):
+async def handle_state(message: Message, state: FSMContext):
     raw_mt = getattr(message, "text", "")
     lesson_label = raw_mt.strip()
     await state.update_data(lesson_label=lesson_label)

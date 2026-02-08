@@ -216,10 +216,14 @@ class TestGetUnsignedStudents(Base):
 
 
 class TestDeleteStudents(Base):
-    async def test_delete_students_do_not_fail_with_empty_list(self, valid_teacher, func_mock):
+    async def test_delete_students_do_not_fail_with_empty_list(
+        self, valid_teacher, func_mock
+    ):
         students = list()
         condition = nullcontext()
         func_mock(service=self.service._repository, mock_method="delete_students")
 
         with condition as expected_condition:
-            assert (await self.service.delete_students(students, valid_teacher)) == expected_condition
+            assert (
+                await self.service.delete_students(students, valid_teacher)
+            ) == expected_condition

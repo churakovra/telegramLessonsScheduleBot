@@ -27,16 +27,21 @@ async def reply_and_save_to_db(
     data = await state.get_data()
     slots: list[CreateSlotDTO] = data["slots"]
     teacher_uuid = data["teacher_uuid"]
+    action = data["action"]
 
     slot_service = SlotService(session)
-    await slot_service.add_slots(slots)
+    if action == "Create":
+        await slot_service.add_slots(slots)
+    else:
+        await slot_service.update_slots(slots, teacher_uuid)
+
     logger.info(f"Teacher {teacher_uuid} successfully added slots")
+
     markup_context = SendSlotsKeyboardContext(teacher_uuid)
     await callback.message.answer(
         text=BotStrings.Teacher.SLOTS_PROCESSING_SUCCESS,
         reply_markup=MarkupBuilder.build(KeyboardType.SEND_SLOTS, markup_context),
     )
-
     await state.clear()
     await callback.answer()
 

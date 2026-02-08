@@ -3,8 +3,7 @@ from aiogram.types import InlineKeyboardMarkup
 from app.schemas.bot_message import BotMessage
 from app.utils.bot_strings import BotStrings
 
-
-#TODO rework & update all outcoming messages from bot
+# TODO rework & update all outcoming messages from bot
 
 
 def main_menu_message(markup: InlineKeyboardMarkup) -> BotMessage:
@@ -14,11 +13,9 @@ def main_menu_message(markup: InlineKeyboardMarkup) -> BotMessage:
     )
 
 
-def slots_added_for_student_message(
-    parsed_slots_reply: str, markup: InlineKeyboardMarkup
-):
+def slots_added_for_student_message(markup: InlineKeyboardMarkup):
     return BotMessage(
-        text=f"{BotStrings.Student.SLOTS_ADDED}\n\n{parsed_slots_reply}",
+        text=f"{BotStrings.Student.SLOTS_ADDED}",
         reply_markup=markup,
     )
 
@@ -59,14 +56,35 @@ def specify_week_message(markup: InlineKeyboardMarkup) -> BotMessage:
 
 
 def confirm_lesson_deletion(markup: InlineKeyboardMarkup) -> BotMessage:
-    return BotMessage(text=BotStrings.Teacher.TEACHER_LESSON_DELETE_CONFIRMATION_REQUEST, reply_markup=markup)
+    return BotMessage(
+        text=BotStrings.Teacher.TEACHER_LESSON_DELETE_CONFIRMATION_REQUEST,
+        reply_markup=markup,
+    )
+
 
 def confirm_student_deletion(markup: InlineKeyboardMarkup) -> BotMessage:
-    return BotMessage(text=BotStrings.Teacher.TEACHER_STUDENT_DELETE_CONFIRMATION_REQUEST, reply_markup=markup)
+    return BotMessage(
+        text=BotStrings.Teacher.TEACHER_STUDENT_DELETE_CONFIRMATION_REQUEST,
+        reply_markup=markup,
+    )
 
 
 def lesson_deletion_success() -> BotMessage:
-    return BotMessage(text=BotStrings.Teacher.TEACHER_LESSON_DELETE_SUCCESS, reply_markup=None)
+    return BotMessage(
+        text=BotStrings.Teacher.TEACHER_LESSON_DELETE_SUCCESS,
+        reply_markup=None,
+    )
+
 
 def student_deletion_success(markup: InlineKeyboardMarkup) -> BotMessage:
-    return BotMessage(text=BotStrings.Teacher.TEACHER_STUDENT_DELETE_SUCCESS, reply_markup=markup)
+    return BotMessage(
+        text=BotStrings.Teacher.TEACHER_STUDENT_DELETE_SUCCESS,
+        reply_markup=markup,
+    )
+
+
+def slot_info(message_text: str, markup: InlineKeyboardMarkup) -> BotMessage:
+    return BotMessage(
+        text=message_text,
+        reply_markup=markup,
+    )

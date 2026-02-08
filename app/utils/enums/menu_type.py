@@ -1,5 +1,6 @@
 from enum import StrEnum
 
+
 class MenuType(StrEnum):
     TEACHER = "T"
     TEACHER_STUDENT = "T-S"

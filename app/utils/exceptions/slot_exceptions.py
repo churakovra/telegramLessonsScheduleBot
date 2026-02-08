@@ -19,7 +19,8 @@ class SlotNotFoundException(Exception):
     def __init__(self, slot_uuid: UUID):
         self.slot_uuid = slot_uuid
         self.message = f"Slot {slot_uuid} were not found"
-        
+
+
 class SlotsNotFoundException(Exception):
     def __init__(self, teacher_uuid: UUID, week_flag: WeekFlag):
         self.teacher_uuid = teacher_uuid
