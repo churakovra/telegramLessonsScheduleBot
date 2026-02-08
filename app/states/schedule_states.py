@@ -4,6 +4,9 @@ from aiogram.filters.state import StatesGroup, State
 class ScheduleStates(StatesGroup):
     wait_for_teacher_username = State()  # add Teacher status to user
     wait_for_slots = State()  # wait for teacher slots & start to process them
+    wait_for_slots_update = (
+        State()
+    )  # wait for teacher slots to update & start to process them
     wait_for_confirmation = (
         State()
     )  # wait for teacher confirmation is bot parsed slots correctly
