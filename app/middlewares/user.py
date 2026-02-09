@@ -20,7 +20,7 @@ class UserMiddleware(BaseMiddleware):
     ) -> Any:
         session = data["session"]
         user_service = UserService(session)
-        username = UserMiddleware.get_username(event)
+        username = self.get_username(event)
         try:
             user = await user_service.get_user(username)
             data["user"] = user
