@@ -17,6 +17,7 @@ from app.keyboard.context import (
     EntityOperationsKeyboardContext,
     SpecsToUpdateKeyboardContext,
 )
+from app.schemas.user_dto import UserDTO
 from app.services.lesson_service import LessonService
 from app.services.teacher_service import TeacherService
 from app.states.schedule_states import ScheduleStates
@@ -60,24 +61,18 @@ async def create(
 
 
 @router.callback_query(LessonListCallback.filter())
-async def list(callback: CallbackQuery, session: AsyncSession):
-    teacher_service = TeacherService(session)
+async def list(callback: CallbackQuery, session: AsyncSession, user: UserDTO):
     lesson_service = LessonService(session)
     try:
         markup = None
-        teacher_username = callback.from_user.username
-        teacher = await teacher_service.get_teacher(teacher_username)
-        lessons = await lesson_service.get_teacher_lessons(teacher.uuid)
+        lessons = await lesson_service.get_teacher_lessons(user.uuid)
         message_text = BotStrings.Teacher.TEACHER_LESSON_LIST
         markup_context = EntitiesListKeyboardContext(lessons, EntityType.LESSON)
         markup = MarkupBuilder.build(KeyboardType.ENTITIES_LIST, markup_context)
-    except UserNotFoundException as e:
-        logger.error(e.message)
-        message_text = BotStrings.User.USER_INFO_ERROR
-        return
     except LessonsNotFoundException as e:
         logger.error(e.message)
         message_text = BotStrings.Teacher.TEACHER_LESSONS_WERE_NOT_FOUND
+        markup = MarkupBuilder.build(KeyboardType.TEACHER_MAIN)
     await callback.message.answer(text=message_text, reply_markup=markup)
     await callback.answer()
 
