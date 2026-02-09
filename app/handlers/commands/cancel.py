@@ -8,7 +8,6 @@ from app.keyboard.builder import MarkupBuilder
 from app.schemas.user_dto import UserDTO
 from app.utils import message_template
 
-
 router = Router()
 
 

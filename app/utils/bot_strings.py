@@ -24,7 +24,7 @@ class BotStrings:
         TEACHER_STUDENT_DELETE_SUCCESS = "Ученик успешно удален!"
 
         TEACHER_STUDENTS_NOT_FOUND = (
-            "Студенты не найдены\n Проверь, правильно ли указаны данные"
+            "Студенты не найдены\nПроверь, правильно ли указаны данные"
         )
 
         TEACHER_STUDENTS_LIST = "Ваши ученики:"

@@ -4,13 +4,13 @@ from aiogram import Router
 from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.keyboard.builder import MarkupBuilder
+from app.keyboard.callback_factories.slot import DaysForStudents
+from app.keyboard.context import SlotsForStudentsKeyboardContext
 from app.services.slot_service import SlotService
 from app.utils.datetime_utils import day_format
 from app.utils.enums.bot_values import KeyboardType
 from app.utils.exceptions.slot_exceptions import SlotFreeNotFoundException
-from app.keyboard.callback_factories.slot import DaysForStudents
-from app.keyboard.builder import MarkupBuilder
-from app.keyboard.context import SlotsForStudentsKeyboardContext
 
 router = Router()
 

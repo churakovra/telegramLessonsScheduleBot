@@ -189,7 +189,13 @@ def success_slot_bind(
     context: SuccessSlotBindKeyboardContext, *args, **kwargs
 ) -> tuple[list, int]:
     buttons = [
-        (BotStrings.Menu.BIND_ANOTHER_SLOT, ResendSlotsCallback(teacher_uuid=context.teacher_uuid, student_chat_id=context.student_chat_id)),
+        (
+            BotStrings.Menu.BIND_ANOTHER_SLOT,
+            ResendSlotsCallback(
+                teacher_uuid=context.teacher_uuid,
+                student_chat_id=context.student_chat_id,
+            ),
+        ),
         (BotStrings.Menu.MENU, MenuCallback(menu_type=MenuType.STUDENT)),
     ]
     adjust = 1

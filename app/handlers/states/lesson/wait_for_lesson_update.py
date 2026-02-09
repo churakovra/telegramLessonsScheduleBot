@@ -1,14 +1,12 @@
 from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
-
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.services.lesson_service import LessonService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
 from app.utils.logger import setup_logger
-
 
 router = Router()
 logger = setup_logger(__name__)

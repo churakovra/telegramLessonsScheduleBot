@@ -5,7 +5,7 @@ from app.utils.enums.bot_values import WeekFlag
 
 class SlotValidationException(Exception):
     def __init__(self):
-        self.message = f"Error validating slot"
+        self.message = "Error validating slot"
 
 
 class SlotAssignException(Exception):

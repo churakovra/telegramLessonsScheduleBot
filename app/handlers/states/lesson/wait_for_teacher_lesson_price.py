@@ -59,7 +59,7 @@ async def handle_state(
         await state.clear()
 
         logger.info(f"Teacher {uuid_teacher} added new lesson")
-    except Exception as e:
+    except Exception:
         logger.error(type)
 
         sent_message = await message.answer(

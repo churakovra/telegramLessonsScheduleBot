@@ -3,8 +3,8 @@ import asyncio
 from aiogram import Bot, Dispatcher
 
 from app.config.settings import BOT_TOKEN
-from app.middlewares import register_middlewares
 from app.handlers import register_routers
+from app.middlewares import register_middlewares
 from app.notifier.telegram_notifier import TelegramNotifier
 from app.utils.logger import setup_logger
 

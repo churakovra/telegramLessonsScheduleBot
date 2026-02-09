@@ -1,11 +1,11 @@
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
-from app.schemas.user_dto import UserDTO
 
 from app.handlers.commands.menu import markup_type_by_role
 from app.keyboard.builder import MarkupBuilder
 from app.keyboard.callback_factories.menu import MenuCallback
+from app.schemas.user_dto import UserDTO
 from app.utils import message_template
 from app.utils.bot_strings import BotStrings
 from app.utils.enums.bot_values import KeyboardType

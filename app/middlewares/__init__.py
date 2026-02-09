@@ -1,4 +1,5 @@
 from aiogram import Dispatcher
+
 from .db_session import DBSessionMiddleware
 from .user import UserMiddleware
 

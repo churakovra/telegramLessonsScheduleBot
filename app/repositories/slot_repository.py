@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID
 
 from sqlalchemy import and_, delete, extract, func, select, update
@@ -75,7 +75,7 @@ class SlotRepository:
             update(Slot)
             .where(Slot.uuid == slot_uuid)
             .values(uuid_student=student_uuid)
-            .values(dt_spot=datetime.now(timezone.utc).astimezone())
+            .values(dt_spot=datetime.now(UTC).astimezone())
         )
         await self._db.execute(stmt)
         await self._db.commit()

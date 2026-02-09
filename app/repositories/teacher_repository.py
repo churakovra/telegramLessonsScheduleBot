@@ -10,7 +10,6 @@ from app.database.orm.user import User
 from app.schemas.user_dto import UserDTO
 from app.utils.logger import setup_logger
 
-
 logger = setup_logger(__name__)
 
 

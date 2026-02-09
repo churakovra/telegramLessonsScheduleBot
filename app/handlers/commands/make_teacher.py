@@ -5,12 +5,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.services.user_service import UserService
 from app.utils.bot_strings import BotStrings
-from app.utils.logger import setup_logger
 from app.utils.enums.bot_values import UserRole
 from app.utils.exceptions.user_exceptions import (
-    UserNotFoundException,
     UserChangeRoleException,
+    UserNotFoundException,
 )
+from app.utils.logger import setup_logger
 
 router = Router()
 logger = setup_logger(__name__)

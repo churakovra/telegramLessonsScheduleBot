@@ -2,14 +2,13 @@ from collections.abc import Awaitable, Callable
 from typing import Any
 
 from aiogram import BaseMiddleware
-from aiogram.types import TelegramObject, Message, CallbackQuery
+from aiogram.types import CallbackQuery, Message, TelegramObject
 
 from app.database.database import async_session_factory
 from app.services.teacher_service import TeacherService
 from app.utils.bot_strings import BotStrings
 from app.utils.exceptions.user_exceptions import UserNotFoundException
 from app.utils.logger import setup_logger
-
 
 logger = setup_logger(__name__)
 
