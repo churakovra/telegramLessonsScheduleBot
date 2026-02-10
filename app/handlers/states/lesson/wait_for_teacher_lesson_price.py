@@ -28,7 +28,6 @@ async def handle_state(
     previous_message_id = data["previous_message_id"]
     operation_type = data["operation_type"]
     raw_mt = getattr(message, "text", "")
-    username = getattr(message.from_user, "username", "") or ""
 
     label = data["lesson_label"]
     duration = data["lesson_duration"]

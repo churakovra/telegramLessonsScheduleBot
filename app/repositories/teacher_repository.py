@@ -33,7 +33,7 @@ class TeacherRepository:
         else:
             condition = User.username == data
 
-        stmt = select(User).where(and_(condition, User.is_teacher == True))
+        stmt = select(User).where(and_(condition, User.is_teacher.is_(True)))
         teacher = await self._db.scalar(stmt)
         return teacher
 
@@ -87,7 +87,7 @@ class TeacherRepository:
             .where(
                 and_(
                     TeacherStudent.uuid_teacher == teacher_uuid,
-                    TeacherStudent.lesson != None,
+                    TeacherStudent.lesson.is_not(None),
                 )
             )
             .scalar_subquery()

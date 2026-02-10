@@ -48,7 +48,7 @@ class SlotRepository:
             and_(
                 Slot.uuid_teacher == teacher_uuid,
                 Slot.dt_start > func.now(),
-                Slot.uuid_student == None,
+                Slot.uuid_student.is_(None),
             )
         )
         for slot in await self._db.scalars(stmt):
@@ -63,7 +63,7 @@ class SlotRepository:
             and_(
                 func.date(Slot.dt_start) == day,
                 Slot.uuid_teacher == teacher_uuid,
-                Slot.uuid_student == None,
+                Slot.uuid_student.is_(None),
             )
         )
         for slot in await self._db.scalars(stmt):
