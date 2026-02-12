@@ -28,3 +28,4 @@ run_migrations:
 
 lint:
 	$(RUN) ruff format
+	$(RUN) ruff check --fix

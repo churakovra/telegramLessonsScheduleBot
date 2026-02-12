@@ -30,7 +30,7 @@ async def add_new_user(message: Message, session: AsyncSession):
             chat_id=chat_id,
         )
         logger.info(f"New user registeged. User id: {new_user_uuid}")
-    except IntegrityError as e:
+    except IntegrityError:
         logger.error(f"User {username} already registered")
     finally:
         await message.answer(text=BotStrings.Common.GREETING.format(user=first_name))

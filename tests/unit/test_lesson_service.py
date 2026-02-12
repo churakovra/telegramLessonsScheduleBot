@@ -1,8 +1,8 @@
 from unittest.mock import AsyncMock
 from uuid import uuid4
 
-from pydantic import ValidationError
 import pytest
+from pydantic import ValidationError
 
 from app.services.lesson_service import LessonService
 

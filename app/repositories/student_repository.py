@@ -14,7 +14,7 @@ class StudentRepository:
 
     async def _get_student(self, username: str) -> User | None:
         stmt = select(User).where(
-            and_(User.username == username, User.is_student == True)
+            and_(User.username == username, User.is_student.is_(True))
         )
         student = await self._db.scalar(stmt)
         return student
@@ -26,7 +26,7 @@ class StudentRepository:
         return StudentDTO.model_validate(student)
 
     async def get_student_by_uuid(self, uuid: UUID):
-        stmt = select(User).where(and_(User.uuid == uuid, User.is_student == True))
+        stmt = select(User).where(and_(User.uuid == uuid, User.is_student.is_(True)))
         return StudentDTO.model_validate(await self._db.scalar(stmt))
 
     async def get_students_by_teacher_uuid(

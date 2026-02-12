@@ -11,7 +11,6 @@ from app.utils.exceptions.user_exceptions import (
     UserNotFoundException,
 )
 
-
 valid_user = CreateUserDTO(
     username="test-username",
     firstname="test-firstname",
