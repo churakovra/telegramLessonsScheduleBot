@@ -18,7 +18,7 @@ logger = setup_logger(__name__)
 
 
 @router.callback_query(
-    ConfirmMenuCallback.filter(F.confirm == True),
+    ConfirmMenuCallback.filter(F.confirm.is_(True)),
     ScheduleStates.wait_for_confirmation,
 )
 async def reply_and_save_to_db(
@@ -46,7 +46,7 @@ async def reply_and_save_to_db(
     await callback.answer()
 
 
-@router.callback_query(ConfirmMenuCallback.filter(F.confirm == False))
+@router.callback_query(ConfirmMenuCallback.filter(F.confirm.is_(False)))
 async def handle_callback(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer(BotStrings.Teacher.SLOTS_FAILURE)
     await state.set_state(ScheduleStates.wait_for_slots)

@@ -1,15 +1,11 @@
 import asyncio
 from logging.config import fileConfig
 
+from alembic import context
 from sqlalchemy import URL
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from alembic import context
 from app.database.database import url
-from app.database.orm.user import User
-from app.database.orm.lesson import Lesson
-from app.database.orm.slot import Slot
-from app.database.orm.teacher_student import TeacherStudent
 from app.database.orm.base import Base
 
 url = URL.create(

@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import and_, delete, exists, not_, select, update
+from sqlalchemy import and_, delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.orm.lesson import Lesson

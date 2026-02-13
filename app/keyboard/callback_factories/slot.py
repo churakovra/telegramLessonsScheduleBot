@@ -40,7 +40,7 @@ class SendSlots(CallbackData, prefix="send-slots-to-students"):
     teacher_uuid: UUID
 
 
-class ResendSlots(CallbackData, prefix="resend-s-t-s"):
+class ResendSlotsCallback(CallbackData, prefix="resend-s-t-s"):
     teacher_uuid: UUID
     student_chat_id: int
 

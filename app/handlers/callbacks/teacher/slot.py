@@ -1,3 +1,4 @@
+# TODO delete getting user in every place in handlers except middleware
 from aiogram import F, Router
 from aiogram.filters import or_f
 from aiogram.fsm.context import FSMContext
@@ -22,18 +23,16 @@ from app.services.slot_service import SlotService
 from app.services.student_service import StudentService
 from app.services.teacher_service import TeacherService
 from app.states.schedule_states import ScheduleStates
+from app.utils import message_template as mt
 from app.utils.bot_strings import BotStrings
 from app.utils.enums.bot_values import EntityType, KeyboardType, WeekFlag
 from app.utils.exceptions.lesson_exceptions import LessonsNotFoundException
 from app.utils.exceptions.slot_exceptions import SlotsNotFoundException
 from app.utils.exceptions.user_exceptions import UserNotFoundException
 from app.utils.logger import setup_logger
-from app.utils import message_template as mt
 
 router = Router()
 logger = setup_logger(__name__)
-
-# TODO check if update slots work
 
 
 @router.callback_query(
@@ -44,7 +43,8 @@ logger = setup_logger(__name__)
     )
 )
 async def specify_week(
-    callback: CallbackQuery, callback_data: SlotCreateCallback | SlotListCallback
+    callback: CallbackQuery,
+    callback_data: SlotCreateCallback | SlotListCallback,
 ) -> None:
     markup_context = SpecifyWeekKeyboardContext(type(callback_data))
     markup = MarkupBuilder.build(KeyboardType.SPECIFY_WEEK, markup_context)
@@ -122,7 +122,6 @@ async def list(
 async def info(
     callback: CallbackQuery, callback_data: SlotInfoCallback, session: AsyncSession
 ) -> None:
-    # TODO add slot info str; add slot update callback; slot delete callback handlers
     slot_service = SlotService(session)
     slot = await slot_service.get_slot(callback_data.uuid)
     markup_context = EntityOperationsKeyboardContext(

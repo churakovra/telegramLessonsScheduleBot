@@ -1,12 +1,11 @@
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.handlers.commands.menu import markup_type_by_role
 from app.keyboard.builder import MarkupBuilder
 from app.keyboard.callback_factories.menu import MenuCallback
-from app.services.user_service import UserService
+from app.schemas.user_dto import UserDTO
 from app.utils import message_template
 from app.utils.bot_strings import BotStrings
 from app.utils.enums.bot_values import KeyboardType
@@ -51,12 +50,9 @@ async def handle_teacher_menu(
 @router.callback_query(MenuCallback.filter(F.menu_type == MenuType.CANCEL))
 async def handle_cancel(
     callback: CallbackQuery,
-    session: AsyncSession,
     state: FSMContext,
+    user: UserDTO,
 ):
-    user_service = UserService(session)
-    username = callback.from_user.username
-    user = await user_service.get_user(username)
     markup = MarkupBuilder.build(markup_type_by_role[user.role])
     reply_message = message_template.main_menu_message(markup)
     await state.clear()

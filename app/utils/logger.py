@@ -1,4 +1,4 @@
-from logging import Logger, StreamHandler, DEBUG
+from logging import DEBUG, Logger, StreamHandler
 
 import colorlog
 

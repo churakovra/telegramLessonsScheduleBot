@@ -4,18 +4,16 @@ from aiogram import Router
 from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.keyboard.builder import MarkupBuilder
+from app.keyboard.callback_factories.slot import SlotsForStudents
+from app.keyboard.context import SuccessSlotBindKeyboardContext
 from app.notifier.telegram_notifier import TelegramNotifier
 from app.schemas.slot_dto import SlotDTO
 from app.schemas.user_dto import UserDTO
 from app.services.slot_service import SlotService
-from app.services.student_service import StudentService
 from app.services.teacher_service import TeacherService
 from app.utils.datetime_utils import full_format_no_sec
 from app.utils.enums.bot_values import KeyboardType
-from app.utils.exceptions.user_exceptions import UserNotFoundException
-from app.keyboard.callback_factories.slot import SlotsForStudents
-from app.keyboard.builder import MarkupBuilder
-from app.keyboard.context import SuccessSlotBindKeyboardContext
 from app.utils.message_template import slot_is_taken_message, success_slot_bind_message
 
 router = Router()
@@ -27,30 +25,23 @@ async def handle_callback(
     callback_data: SlotsForStudents,
     session: AsyncSession,
     notifier: TelegramNotifier,
+    user: UserDTO,
 ):
     slot_uuid = callback_data.uuid_slot
-    student_username = callback.from_user.username
-    try:
-        student_service = StudentService(session=session)
-        student = await student_service.get_student_by_username(
-            username=student_username
-        )
-        assigned_slot = await assign_slot(
-            session=session, student=student, slot_uuid=slot_uuid
-        )
-        teacher_service = TeacherService(session=session)
-        teacher = await teacher_service.get_teacher_by_uuid(
-            teacher_uuid=assigned_slot.uuid_teacher
-        )
-    except UserNotFoundException:
-        raise ValueError()
+    assigned_slot = await assign_slot(
+        session=session, student=user, slot_uuid=slot_uuid
+    )
+    teacher_service = TeacherService(session=session)
+    teacher = await teacher_service.get_teacher_by_uuid(
+        teacher_uuid=assigned_slot.uuid_teacher
+    )
 
     slot_time = assigned_slot.dt_start.strftime(full_format_no_sec)
     await notify_student(
-        teacher=teacher, student=student, slot_time=slot_time, notifier=notifier
+        teacher=teacher, student=user, slot_time=slot_time, notifier=notifier
     )
     await notify_teacher(
-        teacher=teacher, student=student, slot_time=slot_time, notifier=notifier
+        teacher=teacher, student=user, slot_time=slot_time, notifier=notifier
     )
 
     await callback.message.delete()

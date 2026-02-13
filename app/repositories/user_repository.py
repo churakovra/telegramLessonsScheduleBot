@@ -3,10 +3,9 @@ from uuid import UUID
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database.orm.lesson import Lesson
 from app.database.orm.user import User
-from app.utils.enums.bot_values import UserRole
 from app.schemas.user_dto import CreateUserDTO, UserDTO
+from app.utils.enums.bot_values import UserRole
 
 
 class UserRepository:
