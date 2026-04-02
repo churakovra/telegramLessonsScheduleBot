@@ -8,6 +8,7 @@ from app.config.settings import (
     AMQP_DEFAULT_ROUTING_KEY,
     AMQP_URL,
 )
+from app.message.message_pack import MessagePack
 from app.notifier.notifier import Notifier
 from app.utils.logger import setup_logger
 
@@ -36,8 +37,8 @@ class MessageConsumer:
 
     async def on_message(self, incoming_msg: AbstractIncomingMessage):
         async with incoming_msg.process():
-            body = incoming_msg.body.decode()
-            logger.debug(body)
+            message_pack = MessagePack.model_validate_json(incoming_msg.body)
+            logger.debug(message_pack)
             # TODO add self.notifier.send_message()
 
     async def stop(self):

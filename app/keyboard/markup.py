@@ -22,8 +22,12 @@ class BotMarkup:
     def build(self) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         for row in self.rows:
-            buttons = []
+            buttons: list[InlineKeyboardButton] = []
             for button in row.buttons:
-                buttons.append(InlineKeyboardButton(text=button.text, callback_data=button.callback))
-            builder.row(buttons)
+                buttons.append(
+                    InlineKeyboardButton(
+                        text=button.text, callback_data=button.callback
+                    )
+                )
+            builder.row(*buttons)
         return builder.as_markup()

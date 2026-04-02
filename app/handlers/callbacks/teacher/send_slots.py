@@ -3,7 +3,8 @@ from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.keyboard.callback_factories.slot import SendSlots
-from app.message import context, message_builder
+from app.message import context
+from app.message.message import BotMessage
 from app.message.message_pack import MessagePack, MessageRecipient
 from app.notifier.producer import MessageProducer
 from app.services.slot_service import SlotService
@@ -43,6 +44,6 @@ async def handle_callback(
         logger.error(e.message)
         await callback.message.answer(e.message)
     finally:
-        message_context = context.MainMenu(UserRole.TEACHER)
-        await callback.message.answer(**message_builder.build(message_context))
+        message = BotMessage.main_menu(UserRole.TEACHER)
+        await callback.message.answer(**message.prepare())
         await callback.answer()
