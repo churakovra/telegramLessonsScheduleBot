@@ -17,11 +17,10 @@ async def produce(message: Message, producer: MessageProducer):
     # Build message with fabric markup
     markup = fabric.student_main_menu()
     bot_message = BotMessage(text="Test message from producer", markup=markup)
-    
+
     # Wrap and send
     envelope = MessageEnvelope(
-        message=bot_message,
-        recipients=[MessageRecipient(chat_id=320854517)]
+        message=bot_message, recipients=[MessageRecipient(chat_id=320854517)]
     )
     await producer.produce(envelope)
     await message.answer("Success")

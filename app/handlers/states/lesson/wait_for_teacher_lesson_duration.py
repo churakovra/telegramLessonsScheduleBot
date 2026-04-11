@@ -22,14 +22,19 @@ async def handle_state(message: Message, state: FSMContext):
         await state.update_data(lesson_duration=duration)
         await state.set_state(ScheduleStates.wait_for_teacher_lesson_price)
 
-        msg = BotMessage(text=BotStrings.Teacher.TEACHER_LESSON_ADD_PRICE, markup=fabric.cancel_markup())
+        msg = BotMessage(
+            text=BotStrings.Teacher.TEACHER_LESSON_ADD_PRICE,
+            markup=fabric.cancel_markup(),
+        )
         sent_message = await message.answer(**msg.to_dict())
         await state.update_data(previous_message_id=sent_message.message_id)
 
     except Exception as e:
         logger.error(e)
         await state.set_state(ScheduleStates.wait_for_teacher_lesson_duration)
-        error_msg = BotMessage(text=BotStrings.Teacher.TEACHER_LESSON_ADD_DURATION_ERROR)
+        error_msg = BotMessage(
+            text=BotStrings.Teacher.TEACHER_LESSON_ADD_DURATION_ERROR
+        )
         sent_message = await message.answer(**error_msg.to_dict())
         await state.update_data(previous_message_id=sent_message.message_id)
     finally:

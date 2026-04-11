@@ -37,12 +37,9 @@ async def reply_and_save_to_db(
 
     logger.info(f"Teacher {teacher_uuid} successfully added slots")
 
-    markup = send_slots(
-        type("Context", (), {"teacher_uuid": teacher_uuid})()
-    )
+    markup = send_slots(type("Context", (), {"teacher_uuid": teacher_uuid})())
     message = BotMessage(
-        text=BotStrings.Teacher.SLOTS_PROCESSING_SUCCESS,
-        markup=markup
+        text=BotStrings.Teacher.SLOTS_PROCESSING_SUCCESS, markup=markup
     )
     await callback.message.answer(**message.to_aiogram_kwargs())
     await state.clear()

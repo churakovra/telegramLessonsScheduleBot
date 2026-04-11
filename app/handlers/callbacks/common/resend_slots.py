@@ -20,15 +20,14 @@ async def handle_callback(
 ) -> None:
     slots_service = SlotService(session)
     slots = await slots_service.get_free_slots(callback_data.teacher_uuid)
-    
+
     # Build markup using fabric
     markup = days_for_students(
-        type("Context", (), {
-            "teacher_uuid": callback_data.teacher_uuid,
-            "slots": slots
-        })()
+        type(
+            "Context", (), {"teacher_uuid": callback_data.teacher_uuid, "slots": slots}
+        )()
     )
-    
+
     # Build message
     message = BotMessage(text=BotStrings.Student.SLOTS_ADDED, markup=markup)
     await callback.message.answer(**message.to_aiogram_kwargs())

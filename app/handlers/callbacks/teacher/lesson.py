@@ -46,18 +46,15 @@ async def create(
         await state.update_data(operation_type=ActionType.CREATE)
         await state.set_state(ScheduleStates.wait_for_teacher_lesson_label)
         await callback.message.delete()
-        
+
         markup = cancel_markup(None)
         message = BotMessage(
-            text=BotStrings.Teacher.TEACHER_LESSON_ADD_LABEL,
-            markup=markup
+            text=BotStrings.Teacher.TEACHER_LESSON_ADD_LABEL, markup=markup
         )
         sent_message = await callback.message.answer(**message.to_aiogram_kwargs())
         await state.update_data(previous_message_id=sent_message.message_id)
     except UserNotFoundException:
-        logger.error(
-            f"Teacher tried to add new lesson, but didn't have enough rights"
-        )
+        logger.error(f"Teacher tried to add new lesson, but didn't have enough rights")
         await callback.message.answer(BotStrings.Teacher.NOT_ENOUGH_RIGHTS)
         return
     finally:
@@ -70,16 +67,12 @@ async def list_lessons(callback: CallbackQuery, session: AsyncSession, user: Use
     try:
         lessons = await lesson_service.get_teacher_lessons(user.uuid)
         markup = lesson_buttons(type("Context", (), {"lessons": lessons})())
-        message = BotMessage(
-            text=BotStrings.Teacher.TEACHER_LESSON_LIST,
-            markup=markup
-        )
+        message = BotMessage(text=BotStrings.Teacher.TEACHER_LESSON_LIST, markup=markup)
     except LessonsNotFoundException as e:
         logger.error(e.message)
         markup = teacher_main_menu()
         message = BotMessage(
-            text=BotStrings.Teacher.TEACHER_LESSONS_WERE_NOT_FOUND,
-            markup=markup
+            text=BotStrings.Teacher.TEACHER_LESSONS_WERE_NOT_FOUND, markup=markup
         )
     await callback.message.answer(**message.to_aiogram_kwargs())
     await callback.answer()
@@ -93,6 +86,7 @@ async def info(
     lesson = await lesson_service.get_lesson(callback_data.uuid)
     text = get_lesson_info(lesson)
     from app.keyboard.fabric import entity_operations
+
     markup = entity_operations(lesson.uuid, type(lesson))
     message = BotMessage(text=text, markup=markup)
     await callback.message.answer(**message.to_aiogram_kwargs())
@@ -108,17 +102,20 @@ async def select_spec(
         "duration": "Продолжительность",
         "price": "Цена",
     }
-    
+
     markup = specs_to_update(
-        type("Context", (), {
-            "lesson_uuid": callback_data.uuid,
-            "specs": lesson_specs,
-            "callback_data_cls": LessonUpdateCallback
-        })()
+        type(
+            "Context",
+            (),
+            {
+                "lesson_uuid": callback_data.uuid,
+                "specs": lesson_specs,
+                "callback_data_cls": LessonUpdateCallback,
+            },
+        )()
     )
     message = BotMessage(
-        text=BotStrings.Teacher.TEACHER_LESSON_UPDATE_SELECT_SPEC,
-        markup=markup
+        text=BotStrings.Teacher.TEACHER_LESSON_UPDATE_SELECT_SPEC, markup=markup
     )
     await callback.message.answer(**message.to_aiogram_kwargs())
     await callback.answer()
@@ -156,11 +153,10 @@ async def update_whole_lesson(
     await state.update_data(uuid_lesson=callback_data.uuid)
     await state.update_data(operation_type=ActionType.UPDATE)
     await state.set_state(ScheduleStates.wait_for_teacher_lesson_label)
-    
+
     markup = cancel_markup(None)
     message = BotMessage(
-        text=BotStrings.Teacher.TEACHER_LESSON_ADD_LABEL,
-        markup=markup
+        text=BotStrings.Teacher.TEACHER_LESSON_ADD_LABEL, markup=markup
     )
     sent_message = await callback.message.answer(**message.to_aiogram_kwargs())
     await state.update_data(previous_message_id=sent_message.message_id)
@@ -172,14 +168,15 @@ async def request_delete_confirmation(
     callback: CallbackQuery, callback_data: LessonDeleteCallback
 ):
     markup = confirm_deletion(
-        type("Context", (), {
-            "callback_data_cls": LessonDeleteCallback,
-            "callback_data": callback_data
-        })()
+        type(
+            "Context",
+            (),
+            {"callback_data_cls": LessonDeleteCallback, "callback_data": callback_data},
+        )()
     )
     message = BotMessage(
         text=BotStrings.Teacher.TEACHER_LESSON_DELETE_CONFIRMATION_REQUEST,
-        markup=markup
+        markup=markup,
     )
     await callback.message.answer(**message.to_aiogram_kwargs())
     await callback.answer()
@@ -192,11 +189,10 @@ async def delete_lesson(
     lesson_service = LessonService(session)
     await lesson_service.detach_lesson(callback_data.uuid)
     await lesson_service.delete_lesson(callback_data.uuid)
-    
+
     markup = teacher_main_menu()
     message = BotMessage(
-        text=BotStrings.Teacher.TEACHER_LESSON_DELETE_SUCCESS,
-        markup=markup
+        text=BotStrings.Teacher.TEACHER_LESSON_DELETE_SUCCESS, markup=markup
     )
     await callback.message.answer(**message.to_aiogram_kwargs())
     await callback.answer()

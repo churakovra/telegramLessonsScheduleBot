@@ -65,21 +65,21 @@ async def notify_student(
     # Build message with success markup for slot taken
     from app.keyboard.fabric import success_slot_bind
     from app.keyboard.callback_factories.slot import ResendSlotsCallback
-    
+
     text = BotStrings.Student.SLOTS_ASSIGN_SUCCESS.format(
         teacher=teacher.username, slot_time=slot_time
     )
     markup = success_slot_bind(
-        type("Context", (), {
-            "teacher_uuid": teacher.uuid,
-            "student_chat_id": student.chat_id
-        })()
+        type(
+            "Context",
+            (),
+            {"teacher_uuid": teacher.uuid, "student_chat_id": student.chat_id},
+        )()
     )
     message = BotMessage(text=text, markup=markup)
-    
+
     envelope = MessageEnvelope(
-        message=message,
-        recipients=[MessageRecipient(chat_id=student.chat_id)]
+        message=message, recipients=[MessageRecipient(chat_id=student.chat_id)]
     )
     await producer.produce(envelope)
 
@@ -92,9 +92,8 @@ async def notify_teacher(
         student=student.username, slot_time=slot_time
     )
     message = BotMessage(text=text)
-    
+
     envelope = MessageEnvelope(
-        message=message,
-        recipients=[MessageRecipient(chat_id=teacher.chat_id)]
+        message=message, recipients=[MessageRecipient(chat_id=teacher.chat_id)]
     )
     await producer.produce(envelope)

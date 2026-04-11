@@ -13,9 +13,7 @@ router = Router()
 
 
 @router.callback_query(MenuCallback.filter(F.menu_type == MenuType.NEW))
-async def handle_callback(
-    callback: CallbackQuery, user: UserDTO
-):
+async def handle_callback(callback: CallbackQuery, user: UserDTO):
     # Get appropriate main menu markup based on user role
     if user.role == UserRole.TEACHER:
         markup = teacher_main_menu()
@@ -25,7 +23,9 @@ async def handle_callback(
         markup = admin_main_menu()
     else:
         markup = None
-    
-    message = BotMessage(text=BotStrings.Common.GREETING.format(user=user.username), markup=markup)
+
+    message = BotMessage(
+        text=BotStrings.Common.GREETING.format(user=user.username), markup=markup
+    )
     await callback.message.answer(**message.to_aiogram_kwargs())
     await callback.answer()

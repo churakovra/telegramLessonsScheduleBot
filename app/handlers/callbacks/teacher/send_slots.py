@@ -29,24 +29,23 @@ async def handle_callback(
     try:
         students = await teacher_service.get_unsigned_students(teacher_uuid)
         slots = await slots_service.get_free_slots(teacher_uuid)
-        
+
         # Build markup using fabric
         markup = days_for_students(
-            type("Context", (), {
-                "teacher_uuid": teacher_uuid,
-                "slots": slots
-            })()
+            type("Context", (), {"teacher_uuid": teacher_uuid, "slots": slots})()
         )
-        
+
         # Build message
         message = BotMessage(text=BotStrings.Student.SLOTS_ADDED, markup=markup)
-        
+
         # Create envelope with recipients
         envelope = MessageEnvelope(
             message=message,
-            recipients=[MessageRecipient(chat_id=student.chat_id) for student in students]
+            recipients=[
+                MessageRecipient(chat_id=student.chat_id) for student in students
+            ],
         )
-        
+
         await producer.produce(envelope)
         logger.info(f"Teacher {teacher_uuid} sent slots to students")
     except TeacherStudentsNotFound as e:

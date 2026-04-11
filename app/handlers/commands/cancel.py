@@ -14,7 +14,7 @@ router = Router()
 @router.message(Command("cancel"))
 async def cancel(message: Message, state: FSMContext, user: UserDTO) -> None:
     await state.clear()
-    
+
     # Get markup based on role
     if user.role == UserRole.TEACHER:
         markup = fabric.teacher_main_menu()
@@ -24,7 +24,7 @@ async def cancel(message: Message, state: FSMContext, user: UserDTO) -> None:
         markup = fabric.admin_main_menu()
     else:
         markup = None
-    
+
     # Build and send message
     bot_message = BotMessage(text="Меню", markup=markup)
     await message.answer(**bot_message.to_aiogram_kwargs())

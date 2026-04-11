@@ -24,6 +24,9 @@ async def handle_state(message: Message, state: FSMContext):
     await message.chat.delete_message(previous_message_id)
     await message.delete()
 
-    msg = BotMessage(text=BotStrings.Teacher.TEACHER_LESSON_ADD_DURATION, markup=fabric.cancel_markup())
+    msg = BotMessage(
+        text=BotStrings.Teacher.TEACHER_LESSON_ADD_DURATION,
+        markup=fabric.cancel_markup(),
+    )
     sent_message = await message.answer(**msg.to_dict())
     await state.update_data(previous_message_id=sent_message.message_id)

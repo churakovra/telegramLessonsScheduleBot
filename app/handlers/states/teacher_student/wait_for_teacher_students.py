@@ -57,5 +57,7 @@ async def handle_state(
 
     await state.clear()
 
-    msg = BotMessage(text=BotStrings.Common.MAIN_MENU, markup=fabric.teacher_main_menu())
+    msg = BotMessage(
+        text=BotStrings.Common.MAIN_MENU, markup=fabric.teacher_main_menu()
+    )
     await message.answer(**msg.to_dict())

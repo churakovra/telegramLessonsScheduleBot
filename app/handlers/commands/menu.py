@@ -24,7 +24,7 @@ async def send_menu_message(message: Message, user: UserDTO) -> None:
         markup = fabric.admin_main_menu()
     else:
         markup = None
-    
+
     # Build and send message
     bot_message = BotMessage(text="Меню", markup=markup)
     await message.answer(**bot_message.to_aiogram_kwargs())

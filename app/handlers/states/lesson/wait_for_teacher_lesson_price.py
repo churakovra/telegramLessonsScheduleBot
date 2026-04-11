@@ -53,7 +53,9 @@ async def handle_state(
     except Exception:
         logger.error(type)
 
-        error_message = BotMessage(text=BotStrings.Teacher.TEACHER_LESSON_ADD_PRICE_ERROR)
+        error_message = BotMessage(
+            text=BotStrings.Teacher.TEACHER_LESSON_ADD_PRICE_ERROR
+        )
         sent_message = await message.answer(**error_message.to_dict())
         await state.update_data(previous_message_id=sent_message.message_id)
         await state.set_state(ScheduleStates.wait_for_teacher_lesson_price)
