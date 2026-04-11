@@ -5,8 +5,7 @@ from aiogram import Bot, Dispatcher
 from app.config.settings import BOT_TOKEN, SERVICE_TYPE
 from app.handlers import register_routers
 from app.middlewares import register_middlewares
-from app.notifier import setup_consumer
-from app.notifier.producer import MessageProducer
+from app.notifier import MessageConsumer, MessageProducer
 from app.utils.enums.common import ServiceType
 from app.utils.logger import setup_logger
 
@@ -19,24 +18,28 @@ logger.info("Start Bot")
 async def main() -> None:
 
     if SERVICE_TYPE == ServiceType.CONSUMER:
-        await setup_consumer(bot)
+        consumer = MessageConsumer(bot)
+        await consumer.start()
+        try:
+            await asyncio.Future()
+        finally:
+            await consumer.stop()
         return
 
-    message_producer = MessageProducer()
-    await message_producer.start()
+    producer = MessageProducer()
+    await producer.start()
 
     dp = Dispatcher(
-        producer=message_producer,
+        producer=producer,
     )
     register_middlewares(dp)
     register_routers(dp)
 
-    # startup
-    await bot.delete_webhook(drop_pending_updates=True)
-    await dp.start_polling(bot)
-
-    # utilization
-    await message_producer.stop()
+    try:
+        await bot.delete_webhook(drop_pending_updates=True)
+        await dp.start_polling(bot)
+    finally:
+        await producer.stop()
 
 
 if __name__ == "__main__":

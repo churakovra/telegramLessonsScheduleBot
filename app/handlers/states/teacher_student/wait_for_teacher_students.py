@@ -3,8 +3,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.keyboard.context import UserRole
-from app.message.message import BotMessage
+from app.keyboard import fabric
+from app.message.models import BotMessage
 from app.services.student_service import StudentService
 from app.services.teacher_service import TeacherService
 from app.states.schedule_states import ScheduleStates
@@ -57,5 +57,5 @@ async def handle_state(
 
     await state.clear()
 
-    bot_message = BotMessage.main_menu(UserRole.TEACHER)
-    await message.answer(**bot_message.prepare())
+    msg = BotMessage(text=BotStrings.Common.MAIN_MENU, markup=fabric.teacher_main_menu())
+    await message.answer(**msg.to_dict())

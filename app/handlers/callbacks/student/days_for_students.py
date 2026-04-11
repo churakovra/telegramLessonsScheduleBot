@@ -4,9 +4,10 @@ from aiogram import Router
 from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.keyboard.builder import MarkupBuilder
 from app.keyboard.callback_factories.slot import DaysForStudents
-from app.keyboard.context import SlotsForStudentsKeyboardContext
+from app.keyboard.fabric import slots_for_students
+from app.message.models import BotMessage, MarkupData
+from app.message.utils import slots_to_reply
 from app.services.slot_service import SlotService
 from app.utils.datetime_utils import day_format
 from app.utils.enums.bot_values import KeyboardType
@@ -24,11 +25,18 @@ async def handle_callback(
     try:
         slot_service = SlotService(session)
         slots = await slot_service.get_day_slots(day, teacher_uuid)
-        markup_context = SlotsForStudentsKeyboardContext(teacher_uuid, slots)
-        markup = MarkupBuilder.build(KeyboardType.SLOTS_FOR_STUDENTS, markup_context)
-        await callback.message.answer(text=callback.message.text, reply_markup=markup)
+        
+        # Build markup using fabric
+        markup = slots_for_students(
+            type("Context", (), {"slots": slots})()
+        )
+        
+        # Build message
+        message = BotMessage(text=callback.message.text, markup=markup)
+        await callback.message.answer(**message.to_aiogram_kwargs())
         await callback.message.delete()
     except SlotFreeNotFoundException as e:
-        await callback.message.answer(str(e))
+        message = BotMessage(text=str(e))
+        await callback.message.answer(**message.to_aiogram_kwargs())
     finally:
         await callback.answer()

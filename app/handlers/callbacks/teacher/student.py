@@ -11,13 +11,7 @@ from app.keyboard.callback_factories.student import (
     StudentInfoCallback,
     StudentListCallback,
 )
-from app.keyboard.context import (
-    CancelKeyboardContext,
-    MainMenuKeyboardContext,
-    SubMenuKeyboardContext,
-    UserRole,
-)
-from app.message.message import BotMessage
+from app.message.models import BotMessage, MarkupData
 from app.services.lesson_service import LessonService
 from app.services.slot_service import SlotService
 from app.services.student_service import StudentService

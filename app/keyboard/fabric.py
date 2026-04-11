@@ -29,7 +29,7 @@ from app.keyboard.callback_factories.student import (
     StudentListCallback,
 )
 from app.keyboard.callback_factories.teacher import TeacherCallback
-from app.keyboard.markup import BotMarkup, MarkupButton, MarkupRow
+from app.message.models import MarkupData, RowData, ButtonData
 from app.schemas.lesson import LessonDTO
 from app.schemas.slot import SlotDTO
 from app.schemas.student import StudentDTO
@@ -41,216 +41,123 @@ from app.utils.enums.menu_type import MenuType
 from ..utils.datetime_utils import full_format_no_sec
 
 
-def teacher_main_menu() -> BotMarkup:
-    return BotMarkup(
-        [
-            MarkupRow(
-                [
-                    MarkupButton(
-                        "Ученики", MenuCallback(menu_type=MenuType.TEACHER_STUDENT)
-                    ),
-                    MarkupButton(
-                        "Окошки", MenuCallback(menu_type=MenuType.TEACHER_SLOT)
-                    ),
-                    MarkupButton(
-                        "Предметы", MenuCallback(menu_type=MenuType.TEACHER_LESSON)
-                    ),
-                ]
-            )
-        ]
-    )
+def teacher_main_menu() -> MarkupData:
+    return MarkupData(rows=[
+        RowData(buttons=[
+            ButtonData(text="Ученики", callback_data=MenuCallback(menu_type=MenuType.TEACHER_STUDENT).pack()),
+            ButtonData(text="Окошки", callback_data=MenuCallback(menu_type=MenuType.TEACHER_SLOT).pack()),
+            ButtonData(text="Предметы", callback_data=MenuCallback(menu_type=MenuType.TEACHER_LESSON).pack()),
+        ]),
+    ])
 
 
-def student_main_menu() -> BotMarkup:
-    return BotMarkup(
-        [
-            MarkupRow(
-                [
-                    MarkupButton(
-                        "Преподаватели",
-                        MenuCallback(menu_type=MenuType.STUDENT_TEACHER),
-                    ),
-                    MarkupButton(
-                        "Занятия", MenuCallback(menu_type=MenuType.STUDENT_SLOT)
-                    ),
-                ]
-            )
-        ]
-    )
+def student_main_menu() -> MarkupData:
+    return MarkupData(rows=[
+        RowData(buttons=[
+            ButtonData(text="Преподаватели", callback_data=MenuCallback(menu_type=MenuType.STUDENT_TEACHER).pack()),
+            ButtonData(text="Занятия", callback_data=MenuCallback(menu_type=MenuType.STUDENT_SLOT).pack()),
+        ]),
+    ])
 
 
-def admin_main_menu() -> BotMarkup:
-    return BotMarkup(
-        [
-            MarkupRow(
-                [
-                    MarkupButton(
-                        "Пока командами", MenuCallback(menu_type=MenuType.ADMIN_TEMP)
-                    ),
-                ]
-            )
-        ]
-    )
+def admin_main_menu() -> MarkupData:
+    return MarkupData(rows=[
+        RowData(buttons=[
+            ButtonData(text="Пока командами", callback_data=MenuCallback(menu_type=MenuType.ADMIN_TEMP).pack()),
+        ]),
+    ])
 
 
-def teacher_sub_menu_student() -> BotMarkup:
-    return BotMarkup(
-        [
-            MarkupRow(
-                [
-                    MarkupButton("Мои ученики", StudentListCallback()),
-                    MarkupButton("Добавить ученика", StudentCreateCallback()),
-                ]
-            ),
-            MarkupRow(
-                [
-                    MarkupButton(
-                        BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER)
-                    ),
-                ]
-            ),
-        ]
-    )
+def teacher_sub_menu_student() -> MarkupData:
+    return MarkupData(rows=[
+        RowData(buttons=[
+            ButtonData(text="Мои ученики", callback_data=StudentListCallback().pack()),
+            ButtonData(text="Добавить ученика", callback_data=StudentCreateCallback().pack()),
+        ]),
+        RowData(buttons=[
+            ButtonData(text=BotStrings.Menu.BACK, callback_data=MenuCallback(menu_type=MenuType.TEACHER).pack()),
+        ]),
+    ])
 
 
-def teacher_sub_menu_slot() -> BotMarkup:
-    return BotMarkup(
-        [
-            MarkupRow(
-                [
-                    MarkupButton("Моё расписание", SlotListCallback()),
-                    MarkupButton("Добавить окошки", SlotCreateCallback()),
-                ]
-            ),
-            MarkupRow(
-                [
-                    MarkupButton(
-                        BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER)
-                    ),
-                ]
-            ),
-        ]
-    )
+def teacher_sub_menu_slot() -> MarkupData:
+    return MarkupData(rows=[
+        RowData(buttons=[
+            ButtonData(text="Моё расписание", callback_data=SlotListCallback().pack()),
+            ButtonData(text="Добавить окошки", callback_data=SlotCreateCallback().pack()),
+        ]),
+        RowData(buttons=[
+            ButtonData(text=BotStrings.Menu.BACK, callback_data=MenuCallback(menu_type=MenuType.TEACHER).pack()),
+        ]),
+    ])
 
 
-def teacher_sub_menu_lesson() -> BotMarkup:
-    return BotMarkup(
-        [
-            MarkupRow(
-                [
-                    MarkupButton("Мои предметы", LessonListCallback()),
-                    MarkupButton("Добавить предмет", LessonCreateCallback()),
-                ]
-            ),
-            MarkupRow(
-                [
-                    MarkupButton(
-                        BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER)
-                    ),
-                ]
-            ),
-        ]
-    )
+def teacher_sub_menu_lesson() -> MarkupData:
+    return MarkupData(rows=[
+        RowData(buttons=[
+            ButtonData(text="Мои предметы", callback_data=LessonListCallback().pack()),
+            ButtonData(text="Добавить предмет", callback_data=LessonCreateCallback().pack()),
+        ]),
+        RowData(buttons=[
+            ButtonData(text=BotStrings.Menu.BACK, callback_data=MenuCallback(menu_type=MenuType.TEACHER).pack()),
+        ]),
+    ])
 
 
-def student_sub_menu_teacher(context) -> BotMarkup:
-    return BotMarkup(
-        [
-            MarkupRow(
-                [
-                    MarkupButton("Заглушка", TeacherCallback(action=ActionType.LIST)),
-                ]
-            ),
-            MarkupRow(
-                [
-                    MarkupButton(
-                        BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.STUDENT)
-                    ),
-                ]
-            ),
-        ]
-    )
+def student_sub_menu_teacher(context) -> MarkupData:
+    return MarkupData(rows=[
+        RowData(buttons=[
+            ButtonData(text="Заглушка", callback_data=TeacherCallback(action=ActionType.LIST).pack()),
+        ]),
+        RowData(buttons=[
+            ButtonData(text=BotStrings.Menu.BACK, callback_data=MenuCallback(menu_type=MenuType.STUDENT).pack()),
+        ]),
+    ])
 
 
-def student_sub_menu_slot(context) -> BotMarkup:
-    return BotMarkup(
-        [
-            MarkupRow(
-                [
-                    MarkupButton("Заглушка", SlotListCallback()),
-                ]
-            ),
-            MarkupRow(
-                [
-                    MarkupButton(
-                        BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.STUDENT)
-                    ),
-                ]
-            ),
-        ]
-    )
+def student_sub_menu_slot(context) -> MarkupData:
+    return MarkupData(rows=[
+        RowData(buttons=[
+            ButtonData(text="Заглушка", callback_data=SlotListCallback().pack()),
+        ]),
+        RowData(buttons=[
+            ButtonData(text=BotStrings.Menu.BACK, callback_data=MenuCallback(menu_type=MenuType.STUDENT).pack()),
+        ]),
+    ])
 
 
-def admin_sub_menu_temp(context) -> BotMarkup:
-    return BotMarkup(
-        [
-            MarkupRow(
-                [
-                    MarkupButton(
-                        "Пока командами", MenuCallback(menu_type=MenuType.ADMIN_TEMP)
-                    ),
-                ]
-            ),
-            MarkupRow(
-                [
-                    MarkupButton(
-                        BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.ADMIN)
-                    ),
-                ]
-            ),
-        ]
-    )
+def admin_sub_menu_temp(context) -> MarkupData:
+    return MarkupData(rows=[
+        RowData(buttons=[
+            ButtonData(text="Пока командами", callback_data=MenuCallback(menu_type=MenuType.ADMIN_TEMP).pack()),
+        ]),
+        RowData(buttons=[
+            ButtonData(text=BotStrings.Menu.BACK, callback_data=MenuCallback(menu_type=MenuType.ADMIN).pack()),
+        ]),
+    ])
 
 
-def parsed_slots(context) -> BotMarkup:
-    return BotMarkup(
-        [
-            MarkupRow(
-                [
-                    MarkupButton(
-                        BotStrings.Menu.YES, ConfirmMenuCallback(confirm=True)
-                    ),
-                    MarkupButton(
-                        BotStrings.Menu.NO, ConfirmMenuCallback(confirm=False)
-                    ),
-                ]
-            )
-        ]
-    )
+def parsed_slots(context) -> MarkupData:
+    return MarkupData(rows=[
+        RowData(buttons=[
+            ButtonData(text=BotStrings.Menu.YES, callback_data=ConfirmMenuCallback(confirm=True).pack()),
+            ButtonData(text=BotStrings.Menu.NO, callback_data=ConfirmMenuCallback(confirm=False).pack()),
+        ]),
+    ])
 
 
-def send_slots(context) -> BotMarkup:
-    return BotMarkup(
-        [
-            MarkupRow(
-                [
-                    MarkupButton(
-                        BotStrings.Menu.SEND,
-                        SendSlots(teacher_uuid=context.teacher_uuid),
-                    ),
-                    MarkupButton(
-                        BotStrings.Menu.CANCEL, MenuCallback(menu_type=MenuType.TEACHER)
-                    ),
-                ]
-            )
-        ]
-    )
+def send_slots(context) -> MarkupData:
+    return MarkupData(rows=[
+        RowData(buttons=[
+            ButtonData(text=BotStrings.Menu.SEND, callback_data=SendSlots(teacher_uuid=context.teacher_uuid).pack()),
+            ButtonData(text=BotStrings.Menu.CANCEL, callback_data=MenuCallback(menu_type=MenuType.TEACHER).pack()),
+        ]),
+    ])
 
 
-def days_for_students(context) -> BotMarkup:
-
+def days_for_students(context) -> MarkupData:
     prev_slot_date = None
-    rows: list[MarkupRow] = []
+    rows: list[RowData] = []
     for slot in context.slots:
         slot_date = slot.dt_start.date()
         if slot_date != prev_slot_date:
@@ -263,205 +170,166 @@ def days_for_students(context) -> BotMarkup:
                 teacher_uuid=context.teacher_uuid,
             )
             rows.append(
-                MarkupRow(
-                    [
-                        MarkupButton(day_name, callback_data),
-                    ]
-                )
+                RowData(buttons=[
+                    ButtonData(text=day_name, callback_data=callback_data.pack()),
+                ])
             )
             prev_slot_date = slot_date
 
-    return BotMarkup(rows)
+    return MarkupData(rows=rows)
 
 
-def slots_for_students(context) -> BotMarkup:
+def slots_for_students(context) -> MarkupData:
     rows = []
     for slot in context.slots:
         time_str = slot.dt_start.strftime(time_format_HM)
         rows.append(
-            MarkupRow(
-                [
-                    MarkupButton(
-                        time_str,
-                        SlotsForStudents(uuid_slot=slot.uuid),
-                    )
-                ]
-            )
+            RowData(buttons=[
+                ButtonData(
+                    text=time_str,
+                    callback_data=SlotsForStudents(uuid_slot=slot.uuid).pack(),
+                ),
+            ])
         )
     rows.append(
-        MarkupRow(
-            [
-                MarkupButton(
-                    BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.STUDENT)
-                )
-            ]
-        )
+        RowData(buttons=[
+            ButtonData(text=BotStrings.Menu.BACK, callback_data=MenuCallback(menu_type=MenuType.STUDENT).pack()),
+        ])
     )
-    return BotMarkup(rows)
+    return MarkupData(rows=rows)
 
 
-def success_slot_bind(context) -> BotMarkup:
-    return BotMarkup(
-        [
-            MarkupRow(
-                [
-                    MarkupButton(
-                        BotStrings.Menu.BIND_ANOTHER_SLOT,
-                        ResendSlotsCallback(
-                            teacher_uuid=context.teacher_uuid,
-                            student_chat_id=context.student_chat_id,
-                        ),
-                    ),
-                    MarkupButton(
-                        BotStrings.Menu.MENU, MenuCallback(menu_type=MenuType.STUDENT)
-                    ),
-                ]
-            )
-        ]
-    )
-
-
-def specify_week(context) -> BotMarkup:
-    return BotMarkup(
-        [
-            MarkupRow(
-                [
-                    MarkupButton(
-                        BotStrings.Menu.CURRENT_WEEK,
-                        context.callback_cls(week_flag=WeekFlag.CURRENT),
-                    ),
-                    MarkupButton(
-                        BotStrings.Menu.NEXT_WEEK,
-                        context.callback_cls(week_flag=WeekFlag.NEXT),
-                    ),
-                ]
+def success_slot_bind(context) -> MarkupData:
+    return MarkupData(rows=[
+        RowData(buttons=[
+            ButtonData(
+                text=BotStrings.Menu.BIND_ANOTHER_SLOT,
+                callback_data=ResendSlotsCallback(
+                    teacher_uuid=context.teacher_uuid,
+                    student_chat_id=context.student_chat_id,
+                ).pack(),
             ),
-            MarkupRow(
-                [
-                    MarkupButton(
-                        BotStrings.Menu.BACK,
-                        MenuCallback(menu_type=MenuType.TEACHER_SLOT),
-                    ),
-                ]
+            ButtonData(text=BotStrings.Menu.MENU, callback_data=MenuCallback(menu_type=MenuType.STUDENT).pack()),
+        ]),
+    ])
+
+
+def specify_week(context) -> MarkupData:
+    return MarkupData(rows=[
+        RowData(buttons=[
+            ButtonData(
+                text=BotStrings.Menu.CURRENT_WEEK,
+                callback_data=context.callback_cls(week_flag=WeekFlag.CURRENT).pack(),
             ),
-        ]
-    )
+            ButtonData(
+                text=BotStrings.Menu.NEXT_WEEK,
+                callback_data=context.callback_cls(week_flag=WeekFlag.NEXT).pack(),
+            ),
+        ]),
+        RowData(buttons=[
+            ButtonData(
+                text=BotStrings.Menu.BACK,
+                callback_data=MenuCallback(menu_type=MenuType.TEACHER_SLOT).pack(),
+            ),
+        ]),
+    ])
 
 
-def confirm_deletion(context) -> BotMarkup:
+def confirm_deletion(context) -> MarkupData:
     # TODO think about NO callback. Maybe should use some 'decline callback' and only then in it's handler send menu to user
-    return BotMarkup(
-        [
-            MarkupRow(
-                [
-                    MarkupButton(
-                        BotStrings.Menu.YES,
-                        context.callback_data_cls(
-                            uuid=context.callback_data.uuid, confirmed=True
-                        ),
-                    ),
-                    MarkupButton(
-                        BotStrings.Menu.NO, MenuCallback(menu_type=MenuType.TEACHER)
-                    ),
-                ]
-            )
-        ]
-    )
+    return MarkupData(rows=[
+        RowData(buttons=[
+            ButtonData(
+                text=BotStrings.Menu.YES,
+                callback_data=context.callback_data_cls(
+                    uuid=context.callback_data.uuid, confirmed=True
+                ).pack(),
+            ),
+            ButtonData(text=BotStrings.Menu.NO, callback_data=MenuCallback(menu_type=MenuType.TEACHER).pack()),
+        ]),
+    ])
 
 
-def specs_to_update(context) -> BotMarkup:
+def specs_to_update(context) -> MarkupData:
     context.specs["all"] = "Всё"
-    return BotMarkup(
-        [
-            MarkupRow(
-                [
-                    MarkupButton(
-                        label,
-                        context.callback_data_cls(uuid=context.lesson_uuid, spec=spec),
-                    )
-                    for spec, label in context.specs.items()
-                ]
+    return MarkupData(rows=[
+        RowData(buttons=[
+            ButtonData(
+                text=label,
+                callback_data=context.callback_data_cls(uuid=context.lesson_uuid, spec=spec).pack(),
+            )
+            for spec, label in context.specs.items()
+        ]),
+        RowData(buttons=[
+            ButtonData(
+                text=BotStrings.Menu.BACK,
+                callback_data=LessonListCallback().pack(),
             ),
-            MarkupRow(
-                [
-                    MarkupButton(
-                        BotStrings.Menu.BACK,
-                        LessonListCallback(),
-                    )
-                ]
-            ),
-        ]
-    )
+        ]),
+    ])
 
 
-def student_buttons(context) -> BotMarkup:
+def student_buttons(context) -> MarkupData:
     rows = [
-        MarkupRow(
-            [
-                MarkupButton(
-                    " ".join([student.firstname, student.lastname or ""]),
-                    StudentInfoCallback(uuid=student.uuid),
-                )
-            ]
-        )
+        RowData(buttons=[
+            ButtonData(
+                text=" ".join([student.firstname, student.lastname or ""]),
+                callback_data=StudentInfoCallback(uuid=student.uuid).pack(),
+            ),
+        ])
         for student in context.students
     ]
     rows.append(
-        MarkupRow(
-            [
-                MarkupButton(
-                    BotStrings.Menu.BACK,
-                    MenuCallback(menu_type=MenuType.TEACHER_STUDENT),
-                )
-            ]
-        )
+        RowData(buttons=[
+            ButtonData(
+                text=BotStrings.Menu.BACK,
+                callback_data=MenuCallback(menu_type=MenuType.TEACHER_STUDENT).pack(),
+            ),
+        ])
     )
-    return BotMarkup(rows)
+    return MarkupData(rows=rows)
 
 
-def lesson_buttons(context) -> BotMarkup:
+def lesson_buttons(context) -> MarkupData:
     rows = [
-        MarkupRow([MarkupButton(lesson.label, LessonInfoCallback(uuid=lesson.uuid))])
+        RowData(buttons=[
+            ButtonData(text=lesson.label, callback_data=LessonInfoCallback(uuid=lesson.uuid).pack()),
+        ])
         for lesson in context.lessons
     ]
     rows.append(
-        MarkupRow(
-            [
-                MarkupButton(
-                    BotStrings.Menu.BACK,
-                    MenuCallback(menu_type=MenuType.TEACHER_LESSON),
-                )
-            ]
-        )
+        RowData(buttons=[
+            ButtonData(
+                text=BotStrings.Menu.BACK,
+                callback_data=MenuCallback(menu_type=MenuType.TEACHER_LESSON).pack(),
+            ),
+        ])
     )
-    return BotMarkup(rows)
+    return MarkupData(rows=rows)
 
 
-def slot_buttons(context) -> BotMarkup:
+def slot_buttons(context) -> MarkupData:
     rows = [
-        MarkupRow(
-            [
-                MarkupButton(
-                    slot.dt_start.strftime(full_format_no_sec),
-                    SlotInfoCallback(uuid=slot.uuid),
-                )
-            ]
-        )
+        RowData(buttons=[
+            ButtonData(
+                text=slot.dt_start.strftime(full_format_no_sec),
+                callback_data=SlotInfoCallback(uuid=slot.uuid).pack(),
+            ),
+        ])
         for slot in context.slots
     ]
     rows.append(
-        MarkupRow(
-            [
-                MarkupButton(
-                    BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER_SLOT)
-                )
-            ]
-        )
+        RowData(buttons=[
+            ButtonData(
+                text=BotStrings.Menu.BACK,
+                callback_data=MenuCallback(menu_type=MenuType.TEACHER_SLOT).pack(),
+            ),
+        ])
     )
-    return BotMarkup(rows)
+    return MarkupData(rows=rows)
 
 
-def entity_operations(uuid, entity_type) -> BotMarkup:
+def entity_operations(uuid, entity_type) -> MarkupData:
     operations: dict[Any, dict[str, Any]] = {
         type[StudentDTO]: {
             BotStrings.Menu.ATTACH: StudentAssignCallback,
@@ -478,54 +346,46 @@ def entity_operations(uuid, entity_type) -> BotMarkup:
         },
     }
     rows = [
-        MarkupRow([MarkupButton(name, allowed_operation(uuid=uuid))])
+        RowData(buttons=[
+            ButtonData(text=name, callback_data=allowed_operation(uuid=uuid).pack()),
+        ])
         for name, allowed_operation in operations[entity_type].items()
     ]
     rows.append(
-        MarkupRow(
-            [MarkupButton(BotStrings.Menu.CANCEL, MenuCallback(menu_type=MenuType.NEW))]
-        )
+        RowData(buttons=[
+            ButtonData(text=BotStrings.Menu.CANCEL, callback_data=MenuCallback(menu_type=MenuType.NEW).pack()),
+        ])
     )
-    return BotMarkup(rows)
+    return MarkupData(rows=rows)
 
 
-def lessons_to_assign(context) -> BotMarkup:
+def lessons_to_assign(context) -> MarkupData:
     rows = [
-        MarkupRow(
-            [
-                MarkupButton(
-                    lesson.label,
-                    context.assign_callback(
-                        uuid=context.student_uuid,
-                        id_lesson=lesson.id,
-                    ),
-                )
-            ]
-        )
+        RowData(buttons=[
+            ButtonData(
+                text=lesson.label,
+                callback_data=context.assign_callback(
+                    uuid=context.student_uuid,
+                    id_lesson=lesson.id,
+                ).pack(),
+            ),
+        ])
         for lesson in context.lessons
     ]
     rows.append(
-        MarkupRow(
-            [
-                MarkupButton(
-                    BotStrings.Menu.CANCEL,
-                    MenuCallback(menu_type=MenuType.TEACHER_STUDENT),
-                )
-            ]
-        )
+        RowData(buttons=[
+            ButtonData(
+                text=BotStrings.Menu.CANCEL,
+                callback_data=MenuCallback(menu_type=MenuType.TEACHER_STUDENT).pack(),
+            ),
+        ])
     )
-    return BotMarkup(rows)
+    return MarkupData(rows=rows)
 
 
-def cancel_markup(context) -> BotMarkup:
-    return BotMarkup(
-        [
-            MarkupRow(
-                [
-                    MarkupButton(
-                        BotStrings.Menu.CANCEL, MenuCallback(menu_type=MenuType.CANCEL)
-                    ),
-                ]
-            )
-        ]
-    )
+def cancel_markup(context) -> MarkupData:
+    return MarkupData(rows=[
+        RowData(buttons=[
+            ButtonData(text=BotStrings.Menu.CANCEL, callback_data=MenuCallback(menu_type=MenuType.CANCEL).pack()),
+        ]),
+    ])
