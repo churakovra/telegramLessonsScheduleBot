@@ -45,14 +45,13 @@ async def handle_state(
             )
             response_msg = BotStrings.Teacher.TEACHER_LESSON_UPDATE_SUCCESS
 
-        message = BotMessage(text=response_msg, markup=fabric.teacher_main_menu())
-        await message.answer(**message.to_dict())
+        reply_message = BotMessage(text=response_msg, markup=fabric.teacher_main_menu())
+        await message.answer(**reply_message.to_aiogram_kwargs())
         await state.clear()
 
         logger.info(f"Teacher {uuid_teacher} added new lesson")
     except Exception:
         logger.error(type)
-
         error_message = BotMessage(
             text=BotStrings.Teacher.TEACHER_LESSON_ADD_PRICE_ERROR
         )

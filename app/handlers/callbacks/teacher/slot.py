@@ -65,7 +65,7 @@ async def create(
     await state.set_state(ScheduleStates.wait_for_slots)
     await state.update_data(week_flag=callback_data.week_flag)
 
-    markup = cancel_markup(None)
+    markup = cancel_markup()
     message = BotMessage(text=BotStrings.Teacher.SLOTS_ADD, markup=markup)
     await callback.message.answer(**message.to_aiogram_kwargs())
     await callback.answer()
@@ -83,7 +83,7 @@ async def update(
     await state.set_state(ScheduleStates.wait_for_slots_update)
     await state.update_data(week_flag=callback_data.week_flag)
 
-    markup = cancel_markup(None)
+    markup = cancel_markup()
     message = BotMessage(text=BotStrings.Teacher.SLOTS_ADD, markup=markup)
     await callback.message.answer(**message.to_aiogram_kwargs())
     await callback.answer()
@@ -106,11 +106,11 @@ async def list_slots(
     except UserNotFoundException as e:
         error_msg = f"Not enough rights. User {e.data} must have Teacher role."
         logger.error(error_msg, e)
-        markup = cancel_markup(None)
+        markup = cancel_markup()
         message = BotMessage(text=BotStrings.Common.NOT_ENOUGH_RIGHTS, markup=markup)
     except SlotsNotFoundException as e:
         logger.error(e)
-        markup = cancel_markup(None)
+        markup = cancel_markup()
         message = BotMessage(text=BotStrings.Teacher.SLOTS_NOT_FOUND, markup=markup)
     await callback.message.answer(**message.to_aiogram_kwargs())
     await callback.answer()

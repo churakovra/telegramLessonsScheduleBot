@@ -60,4 +60,4 @@ async def handle_state(
     msg = BotMessage(
         text=BotStrings.Common.MAIN_MENU, markup=fabric.teacher_main_menu()
     )
-    await message.answer(**msg.to_dict())
+    await message.answer(**msg.to_aiogram_kwargs())

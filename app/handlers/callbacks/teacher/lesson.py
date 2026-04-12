@@ -47,7 +47,7 @@ async def create(
         await state.set_state(ScheduleStates.wait_for_teacher_lesson_label)
         await callback.message.delete()
 
-        markup = cancel_markup(None)
+        markup = cancel_markup()
         message = BotMessage(
             text=BotStrings.Teacher.TEACHER_LESSON_ADD_LABEL, markup=markup
         )
@@ -154,7 +154,7 @@ async def update_whole_lesson(
     await state.update_data(operation_type=ActionType.UPDATE)
     await state.set_state(ScheduleStates.wait_for_teacher_lesson_label)
 
-    markup = cancel_markup(None)
+    markup = cancel_markup()
     message = BotMessage(
         text=BotStrings.Teacher.TEACHER_LESSON_ADD_LABEL, markup=markup
     )

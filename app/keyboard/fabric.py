@@ -631,7 +631,7 @@ def lessons_to_assign(context) -> MarkupData:
     return MarkupData(rows=rows)
 
 
-def cancel_markup(context) -> MarkupData:
+def cancel_markup() -> MarkupData:
     return MarkupData(
         rows=[
             RowData(

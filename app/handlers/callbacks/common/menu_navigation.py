@@ -53,7 +53,7 @@ async def handle_teacher_menu(
 
     # Get markup from fabric function
     fabric_func = markup_type_by_menu_type[menu_type]
-    markup = fabric_func(None)  # Pass None as context for now
+    markup = fabric_func()
 
     message = BotMessage(text=message_text, markup=markup)
     await callback.message.answer(**message.to_aiogram_kwargs())

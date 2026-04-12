@@ -1,8 +1,9 @@
 import asyncio
 
 from aiogram import Bot, Dispatcher
+import debugpy
 
-from app.config.settings import BOT_TOKEN, SERVICE_TYPE
+from app.config.settings import APP_VERSION, BOT_TOKEN, SERVICE_TYPE
 from app.handlers import register_routers
 from app.middlewares import register_middlewares
 from app.notifier import MessageConsumer, MessageProducer
@@ -25,6 +26,9 @@ async def main() -> None:
         finally:
             await consumer.stop()
         return
+    
+    if APP_VERSION in ("dev", "qa"):
+        debugpy.listen(("0.0.0.0", 5678))
 
     producer = MessageProducer()
     await producer.start()
