@@ -18,7 +18,7 @@ from app.keyboard.fabric import (
     specify_week,
     teacher_main_menu,
 )
-from app.message.models import BotMessage, MarkupData
+from app.message.models import BotMessage
 from app.message.utils import get_slot_info, get_slots_schedule_reply
 from app.services.lesson_service import LessonService
 from app.services.slot_service import SlotService

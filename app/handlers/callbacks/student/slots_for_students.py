@@ -5,7 +5,7 @@ from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.keyboard.callback_factories.slot import SlotsForStudents
-from app.message.models import BotMessage, MarkupData, MessageEnvelope, MessageRecipient
+from app.message.models import BotMessage, MessageEnvelope, MessageRecipient
 from app.message.utils import slots_to_reply
 from app.notifier.producer import MessageProducer
 from app.schemas.slot import SlotDTO

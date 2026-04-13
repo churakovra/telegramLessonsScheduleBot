@@ -17,7 +17,7 @@ from app.keyboard.fabric import (
     specs_to_update,
     teacher_main_menu,
 )
-from app.message.models import BotMessage, MarkupData
+from app.message.models import BotMessage
 from app.message.utils import get_lesson_info
 from app.schemas.user import UserDTO
 from app.services.lesson_service import LessonService

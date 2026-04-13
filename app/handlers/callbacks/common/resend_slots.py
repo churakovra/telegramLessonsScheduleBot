@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.keyboard.callback_factories.slot import ResendSlotsCallback
 from app.keyboard.fabric import days_for_students
-from app.message.models import BotMessage, MarkupData
+from app.message.models import BotMessage
 from app.message.utils import slots_to_reply
 from app.services.slot_service import SlotService
 from app.utils.bot_strings import BotStrings

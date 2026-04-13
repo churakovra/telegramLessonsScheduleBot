@@ -41,5 +41,6 @@ async def wait_for_slots(message: Message, state: FSMContext, session: AsyncSess
     await state.update_data(teacher_uuid=teacher.uuid)
     await state.update_data(slots=slots)
     await state.update_data(action=action)
-    message = BotMessage(text=slots_to_reply(slots), markup=fabric.parsed_slots(slots))
-    await message.answer(**message.to_dict())
+    markup = fabric.parsed_slots(type("Context", (), {"slots": slots})())
+    msg = BotMessage(text=slots_to_reply(slots), markup=markup)
+    await message.answer(**msg.to_aiogram_kwargs())

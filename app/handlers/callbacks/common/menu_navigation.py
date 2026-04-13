@@ -14,7 +14,7 @@ from app.keyboard.fabric import (
     teacher_sub_menu_slot,
     teacher_sub_menu_student,
 )
-from app.message.models import BotMessage, MarkupData
+from app.message.models import BotMessage
 from app.schemas.user import UserDTO
 from app.utils.bot_strings import BotStrings
 from app.utils.enums.menu_type import MenuType

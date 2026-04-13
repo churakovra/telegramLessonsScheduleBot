@@ -6,11 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.keyboard.callback_factories.slot import DaysForStudents
 from app.keyboard.fabric import slots_for_students
-from app.message.models import BotMessage, MarkupData
-from app.message.utils import slots_to_reply
+from app.message.models import BotMessage
 from app.services.slot_service import SlotService
 from app.utils.datetime_utils import day_format
-from app.utils.enums.bot_values import KeyboardType
 from app.utils.exceptions.slot_exceptions import SlotFreeNotFoundException
 
 router = Router()

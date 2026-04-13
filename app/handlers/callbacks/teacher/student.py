@@ -11,7 +11,16 @@ from app.keyboard.callback_factories.student import (
     StudentInfoCallback,
     StudentListCallback,
 )
-from app.message.models import BotMessage, MarkupData
+from app.keyboard.fabric import (
+    cancel_markup,
+    confirm_deletion,
+    lessons_to_assign,
+    student_buttons,
+    teacher_main_menu,
+    teacher_sub_menu_student,
+)
+from app.message.models import BotMessage
+from app.message.utils import get_student_info
 from app.services.lesson_service import LessonService
 from app.services.slot_service import SlotService
 from app.services.student_service import StudentService
@@ -37,14 +46,10 @@ async def create(
         await state.update_data(teacher_uuid=teacher.uuid)
         await state.set_state(ScheduleStates.wait_for_teacher_students)
 
-        message_context = context.Common(
-            text=BotStrings.Teacher.TEACHER_STUDENT_ADD,
-            markup_context=CancelKeyboardContext(),
-        )
-        message = await callback.message.answer(
-            **message_builder.build(message_context)
-        )
-        await state.update_data(previous_message_id=message.message_id)
+        markup = cancel_markup()
+        msg = BotMessage(text=BotStrings.Teacher.TEACHER_STUDENT_ADD, markup=markup)
+        sent_message = await callback.message.answer(**msg.to_aiogram_kwargs())
+        await state.update_data(previous_message_id=sent_message.message_id)
     except UserNotFoundException:
         await callback.message.answer(BotStrings.Teacher.NOT_ENOUGH_RIGHTS)
         return
@@ -54,33 +59,32 @@ async def create(
 
 
 @router.callback_query(StudentListCallback.filter())
-async def list(callback: CallbackQuery, session: AsyncSession) -> None:
+async def list_students(callback: CallbackQuery, session: AsyncSession) -> None:
     teacher_service = TeacherService(session)
     student_service = StudentService(session)
     username = callback.from_user.username
-    message_context: context.AbstractBotMessageContext
     try:
         teacher = await teacher_service.get_teacher(username)
         students = await student_service.get_students_by_teacher_uuid(teacher.uuid)
         logger.debug(f"teacher {teacher}")
         logger.debug(f"teacher.uuid {teacher.uuid}")
         logger.debug(f"students {students}")
-        message_context = context.EntitiesList(students, EntityType.STUDENT)
+        markup = student_buttons(type("Context", (), {"students": students})())
+        msg = BotMessage(text=BotStrings.Teacher.TEACHER_STUDENT_LIST, markup=markup)
     except UserNotFoundException as e:
-        # TODO send error msg; send MainMenu msg via notifier
         error_msg = f"Not enough rights. User {e.data} must have Teacher role."
         logger.error(error_msg, e)
-        message_context = context.Common(
-            BotStrings.Common.NOT_ENOUGH_RIGHTS,
-            MainMenuKeyboardContext(UserRole.TEACHER),
+        markup = teacher_main_menu()
+        msg = BotMessage(
+            text=BotStrings.Common.NOT_ENOUGH_RIGHTS, markup=markup
         )
     except TeacherStudentsNotFound as e:
         logger.error(e)
-        message_context = context.Common(
-            BotStrings.Teacher.TEACHER_STUDENTS_NOT_FOUND,
-            MainMenuKeyboardContext(UserRole.TEACHER),
+        markup = teacher_main_menu()
+        msg = BotMessage(
+            text=BotStrings.Teacher.TEACHER_STUDENTS_NOT_FOUND, markup=markup
         )
-    await callback.message.answer(**message_builder.build(message_context))
+    await callback.message.answer(**msg.to_aiogram_kwargs())
     await callback.answer()
 
 
@@ -92,9 +96,13 @@ async def info(
     lesson_service = LessonService(session)
     student = await student_service.get_student_by_uuid(callback_data.uuid)
     lessons = await lesson_service.get_student_lessons(student.uuid)
-    message_context = context.StudentInfo(student, lessons)
-    message_context = BotMessage.entity_info(student, lessons=lessons)
-    await callback.message.answer(**message_builder.build(message_context))
+    text = get_student_info(student, lessons=lessons)
+
+    from app.keyboard.fabric import entity_operations
+
+    markup = entity_operations(student.uuid, type(student))
+    msg = BotMessage(text=text, markup=markup)
+    await callback.message.answer(**msg.to_aiogram_kwargs())
     await callback.answer()
 
 
@@ -102,8 +110,18 @@ async def info(
 async def request_delete_confirmation(
     callback: CallbackQuery, callback_data: StudentDeleteCallback
 ) -> None:
-    message_context = context.ConfirmOperation(StudentDeleteCallback, callback_data)
-    await callback.message.answer(**message_builder.build(message_context))
+    markup = confirm_deletion(
+        type(
+            "Context",
+            (),
+            {"callback_data_cls": StudentDeleteCallback, "callback_data": callback_data},
+        )()
+    )
+    msg = BotMessage(
+        text=BotStrings.Teacher.TEACHER_STUDENT_DELETE_CONFIRMATION_REQUEST,
+        markup=markup,
+    )
+    await callback.message.answer(**msg.to_aiogram_kwargs())
     await callback.answer()
 
 
@@ -119,11 +137,12 @@ async def delete_student(
         teacher_uuid=teacher.uuid, student_uuid=student_uuid
     )
     await slot_service.delete_slots_attached_to_student(student_uuid)
-    message_context = context.Common(
-        text=BotStrings.Teacher.TEACHER_STUDENT_DELETE_SUCCESS,
-        markup_context=MainMenuKeyboardContext(UserRole.TEACHER),
+
+    markup = teacher_main_menu()
+    msg = BotMessage(
+        text=BotStrings.Teacher.TEACHER_STUDENT_DELETE_SUCCESS, markup=markup
     )
-    await callback.message.answer(**message_builder.build(message_context))
+    await callback.message.answer(**msg.to_aiogram_kwargs())
     await callback.answer()
 
 
@@ -138,8 +157,15 @@ async def list_lessons_to_attach(
     lessons = await lesson_service.get_lessons_to_attach(
         student_uuid=callback_data.uuid, teacher_uuid=teacher.uuid
     )
-    message_context = context.StudentAssign(callback_data.uuid, lessons)
-    await callback.message.answer(**message_builder.build(message_context))
+    markup = lessons_to_assign(
+        type(
+            "Context",
+            (),
+            {"student_uuid": callback_data.uuid, "assign_callback": StudentAssignCallback, "lessons": lessons},
+        )()
+    )
+    msg = BotMessage(text=BotStrings.Teacher.TEACHER_LESSON_LIST, markup=markup)
+    await callback.message.answer(**msg.to_aiogram_kwargs())
     await callback.answer()
 
 
@@ -152,11 +178,10 @@ async def attach(
     teacher = await teacher_service.get_teacher(callback.from_user.username)
     lesson = await lesson_service.get_lesson_by_id(callback_data.id_lesson)
     await lesson_service.attach_lesson(callback_data.uuid, teacher.uuid, lesson.uuid)
-    message_context = context.Common(
-        text=BotStrings.Teacher.STUDENT_ATTACH_SUCCESS,
-        markup_context=SubMenuKeyboardContext(UserRole.TEACHER, EntityType.STUDENT),
-    )
-    await callback.message.answer(**message_builder.build(message_context))
+
+    markup = teacher_sub_menu_student()
+    msg = BotMessage(text=BotStrings.Teacher.STUDENT_ATTACH_SUCCESS, markup=markup)
+    await callback.message.answer(**msg.to_aiogram_kwargs())
     await callback.answer()
 
 
@@ -171,8 +196,15 @@ async def list_lessons_to_detach(
     lessons = await lesson_service.get_lessons_to_detach(
         student_uuid=callback_data.uuid, teacher_uuid=teacher.uuid
     )
-    message_context = context.StudentAssign(callback_data.uuid, lessons)
-    await callback.message.answer(**message_builder.build(message_context))
+    markup = lessons_to_assign(
+        type(
+            "Context",
+            (),
+            {"student_uuid": callback_data.uuid, "assign_callback": StudentDetachCallback, "lessons": lessons},
+        )()
+    )
+    msg = BotMessage(text=BotStrings.Teacher.TEACHER_LESSON_LIST, markup=markup)
+    await callback.message.answer(**msg.to_aiogram_kwargs())
     await callback.answer()
 
 
@@ -187,9 +219,8 @@ async def detach(
     await lesson_service.detach_specific_lesson(
         callback_data.uuid, teacher.uuid, lesson.uuid
     )
-    message_context = context.Common(
-        text=BotStrings.Teacher.STUDENT_ATTACH_SUCCESS,
-        markup_context=SubMenuKeyboardContext(UserRole.TEACHER, EntityType.STUDENT),
-    )
-    await callback.message.answer(**message_builder.build(message_context))
+
+    markup = teacher_sub_menu_student()
+    msg = BotMessage(text=BotStrings.Teacher.STUDENT_DETACH_SUCCESS, markup=markup)
+    await callback.message.answer(**msg.to_aiogram_kwargs())
     await callback.answer()

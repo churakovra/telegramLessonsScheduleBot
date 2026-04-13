@@ -35,7 +35,7 @@ async def handle_state(message: Message, state: FSMContext):
         error_msg = BotMessage(
             text=BotStrings.Teacher.TEACHER_LESSON_ADD_DURATION_ERROR
         )
-        sent_message = await message.answer(**error_msg.to_dict())
+        sent_message = await message.answer(**error_msg.to_aiogram_kwargs())
         await state.update_data(previous_message_id=sent_message.message_id)
     finally:
         await message.chat.delete_message(message_id=previous_message_id)
