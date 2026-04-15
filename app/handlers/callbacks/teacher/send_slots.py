@@ -50,7 +50,8 @@ async def handle_callback(
         logger.info(f"Teacher {teacher_uuid} sent slots to students")
     except TeacherStudentsNotFound as e:
         logger.error(e.message)
-        await callback.message.answer(e.message)
+        msg = BotMessage(text=e.message)
+        await callback.message.answer(**msg.to_aiogram_kwargs())
     finally:
         markup = teacher_main_menu()
         message = BotMessage(text=BotStrings.Common.MENU, markup=markup)

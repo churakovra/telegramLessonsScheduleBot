@@ -51,7 +51,9 @@ async def create(
         sent_message = await callback.message.answer(**msg.to_aiogram_kwargs())
         await state.update_data(previous_message_id=sent_message.message_id)
     except UserNotFoundException:
-        await callback.message.answer(BotStrings.Teacher.NOT_ENOUGH_RIGHTS)
+        logger.error(f"Not enough rights. User must have Teacher role.")
+        msg = BotMessage(text=BotStrings.Teacher.NOT_ENOUGH_RIGHTS)
+        await callback.message.answer(**msg.to_aiogram_kwargs())
         return
     finally:
         await callback.message.delete()

@@ -32,9 +32,8 @@ async def handle_state(
             message_text = BotStrings.Teacher.TEACHER_STUDENT_ADD_UNKNOWN_STUDENT
         else:
             message_text = BotStrings.Teacher.TEACHER_STUDENT_ADD_UNKNOWN_STUDENTS
-        await message.answer(
-            str.format(message_text, student=", ".join(unknown_students))
-        )
+        msg = BotMessage(text=str.format(message_text, student=", ".join(unknown_students)))
+        await message.answer(**msg.to_aiogram_kwargs())
 
     if len(students) > 0:
         try:
@@ -44,16 +43,16 @@ async def handle_state(
             )
             success_students_usernames = [student.username for student in students]
         except TeacherAlreadyHasStudentException as e:
-            await message.answer(e.message)
+            msg = BotMessage(text=e.message)
+            await message.answer(**msg.to_aiogram_kwargs())
             return
 
         if len(success_students_usernames) <= 1:
             message_text = BotStrings.Teacher.TEACHER_STUDENT_ADD_SUCCESS
         else:
             message_text = BotStrings.Teacher.TEACHER_STUDENTS_ADD_SUCCESS
-        await message.answer(
-            str.format(message_text, student=", ".join(success_students_usernames))
-        )
+        msg = BotMessage(text=str.format(message_text, student=", ".join(success_students_usernames)))
+        await message.answer(**msg.to_aiogram_kwargs())
 
     await state.clear()
 

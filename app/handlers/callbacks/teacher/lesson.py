@@ -55,7 +55,8 @@ async def create(
         await state.update_data(previous_message_id=sent_message.message_id)
     except UserNotFoundException:
         logger.error(f"Teacher tried to add new lesson, but didn't have enough rights")
-        await callback.message.answer(BotStrings.Teacher.NOT_ENOUGH_RIGHTS)
+        msg = BotMessage(text=BotStrings.Teacher.NOT_ENOUGH_RIGHTS)
+        await callback.message.answer(**msg.to_aiogram_kwargs())
         return
     finally:
         await callback.answer()

@@ -2,6 +2,7 @@ from aiogram import F, Router
 from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.message.models import BotMessage
 from app.services.user_service import UserService
 from app.utils.bot_strings import BotStrings
 
@@ -14,5 +15,6 @@ async def send_user_info(callback: CallbackQuery, session: AsyncSession):
     user_service = UserService(session)
     response = await user_service.get_user_info(username)
     if callback.message:
-        await callback.message.answer(response)
+        message = BotMessage(text=response)
+        await callback.message.answer(**message.to_aiogram_kwargs())
     await callback.answer()

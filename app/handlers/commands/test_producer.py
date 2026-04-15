@@ -23,4 +23,5 @@ async def produce(message: Message, producer: MessageProducer):
         message=bot_message, recipients=[MessageRecipient(chat_id=320854517)]
     )
     await producer.produce(envelope)
-    await message.answer("Success")
+    msg = BotMessage(text="Success")
+    await message.answer(**msg.to_aiogram_kwargs())
