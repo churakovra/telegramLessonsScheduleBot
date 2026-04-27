@@ -2,9 +2,8 @@ from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from app.keyboard.context import CancelKeyboardContext
-from app.message import message_builder
-from app.message.context import Common
+from app.keyboard import fabric
+from app.message.models import BotMessage
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
 from app.utils.logger import setup_logger
@@ -23,19 +22,20 @@ async def handle_state(message: Message, state: FSMContext):
         await state.update_data(lesson_duration=duration)
         await state.set_state(ScheduleStates.wait_for_teacher_lesson_price)
 
-        message_context = Common(
+        msg = BotMessage(
             text=BotStrings.Teacher.TEACHER_LESSON_ADD_PRICE,
-            markup_context=CancelKeyboardContext(),
+            markup=fabric.cancel_markup(),
         )
-        sent_message = await message.answer(**message_builder.build(message_context))
+        sent_message = await message.answer(**msg.to_aiogram_kwargs())
         await state.update_data(previous_message_id=sent_message.message_id)
 
     except Exception as e:
         logger.error(e)
         await state.set_state(ScheduleStates.wait_for_teacher_lesson_duration)
-        sent_message = await message.answer(
-            BotStrings.Teacher.TEACHER_LESSON_ADD_DURATION_ERROR
+        error_msg = BotMessage(
+            text=BotStrings.Teacher.TEACHER_LESSON_ADD_DURATION_ERROR
         )
+        sent_message = await message.answer(**error_msg.to_aiogram_kwargs())
         await state.update_data(previous_message_id=sent_message.message_id)
     finally:
         await message.chat.delete_message(message_id=previous_message_id)

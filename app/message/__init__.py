@@ -1,5 +1,3 @@
-from .builder import message_builder
+from app.message.models import BotMessage, MessageRecipient, MessageEnvelope
 
-__all__ = [
-    "message_builder",
-]
+__all__ = ["BotMessage", "MessageRecipient", "MessageEnvelope"]

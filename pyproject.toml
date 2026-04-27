@@ -11,6 +11,7 @@ dependencies = [
     "async>=0.6.2",
     "asyncpg>=0.30.0",
     "colorlog>=6.9.0",
+    "debugpy>=1.8.20",
     "greenlet>=3.2.3",
     "pg>=0.1",
     "psycopg2-binary>=2.9.10",

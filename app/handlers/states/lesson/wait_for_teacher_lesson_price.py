@@ -3,12 +3,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.keyboard.context import (
-    MainMenuKeyboardContext,
-    UserRole,
-)
-from app.message import message_builder
-from app.message.context import Common
+from app.keyboard import fabric
+from app.message.models import BotMessage
 from app.services.lesson_service import LessonService
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
@@ -49,20 +45,17 @@ async def handle_state(
             )
             response_msg = BotStrings.Teacher.TEACHER_LESSON_UPDATE_SUCCESS
 
-        message_context = Common(
-            text=response_msg,
-            markup_context=MainMenuKeyboardContext(UserRole.TEACHER),
-        )
-        await message.answer(**message_builder.build(message_context))
+        reply_message = BotMessage(text=response_msg, markup=fabric.teacher_main_menu())
+        await message.answer(**reply_message.to_aiogram_kwargs())
         await state.clear()
 
         logger.info(f"Teacher {uuid_teacher} added new lesson")
     except Exception:
         logger.error(type)
-
-        sent_message = await message.answer(
-            BotStrings.Teacher.TEACHER_LESSON_ADD_PRICE_ERROR
+        error_message = BotMessage(
+            text=BotStrings.Teacher.TEACHER_LESSON_ADD_PRICE_ERROR
         )
+        sent_message = await message.answer(**error_message.to_aiogram_kwargs())
         await state.update_data(previous_message_id=sent_message.message_id)
         await state.set_state(ScheduleStates.wait_for_teacher_lesson_price)
 

@@ -1,3 +1,5 @@
+import asyncio
+
 import aio_pika
 from aio_pika.abc import AbstractIncomingMessage
 
@@ -8,18 +10,18 @@ from app.config.settings import (
     AMQP_DEFAULT_ROUTING_KEY,
     AMQP_URL,
 )
-from app.notifier.notifier import Notifier
+from app.message.models import BotMessage, MessageEnvelope
 from app.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 
 
 class MessageConsumer:
-    def __init__(self, notifier: Notifier) -> None:
+    def __init__(self, bot) -> None:
         self.connection = None
         self.channel = None
         self.queue = None
-        self.notifier = notifier
+        self.bot = bot
 
     async def start(self):
         self.connection = await aio_pika.connect_robust(AMQP_URL)
@@ -36,9 +38,17 @@ class MessageConsumer:
 
     async def on_message(self, incoming_msg: AbstractIncomingMessage):
         async with incoming_msg.process():
-            body = incoming_msg.body.decode()
-            logger.debug(body)
-            # TODO add self.notifier.send_message()
+            envelope = MessageEnvelope.model_validate_json(incoming_msg.body)
+            logger.debug(f"Received envelope: {envelope}")
+
+            # Extract aiogram-compatible kwargs
+            kwargs = envelope.message.to_aiogram_kwargs()
+            recipients = envelope.recipients
+
+            # Send to all recipients concurrently
+            await asyncio.gather(
+                *[self.bot.send_message(r.chat_id, **kwargs) for r in recipients]
+            )
 
     async def stop(self):
         if self.channel:

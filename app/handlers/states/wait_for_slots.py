@@ -4,8 +4,9 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.message import message_builder
-from app.message.context import ParsedSlots
+from app.keyboard import fabric
+from app.message.models import BotMessage
+from app.message.utils import slots_to_reply
 from app.services.slot_service import SlotService
 from app.services.teacher_service import TeacherService
 from app.states.schedule_states import ScheduleStates
@@ -40,5 +41,6 @@ async def wait_for_slots(message: Message, state: FSMContext, session: AsyncSess
     await state.update_data(teacher_uuid=teacher.uuid)
     await state.update_data(slots=slots)
     await state.update_data(action=action)
-    message_context = ParsedSlots(slots)
-    await message.answer(**message_builder.build(message_context))
+    markup = fabric.parsed_slots(type("Context", (), {"slots": slots})())
+    msg = BotMessage(text=slots_to_reply(slots), markup=markup)
+    await message.answer(**msg.to_aiogram_kwargs())

@@ -3,7 +3,6 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.student_repository import StudentRepository
-from app.schemas.lesson import LessonDTO
 from app.schemas.student import StudentDTO
 from app.utils.enums.bot_values import UserRole
 from app.utils.exceptions.teacher_exceptions import TeacherStudentsNotFound

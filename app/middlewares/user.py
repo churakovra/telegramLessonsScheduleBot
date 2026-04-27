@@ -31,5 +31,5 @@ class UserMiddleware(BaseMiddleware):
 
     @staticmethod
     def get_username(event: TelegramObject):
-        event_type = event.message if event.message else event.callback_query # type: ignore
+        event_type = event.message if event.message else event.callback_query  # type: ignore
         return event_type.from_user.username

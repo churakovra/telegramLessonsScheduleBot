@@ -3,8 +3,11 @@ from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.keyboard.callback_factories.slot import ResendSlotsCallback
-from app.message import context, message_builder
+from app.keyboard.fabric import days_for_students
+from app.message.models import BotMessage
+from app.message.utils import slots_to_reply
 from app.services.slot_service import SlotService
+from app.utils.bot_strings import BotStrings
 
 router = Router()
 
@@ -17,6 +20,15 @@ async def handle_callback(
 ) -> None:
     slots_service = SlotService(session)
     slots = await slots_service.get_free_slots(callback_data.teacher_uuid)
-    message_context = context.DaysForStudents(callback_data.teacher_uuid, slots)
-    await callback.message.answer(**message_builder.build(message_context))
+
+    # Build markup using fabric
+    markup = days_for_students(
+        type(
+            "Context", (), {"teacher_uuid": callback_data.teacher_uuid, "slots": slots}
+        )()
+    )
+
+    # Build message
+    message = BotMessage(text=BotStrings.Student.SLOTS_ADDED, markup=markup)
+    await callback.message.answer(**message.to_aiogram_kwargs())
     await callback.answer()
