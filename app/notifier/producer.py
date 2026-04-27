@@ -1,5 +1,3 @@
-import json
-
 import aio_pika
 
 from app.config.settings import (
@@ -8,7 +6,7 @@ from app.config.settings import (
     AMQP_DEFAULT_ROUTING_KEY,
     AMQP_URL,
 )
-from app.message.message_pack import MessagePack
+from app.message.models import MessageEnvelope
 from app.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
@@ -28,8 +26,8 @@ class MessageProducer:
         )
         logger.info("MessageProducer has been started")
 
-    async def produce(self, message_pack: MessagePack):
-        body = json.dumps(message_pack.to_dict()).encode("utf-8")
+    async def produce(self, envelope: MessageEnvelope):
+        body = envelope.model_dump_json().encode("utf-8")
         message = aio_pika.Message(body, content_type="application/json")
         await self._exchange.publish(message, routing_key=AMQP_DEFAULT_ROUTING_KEY)
 

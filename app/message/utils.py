@@ -41,7 +41,8 @@ def slots_to_reply(slots: list[SlotDTO]) -> str:
     return response
 
 
-def get_student_info(student: StudentDTO, lessons: list[LessonDTO]) -> str:
+def get_student_info(student: StudentDTO, **kwargs) -> str:
+    lessons = kwargs["lessons"]
     name = " ".join([student.firstname, student.lastname or ""])
     username = student.username
     student_lessons = ", ".join([lesson.label for lesson in lessons])

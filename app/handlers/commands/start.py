@@ -4,6 +4,7 @@ from aiogram.types import Message
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.message.models import BotMessage
 from app.services.user_service import UserService
 from app.utils.bot_strings import BotStrings
 from app.utils.enums.bot_values import UserRole
@@ -33,4 +34,5 @@ async def add_new_user(message: Message, session: AsyncSession):
     except IntegrityError:
         logger.error(f"User {username} already registered")
     finally:
-        await message.answer(text=BotStrings.Common.GREETING.format(user=first_name))
+        msg = BotMessage(text=BotStrings.Common.GREETING.format(user=first_name))
+        await message.answer(**msg.to_aiogram_kwargs())

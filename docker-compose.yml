@@ -2,13 +2,20 @@ services:
   scheduler:
     build: .
     container_name: scheduler
-    restart: unless-stopped
     environment:
       - APP_VERSION=${APP_VERSION}
+    ports:
+      - "5678:5678"
+    restart: unless-stopped
     deploy:
       restart_policy:
         condition: on-failure
         max_attempts: 2
+    develop:
+      watch:
+        - path: ./app
+          target: /src/app
+          action: rebuild
 
     command: uv run python -m app.main
 

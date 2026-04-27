@@ -8,7 +8,7 @@ outer_middlewares = [
     UserMiddleware,
 ]
 
-inner_middlewares = [] # type: ignore
+inner_middlewares = []  # type: ignore
 
 middlewares_map = {
     "outer": outer_middlewares,
