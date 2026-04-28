@@ -32,7 +32,9 @@ async def handle_state(
             message_text = BotStrings.Teacher.TEACHER_STUDENT_ADD_UNKNOWN_STUDENT
         else:
             message_text = BotStrings.Teacher.TEACHER_STUDENT_ADD_UNKNOWN_STUDENTS
-        msg = BotMessage(text=str.format(message_text, student=", ".join(unknown_students)))
+        msg = BotMessage(
+            text=str.format(message_text, student=", ".join(unknown_students))
+        )
         await message.answer(**msg.to_aiogram_kwargs())
 
     if len(students) > 0:
@@ -51,7 +53,9 @@ async def handle_state(
             message_text = BotStrings.Teacher.TEACHER_STUDENT_ADD_SUCCESS
         else:
             message_text = BotStrings.Teacher.TEACHER_STUDENTS_ADD_SUCCESS
-        msg = BotMessage(text=str.format(message_text, student=", ".join(success_students_usernames)))
+        msg = BotMessage(
+            text=str.format(message_text, student=", ".join(success_students_usernames))
+        )
         await message.answer(**msg.to_aiogram_kwargs())
 
     await state.clear()

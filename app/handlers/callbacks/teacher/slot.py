@@ -45,9 +45,13 @@ logger = setup_logger(__name__)
 )
 async def specify_week_handler(
     callback: CallbackQuery,
-    callback_data: SlotCreateCallback | SlotListCallback,
+    callback_data: SlotCreateCallback | SlotListCallback | SlotsUpdateCallback,
 ) -> None:
-    markup = specify_week(type("Context", (), {"callback_cls": type(callback_data)})())
+    callback_cls = type(callback_data)
+    markup = specify_week(
+        current_week_callback=callback_cls(week_flag=WeekFlag.CURRENT).pack(),
+        next_week_callback=callback_cls(week_flag=WeekFlag.NEXT).pack(),
+    )
     message = BotMessage(text=BotStrings.Common.SPECIFY_WEEK, markup=markup)
     await callback.message.answer(**message.to_aiogram_kwargs())
     await callback.answer()
@@ -101,7 +105,7 @@ async def list_slots(
     try:
         teacher = await teacher_service.get_teacher(callback.from_user.username)
         slots = await slot_service.get_slots(teacher.uuid, callback_data.week_flag)
-        markup = slot_buttons(type("Context", (), {"slots": slots})())
+        markup = slot_buttons(slots=slots)
         message = BotMessage(text=BotStrings.Teacher.SLOTS_LIST, markup=markup)
     except UserNotFoundException as e:
         error_msg = f"Not enough rights. User {e.data} must have Teacher role."

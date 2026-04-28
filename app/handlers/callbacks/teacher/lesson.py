@@ -13,6 +13,7 @@ from app.keyboard.callback_factories.lesson import (
 from app.keyboard.fabric import (
     cancel_markup,
     confirm_deletion,
+    entity_operations,
     lesson_buttons,
     specs_to_update,
     teacher_main_menu,
@@ -67,7 +68,7 @@ async def list_lessons(callback: CallbackQuery, session: AsyncSession, user: Use
     lesson_service = LessonService(session)
     try:
         lessons = await lesson_service.get_teacher_lessons(user.uuid)
-        markup = lesson_buttons(type("Context", (), {"lessons": lessons})())
+        markup = lesson_buttons(lessons=lessons)
         message = BotMessage(text=BotStrings.Teacher.TEACHER_LESSON_LIST, markup=markup)
     except LessonsNotFoundException as e:
         logger.error(e.message)
@@ -86,9 +87,7 @@ async def info(
     lesson_service = LessonService(session)
     lesson = await lesson_service.get_lesson(callback_data.uuid)
     text = get_lesson_info(lesson)
-    from app.keyboard.fabric import entity_operations
-
-    markup = entity_operations(lesson.uuid, type(lesson))
+    markup = entity_operations(uuid=lesson.uuid, entity_type=type(lesson))
     message = BotMessage(text=text, markup=markup)
     await callback.message.answer(**message.to_aiogram_kwargs())
     await callback.answer()
@@ -105,15 +104,9 @@ async def select_spec(
     }
 
     markup = specs_to_update(
-        type(
-            "Context",
-            (),
-            {
-                "lesson_uuid": callback_data.uuid,
-                "specs": lesson_specs,
-                "callback_data_cls": LessonUpdateCallback,
-            },
-        )()
+        lesson_uuid=callback_data.uuid,
+        specs=lesson_specs,
+        callback_data_cls=LessonUpdateCallback,
     )
     message = BotMessage(
         text=BotStrings.Teacher.TEACHER_LESSON_UPDATE_SELECT_SPEC, markup=markup
@@ -169,11 +162,7 @@ async def request_delete_confirmation(
     callback: CallbackQuery, callback_data: LessonDeleteCallback
 ):
     markup = confirm_deletion(
-        type(
-            "Context",
-            (),
-            {"callback_data_cls": LessonDeleteCallback, "callback_data": callback_data},
-        )()
+        callback_data_cls=LessonDeleteCallback, uuid=callback_data.uuid
     )
     message = BotMessage(
         text=BotStrings.Teacher.TEACHER_LESSON_DELETE_CONFIRMATION_REQUEST,

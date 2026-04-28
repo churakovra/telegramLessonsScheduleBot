@@ -1,3 +1,17 @@
-from app.message.models import BotMessage, MessageRecipient, MessageEnvelope
+from app.message.models import (
+    BotMessage,
+    ButtonData,
+    MarkupData,
+    MessageEnvelope,
+    MessageRecipient,
+    RowData,
+)
 
-__all__ = ["BotMessage", "MessageRecipient", "MessageEnvelope"]
+__all__ = [
+    "BotMessage",
+    "ButtonData",
+    "MarkupData",
+    "MessageEnvelope",
+    "MessageRecipient",
+    "RowData",
+]

@@ -22,11 +22,7 @@ async def handle_callback(
     slots = await slots_service.get_free_slots(callback_data.teacher_uuid)
 
     # Build markup using fabric
-    markup = days_for_students(
-        type(
-            "Context", (), {"teacher_uuid": callback_data.teacher_uuid, "slots": slots}
-        )()
-    )
+    markup = days_for_students(slots=slots, teacher_uuid=callback_data.teacher_uuid)
 
     # Build message
     message = BotMessage(text=BotStrings.Student.SLOTS_ADDED, markup=markup)

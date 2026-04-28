@@ -14,6 +14,7 @@ from app.keyboard.callback_factories.student import (
 from app.keyboard.fabric import (
     cancel_markup,
     confirm_deletion,
+    entity_operations,
     lessons_to_assign,
     student_buttons,
     teacher_main_menu,
@@ -71,15 +72,13 @@ async def list_students(callback: CallbackQuery, session: AsyncSession) -> None:
         logger.debug(f"teacher {teacher}")
         logger.debug(f"teacher.uuid {teacher.uuid}")
         logger.debug(f"students {students}")
-        markup = student_buttons(type("Context", (), {"students": students})())
+        markup = student_buttons(students=students)
         msg = BotMessage(text=BotStrings.Teacher.TEACHER_STUDENT_LIST, markup=markup)
     except UserNotFoundException as e:
         error_msg = f"Not enough rights. User {e.data} must have Teacher role."
         logger.error(error_msg, e)
         markup = teacher_main_menu()
-        msg = BotMessage(
-            text=BotStrings.Common.NOT_ENOUGH_RIGHTS, markup=markup
-        )
+        msg = BotMessage(text=BotStrings.Common.NOT_ENOUGH_RIGHTS, markup=markup)
     except TeacherStudentsNotFound as e:
         logger.error(e)
         markup = teacher_main_menu()
@@ -99,10 +98,7 @@ async def info(
     student = await student_service.get_student_by_uuid(callback_data.uuid)
     lessons = await lesson_service.get_student_lessons(student.uuid)
     text = get_student_info(student, lessons=lessons)
-
-    from app.keyboard.fabric import entity_operations
-
-    markup = entity_operations(student.uuid, type(student))
+    markup = entity_operations(uuid=student.uuid, entity_type=type(student))
     msg = BotMessage(text=text, markup=markup)
     await callback.message.answer(**msg.to_aiogram_kwargs())
     await callback.answer()
@@ -113,11 +109,7 @@ async def request_delete_confirmation(
     callback: CallbackQuery, callback_data: StudentDeleteCallback
 ) -> None:
     markup = confirm_deletion(
-        type(
-            "Context",
-            (),
-            {"callback_data_cls": StudentDeleteCallback, "callback_data": callback_data},
-        )()
+        callback_data_cls=StudentDeleteCallback, uuid=callback_data.uuid
     )
     msg = BotMessage(
         text=BotStrings.Teacher.TEACHER_STUDENT_DELETE_CONFIRMATION_REQUEST,
@@ -160,11 +152,9 @@ async def list_lessons_to_attach(
         student_uuid=callback_data.uuid, teacher_uuid=teacher.uuid
     )
     markup = lessons_to_assign(
-        type(
-            "Context",
-            (),
-            {"student_uuid": callback_data.uuid, "assign_callback": StudentAssignCallback, "lessons": lessons},
-        )()
+        student_uuid=callback_data.uuid,
+        lessons=lessons,
+        assign_callback=StudentAssignCallback,
     )
     msg = BotMessage(text=BotStrings.Teacher.TEACHER_LESSON_LIST, markup=markup)
     await callback.message.answer(**msg.to_aiogram_kwargs())
@@ -199,11 +189,9 @@ async def list_lessons_to_detach(
         student_uuid=callback_data.uuid, teacher_uuid=teacher.uuid
     )
     markup = lessons_to_assign(
-        type(
-            "Context",
-            (),
-            {"student_uuid": callback_data.uuid, "assign_callback": StudentDetachCallback, "lessons": lessons},
-        )()
+        student_uuid=callback_data.uuid,
+        lessons=lessons,
+        assign_callback=StudentDetachCallback,
     )
     msg = BotMessage(text=BotStrings.Teacher.TEACHER_LESSON_LIST, markup=markup)
     await callback.message.answer(**msg.to_aiogram_kwargs())

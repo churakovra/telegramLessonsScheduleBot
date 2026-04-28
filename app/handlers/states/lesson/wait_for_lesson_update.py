@@ -22,5 +22,9 @@ async def handle_state(message: Message, state: FSMContext, session: AsyncSessio
     new_value = message.text.strip()
     lesson_service = LessonService(session)
     await lesson_service.update_lesson(lesson_uuid, **{spec: new_value})
-    await message.answer(**BotMessage(text=BotStrings.Teacher.TEACHER_LESSON_UPDATE_SUCCESS).to_aiogram_kwargs())
+    await message.answer(
+        **BotMessage(
+            text=BotStrings.Teacher.TEACHER_LESSON_UPDATE_SUCCESS
+        ).to_aiogram_kwargs()
+    )
     await state.clear()

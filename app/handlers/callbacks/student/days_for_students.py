@@ -25,7 +25,7 @@ async def handle_callback(
         slots = await slot_service.get_day_slots(day, teacher_uuid)
 
         # Build markup using fabric
-        markup = slots_for_students(type("Context", (), {"slots": slots})())
+        markup = slots_for_students(slots=slots)
 
         # Build message
         message = BotMessage(text=callback.message.text, markup=markup)
