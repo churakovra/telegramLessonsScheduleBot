@@ -1,10 +1,8 @@
 from typing import Any
 
-from pydantic import BaseModel
-
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-
+from pydantic import BaseModel
 
 
 class MessageRecipient(BaseModel):
@@ -30,7 +28,10 @@ class RowData(BaseModel):
     @classmethod
     def from_callback(cls, *button_drafts: tuple[str, str]) -> "RowData":
         return cls(
-            buttons=[ButtonData(text=text, callback_data=callback) for text, callback in button_drafts]
+            buttons=[
+                ButtonData(text=text, callback_data=callback)
+                for text, callback in button_drafts
+            ]
         )
 
 
@@ -43,10 +44,7 @@ class MarkupData(BaseModel):
 
     @classmethod
     def from_row_callbacks(cls, *row_data: list[tuple[str, str]]) -> "MarkupData":
-        rows = [
-            RowData.from_callback(*button_draft)
-            for button_draft in row_data
-        ]
+        rows = [RowData.from_callback(*button_draft) for button_draft in row_data]
         return cls(rows=rows)
 
 

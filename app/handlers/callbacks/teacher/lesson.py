@@ -1,7 +1,6 @@
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.keyboard.callback_factories.lesson import (
     LessonCreateCallback,
@@ -21,11 +20,10 @@ from app.keyboard.fabric import (
 from app.message.models import BotMessage
 from app.message.utils import get_lesson_info
 from app.schemas.user import UserDTO
-from app.services.lesson_service import LessonService
-from app.services.teacher_service import TeacherService
+from app.services.container import Services
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
-from app.utils.enums.bot_values import ActionType, EntityType, UserRole
+from app.utils.enums.bot_values import ActionType
 from app.utils.exceptions.lesson_exceptions import LessonsNotFoundException
 from app.utils.exceptions.user_exceptions import UserNotFoundException
 from app.utils.logger import setup_logger
@@ -38,11 +36,10 @@ logger = setup_logger(__name__)
 
 @router.callback_query(LessonCreateCallback.filter())
 async def create(
-    callback: CallbackQuery, session: AsyncSession, state: FSMContext
+    callback: CallbackQuery, services: Services, state: FSMContext
 ) -> None:
-    teacher_service = TeacherService(session)
     try:
-        teacher = await teacher_service.get_teacher(callback.from_user.username)
+        teacher = await services.teacher.get_teacher(callback.from_user.username)
         await state.update_data(uuid_teacher=teacher.uuid)
         await state.update_data(operation_type=ActionType.CREATE)
         await state.set_state(ScheduleStates.wait_for_teacher_lesson_label)
@@ -55,7 +52,7 @@ async def create(
         sent_message = await callback.message.answer(**message.to_aiogram_kwargs())
         await state.update_data(previous_message_id=sent_message.message_id)
     except UserNotFoundException:
-        logger.error(f"Teacher tried to add new lesson, but didn't have enough rights")
+        logger.error("Teacher tried to add new lesson, but didn't have enough rights")
         msg = BotMessage(text=BotStrings.Teacher.NOT_ENOUGH_RIGHTS)
         await callback.message.answer(**msg.to_aiogram_kwargs())
         return
@@ -64,10 +61,9 @@ async def create(
 
 
 @router.callback_query(LessonListCallback.filter())
-async def list_lessons(callback: CallbackQuery, session: AsyncSession, user: UserDTO):
-    lesson_service = LessonService(session)
+async def list_lessons(callback: CallbackQuery, services: Services, user: UserDTO):
     try:
-        lessons = await lesson_service.get_teacher_lessons(user.uuid)
+        lessons = await services.lesson.get_teacher_lessons(user.uuid)
         markup = lesson_buttons(lessons=lessons)
         message = BotMessage(text=BotStrings.Teacher.TEACHER_LESSON_LIST, markup=markup)
     except LessonsNotFoundException as e:
@@ -82,10 +78,9 @@ async def list_lessons(callback: CallbackQuery, session: AsyncSession, user: Use
 
 @router.callback_query(LessonInfoCallback.filter())
 async def info(
-    callback: CallbackQuery, callback_data: LessonInfoCallback, session: AsyncSession
+    callback: CallbackQuery, callback_data: LessonInfoCallback, services: Services
 ):
-    lesson_service = LessonService(session)
-    lesson = await lesson_service.get_lesson(callback_data.uuid)
+    lesson = await services.lesson.get_lesson(callback_data.uuid)
     text = get_lesson_info(lesson)
     markup = entity_operations(uuid=lesson.uuid, entity_type=type(lesson))
     message = BotMessage(text=text, markup=markup)
@@ -139,10 +134,9 @@ async def update_whole_lesson(
     callback: CallbackQuery,
     callback_data: LessonUpdateCallback,
     state: FSMContext,
-    session: AsyncSession,
+    services: Services,
 ) -> None:
-    teacher_service = TeacherService(session)
-    teacher = await teacher_service.get_teacher(callback.from_user.username)
+    teacher = await services.teacher.get_teacher(callback.from_user.username)
     await state.update_data(uuid_teacher=teacher.uuid)
     await state.update_data(uuid_lesson=callback_data.uuid)
     await state.update_data(operation_type=ActionType.UPDATE)
@@ -174,11 +168,10 @@ async def request_delete_confirmation(
 
 @router.callback_query(LessonDeleteCallback.filter(F.confirmed))
 async def delete_lesson(
-    callback: CallbackQuery, callback_data: LessonDeleteCallback, session: AsyncSession
+    callback: CallbackQuery, callback_data: LessonDeleteCallback, services: Services
 ):
-    lesson_service = LessonService(session)
-    await lesson_service.detach_lesson(callback_data.uuid)
-    await lesson_service.delete_lesson(callback_data.uuid)
+    await services.lesson.detach_lesson(callback_data.uuid)
+    await services.lesson.delete_lesson(callback_data.uuid)
 
     markup = teacher_main_menu()
     message = BotMessage(

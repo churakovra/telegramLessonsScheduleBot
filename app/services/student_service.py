@@ -10,11 +10,25 @@ from app.utils.exceptions.user_exceptions import UserNotFoundException
 
 
 class StudentService:
-    def __init__(self, session: AsyncSession):
-        self._repository = StudentRepository(session)
+    def __init__(
+        self,
+        session: AsyncSession | None = None,
+        repository: StudentRepository | None = None,
+    ):
+        if repository is None:
+            if session is None:
+                raise ValueError("StudentService requires session or repository")
+            repository = StudentRepository(session)
+        self._repository = repository
 
     async def get_student_by_username(self, username: str) -> StudentDTO:
         student = await self._repository.get_student_by_username(username)
+        if student is None:
+            raise UserNotFoundException(username, UserRole.STUDENT)
+        return student
+
+    async def get_student(self, username: str) -> StudentDTO:
+        student = await self._repository.get_student(username)
         if student is None:
             raise UserNotFoundException(username, UserRole.STUDENT)
         return student
@@ -41,9 +55,7 @@ class StudentService:
         for username in students_raw.split(" "):
             try:
                 students.append(
-                    await self.get_student_by_username(
-                        username.strip().removeprefix("@")
-                    )
+                    await self.get_student(username.strip().removeprefix("@"))
                 )
             except UserNotFoundException:
                 unknown_students.append(username.strip())

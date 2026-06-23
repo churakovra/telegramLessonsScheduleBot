@@ -19,10 +19,21 @@ logger = setup_logger(__name__)
 
 
 class SlotService:
-    def __init__(self, session: AsyncSession):
-        self._repository = SlotRepository(session)
+    def __init__(
+        self,
+        session: AsyncSession | None = None,
+        repository: SlotRepository | None = None,
+    ):
+        if repository is None:
+            if session is None:
+                raise ValueError("SlotService requires session or repository")
+            repository = SlotRepository(session)
+        self._repository = repository
 
     async def add_slots(self, slots: list[CreateSlotDTO]):
+        if not slots:
+            return
+
         await self._repository.add_slots(slots)
 
     async def update_slots(self, slots: list[CreateSlotDTO], teacher_uuid: UUID):

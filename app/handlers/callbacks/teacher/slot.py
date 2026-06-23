@@ -1,9 +1,7 @@
-# TODO delete getting user in every place in handlers except middleware
 from aiogram import F, Router
 from aiogram.filters import or_f
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.keyboard.callback_factories.slot import (
     SlotCreateCallback,
@@ -20,10 +18,7 @@ from app.keyboard.fabric import (
 )
 from app.message.models import BotMessage
 from app.message.utils import get_slot_info, get_slots_schedule_reply
-from app.services.lesson_service import LessonService
-from app.services.slot_service import SlotService
-from app.services.student_service import StudentService
-from app.services.teacher_service import TeacherService
+from app.services.container import Services
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
 from app.utils.enums.bot_values import WeekFlag
@@ -97,14 +92,12 @@ async def update(
     SlotListCallback.filter(F.week_flag.in_([WeekFlag.CURRENT, WeekFlag.NEXT]))
 )
 async def list_slots(
-    callback: CallbackQuery, callback_data: SlotListCallback, session: AsyncSession
+    callback: CallbackQuery, callback_data: SlotListCallback, services: Services
 ) -> None:
     logger.debug("In SlotList")
-    teacher_service = TeacherService(session)
-    slot_service = SlotService(session)
     try:
-        teacher = await teacher_service.get_teacher(callback.from_user.username)
-        slots = await slot_service.get_slots(teacher.uuid, callback_data.week_flag)
+        teacher = await services.teacher.get_teacher(callback.from_user.username)
+        slots = await services.slot.get_slots(teacher.uuid, callback_data.week_flag)
         markup = slot_buttons(slots=slots)
         message = BotMessage(text=BotStrings.Teacher.SLOTS_LIST, markup=markup)
     except UserNotFoundException as e:
@@ -122,10 +115,9 @@ async def list_slots(
 
 @router.callback_query(SlotInfoCallback.filter())
 async def info(
-    callback: CallbackQuery, callback_data: SlotInfoCallback, session: AsyncSession
+    callback: CallbackQuery, callback_data: SlotInfoCallback, services: Services
 ) -> None:
-    slot_service = SlotService(session)
-    slot = await slot_service.get_slot(callback_data.uuid)
+    slot = await services.slot.get_slot(callback_data.uuid)
     text = get_slot_info(slot)
     message = BotMessage(text=text)
     await callback.message.answer(**message.to_aiogram_kwargs())
@@ -134,11 +126,10 @@ async def info(
 
 @router.callback_query(SlotDeleteCallback.filter())
 async def delete(
-    callback: CallbackQuery, callback_data: SlotDeleteCallback, session: AsyncSession
+    callback: CallbackQuery, callback_data: SlotDeleteCallback, services: Services
 ):
     # TODO потестить. Посмотреть, будет ли работать cascade delete.
-    slot_service = SlotService(session)
-    await slot_service.delete_slot(callback_data.uuid)
+    await services.slot.delete_slot(callback_data.uuid)
 
     markup = teacher_main_menu()
     message = BotMessage(text=BotStrings.Teacher.SLOT_DELETE_SUCCESS, markup=markup)
@@ -150,18 +141,14 @@ async def delete(
 async def statistics(
     callback: CallbackQuery,
     callback_data: SlotListCallback,
-    session: AsyncSession,
+    services: Services,
 ):
-    teacher_service = TeacherService(session)
-    slot_service = SlotService(session)
-    lesson_service = LessonService(session)
-    student_service = StudentService(session)
     try:
-        teacher = await teacher_service.get_teacher(callback.from_user.username)
-        slots = await slot_service.get_slots(teacher.uuid, callback_data.week_flag)
-        lessons = await lesson_service.get_students_lessons_by_slots(slots)
+        teacher = await services.teacher.get_teacher(callback.from_user.username)
+        slots = await services.slot.get_slots(teacher.uuid, callback_data.week_flag)
+        lessons = await services.lesson.get_students_lessons_by_slots(slots)
         students = [
-            await student_service.get_student_by_uuid(slot.uuid_student)
+            await services.student.get_student_by_uuid(slot.uuid_student)
             for slot in slots
             if slot.uuid_student
         ]

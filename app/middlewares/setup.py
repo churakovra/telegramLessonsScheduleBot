@@ -1,8 +1,3 @@
-from aiogram import Dispatcher
+from app.middlewares import register_middlewares
 
-from app.middlewares.db_session import DBSessionMiddleware
-
-
-def setup_middlewares(dp: Dispatcher):
-    dp.update.middleware(DBSessionMiddleware())
-    # dp.update.middleware(ValidateTeacherMiddleware())
+setup_middlewares = register_middlewares

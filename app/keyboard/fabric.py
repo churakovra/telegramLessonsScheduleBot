@@ -1,4 +1,5 @@
 import calendar
+from typing import Any
 
 from app.keyboard.callback_factories.lesson import (
     LessonCreateCallback,
@@ -28,16 +29,34 @@ from app.keyboard.callback_factories.student import (
     StudentListCallback,
 )
 from app.keyboard.callback_factories.teacher import TeacherCallback
-from app.message.models import MarkupData, RowData, ButtonData
+from app.message.models import MarkupData
 from app.schemas.lesson import LessonDTO
 from app.schemas.slot import SlotDTO
 from app.schemas.student import StudentDTO
 from app.utils.bot_strings import BotStrings
 from app.utils.datetime_utils import WEEKDAYS, day_format, time_format_HM
-from app.utils.enums.bot_values import ActionType, WeekFlag
+from app.utils.enums.bot_values import ActionType
 from app.utils.enums.menu_type import MenuType
 
 from ..utils.datetime_utils import full_format_no_sec
+
+EntityCallbackMap = dict[type[Any], dict[str, Any]]
+
+ENTITY_OPERATIONS: EntityCallbackMap = {
+    StudentDTO: {
+        BotStrings.Menu.ATTACH: StudentAssignCallback,
+        BotStrings.Menu.DETACH: StudentDetachCallback,
+        BotStrings.Menu.DELETE: StudentDeleteCallback,
+    },
+    LessonDTO: {
+        BotStrings.Menu.UPDATE: LessonUpdateCallback,
+        BotStrings.Menu.DELETE: LessonDeleteCallback,
+    },
+    SlotDTO: {
+        BotStrings.Menu.UPDATE: SlotUpdateCallback,
+        BotStrings.Menu.DELETE: SlotDeleteCallback,
+    },
+}
 
 
 def teacher_main_menu() -> MarkupData:
@@ -185,7 +204,7 @@ def confirm_deletion(*, callback_data_cls, uuid: str) -> MarkupData:
 def specs_to_update(
     *, lesson_uuid: str, specs: dict[str, str], callback_data_cls
 ) -> MarkupData:
-    specs["all"] = "Всё"
+    specs = {**specs, "all": "Всё"}
     return MarkupData.from_row_callbacks(
         *[
             (label, callback_data_cls(uuid=lesson_uuid, spec=spec).pack())
@@ -235,26 +254,9 @@ def slot_buttons(*, slots: list[SlotDTO]) -> MarkupData:
 
 
 def entity_operations(*, uuid, entity_type) -> MarkupData:
-    from typing import Any
-
-    operations: dict[Any, dict[str, Any]] = {
-        type[StudentDTO]: {
-            BotStrings.Menu.ATTACH: StudentAssignCallback,
-            BotStrings.Menu.DETACH: StudentDetachCallback,
-            BotStrings.Menu.DELETE: StudentDeleteCallback,
-        },
-        type[LessonDTO]: {
-            BotStrings.Menu.UPDATE: LessonUpdateCallback,
-            BotStrings.Menu.DELETE: LessonDeleteCallback,
-        },
-        type[SlotDTO]: {
-            BotStrings.Menu.UPDATE: SlotUpdateCallback,
-            BotStrings.Menu.DELETE: SlotDeleteCallback,
-        },
-    }
     rows_data = [
         (name, allowed_operation(uuid=uuid).pack())
-        for name, allowed_operation in operations[entity_type].items()
+        for name, allowed_operation in ENTITY_OPERATIONS[entity_type].items()
     ]
     rows_data.append(
         (BotStrings.Menu.CANCEL, MenuCallback(menu_type=MenuType.NEW).pack())

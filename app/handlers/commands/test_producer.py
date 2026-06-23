@@ -2,10 +2,9 @@ from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
 
-from app.message.models import BotMessage, MessageEnvelope, MessageRecipient
 from app.keyboard import fabric
+from app.message.models import BotMessage, MessageEnvelope, MessageRecipient
 from app.notifier.producer import MessageProducer
-from app.utils.enums.bot_values import UserRole
 from app.utils.logger import setup_logger
 
 router = Router()

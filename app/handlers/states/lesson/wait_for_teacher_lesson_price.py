@@ -1,11 +1,10 @@
 from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.keyboard import fabric
 from app.message.models import BotMessage
-from app.services.lesson_service import LessonService
+from app.services.container import Services
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
 from app.utils.enums.bot_values import ActionType
@@ -18,7 +17,7 @@ logger = setup_logger(__name__)
 @router.message(ScheduleStates.wait_for_teacher_lesson_price)
 async def handle_state(
     message: Message,
-    session: AsyncSession,
+    services: Services,
     state: FSMContext,
 ):
     data = await state.get_data()
@@ -32,15 +31,14 @@ async def handle_state(
     uuid_teacher = data["uuid_teacher"]
 
     try:
-        lesson_service = LessonService(session)
         if operation_type == ActionType.CREATE:
-            await lesson_service.create_lesson(
+            await services.lesson.create_lesson(
                 label=label, duration=duration, uuid_teacher=uuid_teacher, price=price
             )
             response_msg = BotStrings.Teacher.TEACHER_LESSON_ADD_SUCCESS
         else:
             uuid_lesson = data["uuid_lesson"]
-            await lesson_service.update_lesson(
+            await services.lesson.update_lesson(
                 lesson_uuid=uuid_lesson, label=label, duration=duration, price=price
             )
             response_msg = BotStrings.Teacher.TEACHER_LESSON_UPDATE_SUCCESS
