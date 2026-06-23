@@ -29,6 +29,7 @@ def func_mock(monkeypatch):
 @pytest.fixture
 def valid_student():
     return StudentDTO(
+        id=1,
         uuid=uuid4(),
         username="test-student",
         firstname="firstname",
@@ -37,14 +38,15 @@ def valid_student():
         is_teacher=False,
         is_admin=False,
         chat_id=123456789456,
-        dt_reg=datetime.now(),
-        dt_edit=datetime.now(),
+        created_at=datetime.now(),
+        last_updated_at=datetime.now(),
     )
 
 
 @pytest.fixture
 def valid_teacher():
     return UserDTO(
+        id=1,
         uuid=uuid4(),
         username="test-username",
         firstname="test-firstname",
@@ -53,6 +55,6 @@ def valid_teacher():
         is_teacher=True,
         is_admin=False,
         chat_id=1234567898765,
-        dt_reg=datetime.now(),
-        dt_edit=datetime.now(),
+        created_at=datetime.now(),
+        last_updated_at=datetime.now(),
     )

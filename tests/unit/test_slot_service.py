@@ -1,5 +1,5 @@
 from datetime import datetime
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import pytest
@@ -16,12 +16,15 @@ from app.utils.exceptions.slot_exceptions import (
 def slots_single_element():
     return [
         SlotDTO(
+            id=1,
             uuid=uuid4(),
             uuid_teacher=uuid4(),
             dt_start=datetime.now(),
             dt_add=datetime.now(),
             uuid_student=None,
             dt_spot=None,
+            created_at=datetime.now(),
+            last_updated_at=datetime.now(),
         )
     ]
 
@@ -29,13 +32,18 @@ def slots_single_element():
 @pytest.fixture
 def slots_multiple_elements():
     slots = []
-    for _ in range(3):
+    for idx in range(3):
         slots.append(
-            SlotDTO.new_dto(
+            SlotDTO(
+                id=idx,
+                uuid=uuid4(),
                 uuid_teacher=uuid4(),
                 dt_start=datetime.now(),
+                dt_add=datetime.now(),
                 uuid_student=None,
                 dt_spot=None,
+                created_at=datetime.now(),
+                last_updated_at=datetime.now(),
             )
         )
     return slots
@@ -47,41 +55,28 @@ class TestAddSlot:
         self.service = SlotService(session_mock)
 
     async def test_all_valid_slots_added(self, slots_multiple_elements):
-        self.service._repository.add_slot = AsyncMock()
+        self.service._repository.add_slots = AsyncMock()
 
         await self.service.add_slots(slots_multiple_elements)
 
-        assert self.service._repository.add_slot.call_count == 3
+        self.service._repository.add_slots.assert_awaited_once_with(
+            slots_multiple_elements
+        )
 
     async def test_handle_value_error(self, slots_multiple_elements):
-        self.service._repository.add_slot = AsyncMock(
-            side_effect=[None, ValueError, None]
-        )
+        self.service._repository.add_slots = AsyncMock(side_effect=ValueError)
 
-        await self.service.add_slots(slots_multiple_elements)
-
-        assert self.service._repository.add_slot.call_count == 3
-
-    async def test_logging_value_error(self, slots_multiple_elements, monkeypatch):
-        logger_mock = MagicMock()
-        monkeypatch.setattr("app.services.slot_service.logger", logger_mock)
-
-        self.service._repository.add_slot = AsyncMock(
-            side_effect=[None, ValueError, None]
-        )
-
-        await self.service.add_slots(slots_multiple_elements)
-
-        assert logger_mock.error.called
+        with pytest.raises(ValueError):
+            await self.service.add_slots(slots_multiple_elements)
 
     async def test_empty_slots_list_not_use_repository(self):
         empty_slots_list = []
 
-        self.service._repository.add_slot = AsyncMock()
+        self.service._repository.add_slots = AsyncMock()
 
         await self.service.add_slots(empty_slots_list)
 
-        self.service._repository.add_slot.assert_not_called()
+        self.service._repository.add_slots.assert_not_called()
 
 
 class TestGetSlot:
@@ -91,11 +86,16 @@ class TestGetSlot:
 
     async def test_get_slot_success(self):
         slot_uuid = uuid4()
-        slot = SlotDTO.new_dto(
+        slot = SlotDTO(
+            id=1,
+            uuid=uuid4(),
             uuid_teacher=uuid4(),
             dt_start=datetime.now(),
+            dt_add=datetime.now(),
             uuid_student=None,
             dt_spot=None,
+            created_at=datetime.now(),
+            last_updated_at=datetime.now(),
         )
 
         self.service._repository.get_slot = AsyncMock(return_value=slot)
@@ -149,19 +149,19 @@ class TestGetDaySlots:
         self.teacher_uuid = uuid4()
 
     async def test_get_day_slots_success(self, slots_single_element):
-        self.service._repository.get_day_slots = AsyncMock(
+        self.service._repository.get_day_free_slots = AsyncMock(
             return_value=slots_single_element
         )
 
         slots = await self.service.get_day_slots(self.dt, self.teacher_uuid)
 
         assert slots == slots_single_element
-        self.service._repository.get_day_slots.assert_awaited_once_with(
+        self.service._repository.get_day_free_slots.assert_awaited_once_with(
             self.dt, self.teacher_uuid
         )
 
     async def test_get_day_slots_empty_raises_slot_free_not_found_exception(self):
-        self.service._repository.get_day_slots = AsyncMock(return_value=[])
+        self.service._repository.get_day_free_slots = AsyncMock(return_value=[])
 
         with pytest.raises(SlotFreeNotFoundException):
             await self.service.get_day_slots(self.dt, self.teacher_uuid)
