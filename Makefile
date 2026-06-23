@@ -29,10 +29,10 @@ help:
 		'  make typecheck               Run mypy' \
 		'' \
 		'Tests:' \
-		'  make test                    Run unit tests' \
-		'  make test-integration        Start test DB and run integration tests' \
-		'  make test-integration-clean  Run integration tests and stop test DB' \
-		'  make test-coverage           Run unit tests with coverage' \
+		'  make test                    Run all tests and stop test DB' \
+		'  make test-unit               Run fast unit tests only' \
+		'  make test-integration        Run integration tests and stop test DB' \
+		'  make test-coverage           Run all tests with coverage and stop test DB' \
 		'' \
 		'Database:' \
 		'  make migrate                 Upgrade the configured DB to Alembic head' \
@@ -66,11 +66,22 @@ fix:
 typecheck:
 	$(UV) run python -m mypy app
 
-test test-unit:
+test-unit:
 	$(UV) run python -m pytest tests/unit
 
+test:
+	@set -e; \
+	trap '$(TEST_COMPOSE) down --remove-orphans' EXIT INT TERM; \
+	$(TEST_COMPOSE) up -d --wait; \
+	$(UV) run python -m pytest tests
+
 test-coverage:
-	$(UV) run python -m pytest tests/unit --cov=app --cov-report=term-missing
+	@set -e; \
+	trap '$(TEST_COMPOSE) down --remove-orphans' EXIT INT TERM; \
+	$(TEST_COMPOSE) up -d --wait; \
+	$(UV) run python -m pytest tests \
+		--cov=app \
+		--cov-report=term-missing
 
 test-db-up:
 	$(TEST_COMPOSE) up -d --wait
@@ -81,14 +92,13 @@ test-db-down:
 test-db-logs:
 	$(TEST_COMPOSE) logs -f
 
-test-integration: test-db-up
+test-integration:
+	@set -e; \
+	trap '$(TEST_COMPOSE) down --remove-orphans' EXIT INT TERM; \
+	$(TEST_COMPOSE) up -d --wait; \
 	$(UV) run python -m pytest tests/integration
 
-test-integration-clean:
-	@set -e; \
-	$(TEST_COMPOSE) up -d --wait; \
-	trap '$(TEST_COMPOSE) down' EXIT; \
-	$(UV) run python -m pytest tests/integration
+test-integration-clean: test-integration
 
 migrate:
 	APP_VERSION=$(APP_VERSION) $(UV) run python -m alembic upgrade head

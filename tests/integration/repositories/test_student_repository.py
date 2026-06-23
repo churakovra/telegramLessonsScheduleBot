@@ -2,6 +2,7 @@ import pytest
 
 from app.repositories.student_repository import StudentRepository
 from app.repositories.teacher_repository import TeacherRepository
+from app.schemas.student import StudentDTO
 from app.utils.enums.bot_values import UserRole
 
 pytestmark = pytest.mark.asyncio(loop_scope="session")
@@ -14,8 +15,10 @@ async def test_get_student_by_username_and_uuid(setup_session, create_user):
     by_username = await repository.get_student_by_username(student.username)
     by_uuid = await repository.get_student_by_uuid(student.uuid)
 
-    assert by_username == student
-    assert by_uuid == student
+    assert isinstance(by_username, StudentDTO)
+    assert isinstance(by_uuid, StudentDTO)
+    assert by_username.model_dump() == student.model_dump()
+    assert by_uuid.model_dump() == student.model_dump()
 
 
 async def test_teacher_students_are_scoped_to_teacher(setup_session, create_user):

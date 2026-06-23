@@ -43,8 +43,16 @@ class MarkupData(BaseModel):
         return cls(rows=list(rows))
 
     @classmethod
-    def from_row_callbacks(cls, *row_data: list[tuple[str, str]]) -> "MarkupData":
-        rows = [RowData.from_callback(*button_draft) for button_draft in row_data]
+    def from_row_callbacks(
+        cls,
+        *row_data: tuple[str, str] | list[tuple[str, str]],
+    ) -> "MarkupData":
+        rows = []
+        for button_drafts in row_data:
+            if isinstance(button_drafts, tuple):
+                rows.append(RowData.from_callback(button_drafts))
+            else:
+                rows.append(RowData.from_callback(*button_drafts))
         return cls(rows=rows)
 
 
