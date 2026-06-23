@@ -14,7 +14,7 @@ services:
     develop:
       watch:
         - path: ./app
-          target: /src/app
+          target: /bot/app
           action: rebuild
 
     command: uv run python -m app.main
