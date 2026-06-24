@@ -7,51 +7,41 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.orm.slot import Slot
 from app.database.orm.teacher_student import TeacherStudent
 from app.database.orm.user import User
+from app.repositories.base import BaseRepository
 from app.schemas.user import UserDTO
 from app.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 
 
-class TeacherRepository:
-    def __init__(self, session: AsyncSession):
-        self._db = session
+class TeacherRepository(BaseRepository):
+    def __init__(self, session: AsyncSession, *, auto_commit: bool = True):
+        super().__init__(session, auto_commit=auto_commit)
 
-    async def add_teacher(self, user_uuid: UUID):
+    async def add_teacher(self, user_uuid: UUID) -> None:
         stmt = (
             update(User)
             .where(User.uuid == user_uuid)
-            .values(is_student=False)
-            .values(is_teacher=True)
+            .values(is_student=False, is_teacher=True)
         )
-        await self._db.execute(stmt)
-        await self._db.commit()
+        await self.execute(stmt)
 
-    async def _get_teacher(self, data: str | UUID) -> User | None:
+    async def get_teacher(self, data: str | UUID) -> UserDTO | None:
         if isinstance(data, UUID):
             condition = User.uuid == data
         else:
             condition = User.username == data
 
         stmt = select(User).where(and_(condition, User.is_teacher.is_(True)))
-        teacher = await self._db.scalar(stmt)
-        return teacher
+        return await self.one_or_none_dto(stmt, UserDTO)
 
-    async def get_teacher(self, data: str | UUID) -> UserDTO | None:
-        teacher = await self._get_teacher(data)
-        if teacher is None:
-            return teacher
-        return UserDTO.model_validate(teacher)
-
-    async def remove_teacher(self, teacher_uuid: UUID):
+    async def remove_teacher(self, teacher_uuid: UUID) -> None:
         stmt = (
             update(User)
             .where(User.uuid == teacher_uuid)
-            .values(is_teacher=False)
-            .values(is_student=True)
+            .values(is_teacher=False, is_student=True)
         )
-        await self._db.execute(stmt)
-        await self._db.commit()
+        await self.execute(stmt)
 
     async def attach_student(
         self, teacher_uuid: UUID, student_uuid: UUID, uuid_lesson: UUID | None
@@ -62,14 +52,11 @@ class TeacherRepository:
                 uuid_student=student_uuid,
                 uuid_lesson=uuid_lesson,
             )
-            self._db.add(teacher_student)
-            await self._db.commit()
-            await self._db.refresh(teacher_student)
-            return teacher_student
+            return await self.add(teacher_student)
         except IntegrityError as e:
             raise ValueError(str(e)) from e
 
-    async def detach_student(self, student_uuid: UUID, teacher_uuid: UUID):
+    async def detach_student(self, student_uuid: UUID, teacher_uuid: UUID) -> None:
         stmt = delete(TeacherStudent).where(
             and_(
                 TeacherStudent.uuid_teacher == teacher_uuid,
@@ -77,17 +64,27 @@ class TeacherRepository:
             )
         )
         logger.debug(f"delete stmt {stmt}, {teacher_uuid}, {student_uuid}")
-        await self._db.execute(stmt)
-        await self._db.commit()
+        await self.execute(stmt)
+
+    async def delete_students(self, student_uuid: UUID, teacher_uuid: UUID) -> None:
+        await self.detach_student(student_uuid, teacher_uuid)
+
+    async def get_students(self, teacher_uuid: UUID) -> list[UserDTO]:
+        stmt = (
+            select(User)
+            .join(TeacherStudent, User.uuid == TeacherStudent.uuid_student)
+            .where(TeacherStudent.uuid_teacher == teacher_uuid)
+            .order_by(User.firstname.asc(), User.lastname.asc())
+        )
+        return await self.list_dto(stmt, UserDTO)
 
     async def get_unsigned_students(self, teacher_uuid: UUID) -> list[UserDTO]:
-        users = list()
         ts_subquery = (
             select(TeacherStudent.uuid_student)
             .where(
                 and_(
                     TeacherStudent.uuid_teacher == teacher_uuid,
-                    TeacherStudent.lesson != None,
+                    TeacherStudent.uuid_lesson.is_not(None),
                 )
             )
             .scalar_subquery()
@@ -98,6 +95,4 @@ class TeacherRepository:
         stmt = select(User).where(
             and_(User.uuid.in_(ts_subquery), not_(User.uuid.in_(slots_subquery)))
         )
-        for user in await self._db.scalars(stmt):
-            users.append(UserDTO.model_validate(user))
-        return users
+        return await self.list_dto(stmt, UserDTO)

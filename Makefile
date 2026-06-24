@@ -1,42 +1,136 @@
+APP_VERSION ?= dev
 PYTHON_VERSION := $(shell cat .python-version)
-RUN = . .venv/bin/activate;
 
-include .env
+UV := uv
+COMPOSE := docker compose
+TEST_COMPOSE := $(COMPOSE) -f tests/docker-compose-test.yml
 
-ENV_CONFIGS_PATH = app/config/envs
-ENV_FILE = $(PWD)/$(ENV_CONFIGS_PATH)/$(APP_VERSION).env
+.DEFAULT_GOAL := help
 
-include $(ENV_FILE)
+.PHONY: help install sync check format format-check lint fix typecheck \
+	test test-unit test-integration test-integration-clean test-coverage \
+	test-db-up test-db-down test-db-logs \
+	migrate migration \
+	app app-up app-down app-logs app-config \
+	clean \
+	venv init run_app run_migrations test_db_up test_db_down test_integration
 
-pwd:
-	echo $(APP_VERSION)
-	echo $(ENV_FILE)
+help:
+	@printf '%s\n' \
+		'Setup:' \
+		'  make install                 Sync locked project dependencies' \
+		'  make clean                   Remove local caches and coverage data' \
+		'' \
+		'Quality:' \
+		'  make check                   Run format check, lint, unit tests, and compile check' \
+		'  make format                  Format application and tests' \
+		'  make lint                    Run Ruff without modifying files' \
+		'  make fix                     Format and apply safe Ruff fixes' \
+		'  make typecheck               Run mypy' \
+		'' \
+		'Tests:' \
+		'  make test                    Run all tests and stop test DB' \
+		'  make test-unit               Run fast unit tests only' \
+		'  make test-integration        Run integration tests and stop test DB' \
+		'  make test-coverage           Run all tests with coverage and stop test DB' \
+		'' \
+		'Database:' \
+		'  make migrate                 Upgrade the configured DB to Alembic head' \
+		'  make migration MESSAGE=name  Create an Alembic migration' \
+		'' \
+		'Application:' \
+		'  make app                     Run the bot locally' \
+		'  make app-up                  Build and start app containers' \
+		'  make app-down                Stop app containers' \
+		'  make app-logs                Follow app container logs'
 
-init:
-	uv venv -nv -p $(PYTHON_VERSION) .venv
+install sync:
+	$(UV) sync --locked
 
-install:
-	$(RUN) uv sync
+check: format-check lint test-unit
+	$(UV) run python -m compileall -q app tests
 
-venv: init install
+format:
+	$(UV) run ruff format app tests
 
-clean:
-	rm -rf .venv **/__pycache__ **/.pyc
-
-create_db:
-	docker exec -it postgres createdb -U $(DB_USER) -h $(DB_HOST) -p $(DB_PORT) $(DB_NAME)
-
-drop_db:
-	-docker exec -it postgres dropdb $(DB_NAME) -U $(DB_USER) && \
-	echo 'DB $(DB_NAME) dropped successfully'
-
-run_migrations:
-	export $(APP_VERSION) && \
-	$(RUN) alembic upgrade head
+format-check:
+	$(UV) run ruff format --check app tests
 
 lint:
-	$(RUN) ruff format
-	$(RUN) ruff check --fix
+	$(UV) run ruff check app tests
 
-run_app:
-	export APP_VERSION=dev && docker compose up --build
+fix:
+	$(UV) run ruff format app tests
+	$(UV) run ruff check --fix app tests
+
+typecheck:
+	$(UV) run python -m mypy app
+
+test-unit:
+	$(UV) run python -m pytest tests/unit
+
+test:
+	@set -e; \
+	trap '$(TEST_COMPOSE) down --remove-orphans' EXIT INT TERM; \
+	$(TEST_COMPOSE) up -d --wait; \
+	$(UV) run python -m pytest tests
+
+test-coverage:
+	@set -e; \
+	trap '$(TEST_COMPOSE) down --remove-orphans' EXIT INT TERM; \
+	$(TEST_COMPOSE) up -d --wait; \
+	$(UV) run python -m pytest tests \
+		--cov=app \
+		--cov-report=term-missing
+
+test-db-up:
+	$(TEST_COMPOSE) up -d --wait
+
+test-db-down:
+	$(TEST_COMPOSE) down
+
+test-db-logs:
+	$(TEST_COMPOSE) logs -f
+
+test-integration:
+	@set -e; \
+	trap '$(TEST_COMPOSE) down --remove-orphans' EXIT INT TERM; \
+	$(TEST_COMPOSE) up -d --wait; \
+	$(UV) run python -m pytest tests/integration
+
+test-integration-clean: test-integration
+
+migrate:
+	APP_VERSION=$(APP_VERSION) $(UV) run python -m alembic upgrade head
+
+migration:
+	@test -n "$(MESSAGE)" || (echo "Usage: make migration MESSAGE=description" && exit 1)
+	APP_VERSION=$(APP_VERSION) $(UV) run python -m alembic revision --autogenerate -m "$(MESSAGE)"
+
+app:
+	APP_VERSION=$(APP_VERSION) $(UV) run python -m app.main
+
+app-up:
+	APP_VERSION=$(APP_VERSION) $(COMPOSE) up --build -d
+
+app-down:
+	$(COMPOSE) down
+
+app-logs:
+	$(COMPOSE) logs -f scheduler notifier
+
+app-config:
+	APP_VERSION=$(APP_VERSION) $(COMPOSE) config
+
+clean:
+	rm -rf .venv .pytest_cache .mypy_cache .ruff_cache .coverage htmlcov
+	find app tests -type d -name __pycache__ -prune -exec rm -rf {} +
+	find app tests -type f -name '*.py[co]' -delete
+
+# Backward-compatible aliases.
+init venv: install
+run_app: app-up
+run_migrations: migrate
+test_db_up: test-db-up
+test_db_down: test-db-down
+test_integration: test-integration

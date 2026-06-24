@@ -1,12 +1,10 @@
 from aiogram import Router
 from aiogram.types import CallbackQuery
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.keyboard.callback_factories.slot import ResendSlotsCallback
 from app.keyboard.fabric import days_for_students
 from app.message.models import BotMessage
-from app.message.utils import slots_to_reply
-from app.services.slot_service import SlotService
+from app.services.container import Services
 from app.utils.bot_strings import BotStrings
 
 router = Router()
@@ -16,17 +14,12 @@ router = Router()
 async def handle_callback(
     callback: CallbackQuery,
     callback_data: ResendSlotsCallback,
-    session: AsyncSession,
+    services: Services,
 ) -> None:
-    slots_service = SlotService(session)
-    slots = await slots_service.get_free_slots(callback_data.teacher_uuid)
+    slots = await services.slot.get_free_slots(callback_data.teacher_uuid)
 
     # Build markup using fabric
-    markup = days_for_students(
-        type(
-            "Context", (), {"teacher_uuid": callback_data.teacher_uuid, "slots": slots}
-        )()
-    )
+    markup = days_for_students(slots=slots, teacher_uuid=callback_data.teacher_uuid)
 
     # Build message
     message = BotMessage(text=BotStrings.Student.SLOTS_ADDED, markup=markup)

@@ -4,7 +4,7 @@ from typing import Any
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
 
-from app.services.user_service import UserService
+from app.services.container import Services
 from app.utils.exceptions.user_exceptions import UserNotFoundException
 from app.utils.logger import setup_logger
 
@@ -18,11 +18,13 @@ class UserMiddleware(BaseMiddleware):
         event: TelegramObject,
         data: dict[str, Any],
     ) -> Any:
-        session = data["session"]
-        user_service = UserService(session)
+        services: Services = data["services"]
         username = self.get_username(event)
+        if username is None:
+            return await handler(event, data)
+
         try:
-            user = await user_service.get_user(username)
+            user = await services.user.get_user(username)
             data["user"] = user
         except UserNotFoundException:
             # TODO send on_error event in NotificationService via rmq
@@ -30,6 +32,8 @@ class UserMiddleware(BaseMiddleware):
         return await handler(event, data)
 
     @staticmethod
-    def get_username(event: TelegramObject):
-        event_type = event.message if event.message else event.callback_query  # type: ignore
+    def get_username(event: TelegramObject) -> str | None:
+        event_type = event.message if event.message else event.callback_query  # type: ignore[attr-defined]
+        if not event_type or not event_type.from_user:
+            return None
         return event_type.from_user.username

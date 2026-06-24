@@ -15,8 +15,16 @@ from app.utils.exceptions.user_exceptions import (
 
 
 class UserService:
-    def __init__(self, session: AsyncSession):
-        self._repository = UserRepository(session)
+    def __init__(
+        self,
+        session: AsyncSession | None = None,
+        repository: UserRepository | None = None,
+    ):
+        if repository is None:
+            if session is None:
+                raise ValueError("UserService requires session or repository")
+            repository = UserRepository(session)
+        self._repository = repository
 
     async def register_user(
         self,
@@ -34,7 +42,7 @@ class UserService:
             chat_id=chat_id,
         )
         user = await self._repository.add_user(new_user)
-        return user.uuid
+        return user.uuid if user else new_user.uuid
 
     async def add_role(self, initiator_username: str, username: str, role: UserRole):
         initiator = await self._repository.get_user(initiator_username.strip())

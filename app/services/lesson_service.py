@@ -12,8 +12,16 @@ logger = setup_logger(__name__)
 
 
 class LessonService:
-    def __init__(self, session: AsyncSession):
-        self._repository = LessonRepository(session)
+    def __init__(
+        self,
+        session: AsyncSession | None = None,
+        repository: LessonRepository | None = None,
+    ):
+        if repository is None:
+            if session is None:
+                raise ValueError("LessonService requires session or repository")
+            repository = LessonRepository(session)
+        self._repository = repository
 
     async def create_lesson(
         self,
@@ -27,7 +35,7 @@ class LessonService:
         )
 
         lesson = await self._repository.create_lesson(new_lesson)
-        return LessonDTO.model_validate(lesson)
+        return lesson
 
     async def get_students_lessons_by_slots(self, slots: list[SlotDTO]):
         lessons = await self._repository.get_students_lessons_by_slots(slots)

@@ -1,48 +1,68 @@
 from typing import Any
+
+from aiogram.types import InlineKeyboardButton
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 from pydantic import BaseModel
 
 
 class MessageRecipient(BaseModel):
-    """Recipient for message delivery."""
-
     chat_id: int
 
 
 class ButtonData(BaseModel):
-    """Serializable button data."""
-
     text: str
     callback_data: str
 
+    @classmethod
+    def from_callback(cls, text: str, callback_data: str) -> "ButtonData":
+        return cls(text=text, callback_data=callback_data)
+
 
 class RowData(BaseModel):
-    """Serializable row data."""
-
     buttons: list[ButtonData]
+
+    @classmethod
+    def from_buttons(cls, *buttons: ButtonData) -> "RowData":
+        return cls(buttons=list(buttons))
+
+    @classmethod
+    def from_callback(cls, *button_drafts: tuple[str, str]) -> "RowData":
+        return cls(
+            buttons=[
+                ButtonData(text=text, callback_data=callback)
+                for text, callback in button_drafts
+            ]
+        )
 
 
 class MarkupData(BaseModel):
-    """Serializable keyboard markup."""
-
     rows: list[RowData]
+
+    @classmethod
+    def from_rows(cls, *rows: RowData) -> "MarkupData":
+        return cls(rows=list(rows))
+
+    @classmethod
+    def from_row_callbacks(
+        cls,
+        *row_data: tuple[str, str] | list[tuple[str, str]],
+    ) -> "MarkupData":
+        rows = []
+        for button_drafts in row_data:
+            if isinstance(button_drafts, tuple):
+                rows.append(RowData.from_callback(button_drafts))
+            else:
+                rows.append(RowData.from_callback(*button_drafts))
+        return cls(rows=rows)
 
 
 class BotMessage(BaseModel):
-    """Serializable message model for AMQP transport.
-
-    Replaces: AbstractBotMessageContext, MessagePack
-    """
-
     text: str
     markup: MarkupData | None = None
     parse_mode: str | None = None
 
     def to_aiogram_kwargs(self) -> dict[str, Any]:
-        """Convert to kwargs for aiogram Bot.send_message()."""
-        from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-        from aiogram.utils.keyboard import InlineKeyboardBuilder
-
-        kwargs = {
+        kwargs: dict[str, Any] = {
             "text": self.text,
             "parse_mode": self.parse_mode,
         }
@@ -61,7 +81,5 @@ class BotMessage(BaseModel):
 
 
 class MessageEnvelope(BaseModel):
-    """Container for message + recipients. Sent via AMQP."""
-
     message: BotMessage
     recipients: list[MessageRecipient]

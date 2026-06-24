@@ -43,6 +43,7 @@ class TestParseStudents:
         async def get_student_side_effect(username):
             if username in ["student1", "student2"]:
                 return StudentDTO(
+                    id=1,
                     uuid=uuid4(),
                     username=username,
                     firstname="firstname",
@@ -51,8 +52,8 @@ class TestParseStudents:
                     is_teacher=False,
                     is_admin=False,
                     chat_id=123456789456,
-                    dt_reg=datetime.now(),
-                    dt_edit=datetime.now(),
+                    created_at=datetime.now(),
+                    last_updated_at=datetime.now(),
                 )
             raise UserNotFoundException(username, "STUDENT")
 
@@ -75,6 +76,7 @@ class TestParseStudents:
         async def get_student_side_effect(username):
             if username == "known_student":
                 return StudentDTO(
+                    id=1,
                     uuid=uuid4(),
                     username=username,
                     firstname="firstname",
@@ -83,8 +85,8 @@ class TestParseStudents:
                     is_teacher=False,
                     is_admin=False,
                     chat_id=123456789456,
-                    dt_reg=datetime.now(),
-                    dt_edit=datetime.now(),
+                    created_at=datetime.now(),
+                    last_updated_at=datetime.now(),
                 )
             raise UserNotFoundException(username, "STUDENT")
 

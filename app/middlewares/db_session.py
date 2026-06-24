@@ -5,6 +5,7 @@ from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
 
 from app.database.database import async_session_factory
+from app.database.unit_of_work import UnitOfWork
 
 
 class DBSessionMiddleware(BaseMiddleware):
@@ -15,5 +16,13 @@ class DBSessionMiddleware(BaseMiddleware):
         data: dict[str, Any],
     ) -> Any:
         async with async_session_factory() as session:
+            uow = UnitOfWork(session)
             data["session"] = session
-            return await handler(event, data)
+            data["uow"] = uow
+            try:
+                result = await handler(event, data)
+                await uow.commit()
+                return result
+            except Exception:
+                await uow.rollback()
+                raise
