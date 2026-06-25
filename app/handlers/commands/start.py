@@ -1,12 +1,12 @@
 from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
-from sqlalchemy.exc import IntegrityError
 
 from app.message.models import BotMessage
 from app.services.container import Services
 from app.utils.bot_strings import BotStrings
 from app.utils.enums.bot_values import UserRole
+from app.utils.exceptions.user_exceptions import UserAlreadyExistsException
 from app.utils.logger import setup_logger
 
 router = Router()
@@ -20,6 +20,11 @@ async def add_new_user(message: Message, services: Services):
     last_name = message.from_user.last_name
     chat_id = message.from_user.id
 
+    if username is None:
+        msg = BotMessage(text=BotStrings.User.USERNAME_REQUIRED)
+        await message.answer(**msg.to_aiogram_kwargs())
+        return
+
     try:
         new_user_uuid = await services.user.register_user(
             username=username,
@@ -28,9 +33,9 @@ async def add_new_user(message: Message, services: Services):
             role=UserRole.STUDENT,
             chat_id=chat_id,
         )
-        logger.info(f"New user registeged. User id: {new_user_uuid}")
-    except IntegrityError:
-        logger.error(f"User {username} already registered")
-    finally:
-        msg = BotMessage(text=BotStrings.Common.GREETING.format(user=first_name))
-        await message.answer(**msg.to_aiogram_kwargs())
+        logger.info(f"New user registered. User id: {new_user_uuid}")
+    except UserAlreadyExistsException:
+        logger.info(f"User {username} already registered")
+
+    msg = BotMessage(text=BotStrings.Common.GREETING.format(user=first_name))
+    await message.answer(**msg.to_aiogram_kwargs())

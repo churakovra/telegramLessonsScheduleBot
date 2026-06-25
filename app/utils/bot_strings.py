@@ -92,6 +92,9 @@ class BotStrings:
     class User:
         USER_INFO = "Информация"
         USER_INFO_ERROR = "Ошибка. Пользователь не найден"
+        USERNAME_REQUIRED = (
+            "Для регистрации установите имя пользователя в настройках Telegram"
+        )
         CALLBACK_USER_INFO = "user_info"
 
     class Menu:
