@@ -37,5 +37,5 @@ async def make_teacher_from_student(
         )
     except (UserNotFoundException, UserChangeRoleException) as e:
         logger.error(e.message)
-        msg = BotMessage(text=f"{BotStrings.Admin.MAKE_TEACHER_FAILURE}; {e.message}")
+        msg = BotMessage(text=f"{BotStrings.Admin.MAKE_TEACHER_FAILURE}")
         await message.answer(**msg.to_aiogram_kwargs())
