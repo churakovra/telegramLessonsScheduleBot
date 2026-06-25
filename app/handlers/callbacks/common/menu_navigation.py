@@ -17,6 +17,7 @@ from app.keyboard.fabric import (
 from app.message.models import BotMessage
 from app.schemas.user import UserDTO
 from app.utils.bot_strings import BotStrings
+from app.utils.enums.bot_values import UserRole
 from app.utils.enums.menu_type import MenuType
 from app.utils.logger import setup_logger
 
@@ -78,5 +79,25 @@ async def handle_cancel(
 
     message = BotMessage(text=BotStrings.Common.MENU, markup=markup)
     await state.clear()
+    await callback.message.answer(**message.to_aiogram_kwargs())
+    await callback.answer()
+
+
+@router.callback_query(MenuCallback.filter(F.menu_type == MenuType.NEW))
+async def handle_callback(callback: CallbackQuery, user: UserDTO):
+    # Get appropriate main menu markup based on user role
+    match user.role:
+        case UserRole.TEACHER:
+            markup = teacher_main_menu()
+        case UserRole.STUDENT:
+            markup = student_main_menu()
+        case UserRole.ADMIN:
+            markup = admin_main_menu()
+        case _:
+            markup = None
+
+    message = BotMessage(
+        text=BotStrings.Common.GREETING.format(user=user.username), markup=markup
+    )
     await callback.message.answer(**message.to_aiogram_kwargs())
     await callback.answer()
