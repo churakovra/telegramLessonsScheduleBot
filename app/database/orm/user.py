@@ -25,21 +25,29 @@ class User(Base):
     chat_id: Mapped[int] = mapped_column(BigInteger)
 
     lessons: Mapped[list["Lesson"]] = relationship(
-        argument="Lesson", back_populates="teacher"
+        argument="Lesson", back_populates="teacher", passive_deletes=True
     )
     teacher_slots: Mapped[list["Slot"]] = relationship(
-        argument="Slot", foreign_keys="[Slot.uuid_teacher]", back_populates="teacher"
+        argument="Slot",
+        foreign_keys="[Slot.uuid_teacher]",
+        back_populates="teacher",
+        passive_deletes=True,
     )
     student_slots: Mapped[list["Slot"]] = relationship(
-        argument="Slot", foreign_keys="[Slot.uuid_student]", back_populates="student"
+        argument="Slot",
+        foreign_keys="[Slot.uuid_student]",
+        back_populates="student",
+        passive_deletes=True,
     )
     teacher: Mapped[list["TeacherStudent"]] = relationship(
         argument="TeacherStudent",
         foreign_keys="[TeacherStudent.uuid_teacher]",
         back_populates="teacher",
+        passive_deletes=True,
     )
     student: Mapped[list["TeacherStudent"]] = relationship(
         argument="TeacherStudent",
         foreign_keys="[TeacherStudent.uuid_student]",
         back_populates="student",
+        passive_deletes=True,
     )

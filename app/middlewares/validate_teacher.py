@@ -25,11 +25,12 @@ class ValidateTeacherMiddleware(BaseMiddleware):
         async with async_session_factory() as session:
             teacher_service = TeacherService(session)
             try:
-                teacher = await teacher_service.get_teacher(event.from_user.username)
+                await teacher_service.get_teacher(event.from_user.username)
                 return await handler(event, data)
             except UserNotFoundException:
-                logger.error(
-                    f"Teacher {teacher.uuid} tried to add new lesson, but didn't have enough rights"
+                logger.exception(
+                    "Teacher username=%s tried to add new lesson, but didn't have enough rights",
+                    event.from_user.username,
                 )
                 await event.message.answer(BotStrings.Teacher.NOT_ENOUGH_RIGHTS)
                 return

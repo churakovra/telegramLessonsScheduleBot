@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.orm.slot import Slot
 from app.repositories.base import BaseRepository
 from app.schemas.slot import CreateSlotDTO, SlotDTO
+from app.utils.exceptions.slot_exceptions import SlotAlreadyTakenException
 
 
 class SlotRepository(BaseRepository):
@@ -64,10 +65,21 @@ class SlotRepository(BaseRepository):
     async def assign_slot(self, student_uuid: UUID, slot_uuid: UUID) -> None:
         stmt = (
             update(Slot)
-            .where(Slot.uuid == slot_uuid)
+            .where(
+                Slot.uuid == slot_uuid,
+                Slot.uuid_student.is_(None),
+                Slot.dt_start > func.now(),
+            )
             .values(uuid_student=student_uuid, dt_spot=datetime.now(UTC).astimezone())
         )
-        await self.execute(stmt)
+        result = await self.session.execute(stmt)
+        await self.session.flush()
+        if result.rowcount == 0:
+            if self.auto_commit:
+                await self.session.rollback()
+            raise SlotAlreadyTakenException(slot_uuid)
+        if self.auto_commit:
+            await self.session.commit()
 
     async def delete_slots(self, slots: list[SlotDTO]) -> None:
         if not slots:

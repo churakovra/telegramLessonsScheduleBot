@@ -68,8 +68,17 @@ class LessonRepository(BaseRepository):
         await self.execute(stmt)
 
     async def delete_lesson(self, lesson_uuid: UUID) -> None:
-        stmt = delete(Lesson).where(Lesson.uuid == lesson_uuid)
-        await self.execute(stmt)
+        detach_stmt = (
+            update(TeacherStudent)
+            .where(TeacherStudent.uuid_lesson == lesson_uuid)
+            .values(uuid_lesson=None)
+        )
+        delete_stmt = delete(Lesson).where(Lesson.uuid == lesson_uuid)
+        await self.session.execute(detach_stmt)
+        await self.session.execute(delete_stmt)
+        await self.session.flush()
+        if self.auto_commit:
+            await self.session.commit()
 
     async def update_lesson(self, lesson_uuid: UUID, values: dict) -> None:
         if not values:

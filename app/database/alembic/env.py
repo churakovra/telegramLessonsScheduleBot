@@ -5,6 +5,7 @@ from alembic import context
 from sqlalchemy import URL
 from sqlalchemy.ext.asyncio import create_async_engine
 
+import app.database.orm  # noqa: F401
 from app.database.database import url
 from app.database.orm.base import Base
 

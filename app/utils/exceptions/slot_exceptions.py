@@ -15,6 +15,12 @@ class SlotAssignException(Exception):
         self.message = f"Can't assign user {user_uuid} to slot {slot_uuid}"
 
 
+class SlotAlreadyTakenException(Exception):
+    def __init__(self, slot_uuid: UUID):
+        self.slot_uuid = slot_uuid
+        self.message = f"Slot {slot_uuid} is already taken"
+
+
 class SlotNotFoundException(Exception):
     def __init__(self, slot_uuid: UUID):
         self.slot_uuid = slot_uuid

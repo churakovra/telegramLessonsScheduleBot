@@ -170,7 +170,6 @@ async def request_delete_confirmation(
 async def delete_lesson(
     callback: CallbackQuery, callback_data: LessonDeleteCallback, services: Services
 ):
-    await services.lesson.detach_lesson(callback_data.uuid)
     await services.lesson.delete_lesson(callback_data.uuid)
 
     markup = teacher_main_menu()

@@ -12,10 +12,14 @@ class Slot(Base):
     __tablename__ = "slots"
 
     uuid: Mapped[UUID] = mapped_column(Uuid(), unique=True)
-    uuid_teacher: Mapped[int] = mapped_column(ForeignKey("users.uuid"), nullable=False)
+    uuid_teacher: Mapped[int] = mapped_column(
+        ForeignKey("users.uuid", ondelete="CASCADE"), nullable=False
+    )
     dt_start: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     dt_add: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
-    uuid_student: Mapped[int] = mapped_column(ForeignKey("users.uuid"), nullable=True)
+    uuid_student: Mapped[int] = mapped_column(
+        ForeignKey("users.uuid", ondelete="CASCADE"), nullable=True
+    )
     dt_spot: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
 
     __table_args__ = (
@@ -23,8 +27,14 @@ class Slot(Base):
     )
 
     teacher: Mapped["User"] = relationship(
-        argument="User", foreign_keys=[uuid_teacher], back_populates="teacher_slots"
+        argument="User",
+        foreign_keys=[uuid_teacher],
+        back_populates="teacher_slots",
+        passive_deletes=True,
     )
     student: Mapped["User"] = relationship(
-        argument="User", foreign_keys=[uuid_student], back_populates="student_slots"
+        argument="User",
+        foreign_keys=[uuid_student],
+        back_populates="student_slots",
+        passive_deletes=True,
     )
