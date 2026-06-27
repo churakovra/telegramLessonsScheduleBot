@@ -16,7 +16,7 @@ logger = setup_logger(__name__)
 @router.message(Command("start"))
 async def add_new_user(message: Message, services: Services):
     username = message.from_user.username
-    first_name = message.from_user.first_name
+    first_name = message.from_user.first_name or "there"
     last_name = message.from_user.last_name
     chat_id = message.from_user.id
 

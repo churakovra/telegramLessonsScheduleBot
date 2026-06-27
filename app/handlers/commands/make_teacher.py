@@ -26,6 +26,10 @@ async def make_teacher_from_student(
         return
     initiator_user = message.from_user.username
     teacher_username = command.args.strip()
+    if not teacher_username:
+        msg = BotMessage(text=BotStrings.Admin.MAKE_TEACHER_COMMAND_IS_EMPTY)
+        await message.answer(**msg.to_aiogram_kwargs())
+        return
     try:
         await services.user.add_role(initiator_user, teacher_username, UserRole.TEACHER)
         msg = BotMessage(
@@ -36,6 +40,6 @@ async def make_teacher_from_student(
             f"User {teacher_username} having {UserRole.TEACHER} now. Initiator is {initiator_user}"
         )
     except (UserNotFoundException, UserChangeRoleException) as e:
-        logger.error(e.message)
+        logger.error(str(e))
         msg = BotMessage(text=f"{BotStrings.Admin.MAKE_TEACHER_FAILURE}")
         await message.answer(**msg.to_aiogram_kwargs())

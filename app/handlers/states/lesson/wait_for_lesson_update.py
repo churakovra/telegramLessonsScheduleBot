@@ -17,6 +17,11 @@ async def handle_state(message: Message, state: FSMContext, services: Services):
     data = await state.get_data()
     lesson_uuid = data["lesson_uuid"]
     spec = data["spec"]
+    if not message.text:
+        await message.answer(
+            **BotMessage(text=BotStrings.Errors.INVALID_INPUT).to_aiogram_kwargs()
+        )
+        return
     new_value = message.text.strip()
     await services.lesson.update_lesson(lesson_uuid, **{spec: new_value})
     await message.answer(

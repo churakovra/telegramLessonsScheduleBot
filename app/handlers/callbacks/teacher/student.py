@@ -115,7 +115,7 @@ async def delete_student(
 ) -> None:
     teacher = await services.teacher.get_teacher(callback.from_user.username)
     student_uuid = callback_data.uuid
-    await services.teacher._detach_student(
+    await services.teacher.detach_student(
         teacher_uuid=teacher.uuid, student_uuid=student_uuid
     )
     await services.slot.delete_slots_attached_to_student(student_uuid)

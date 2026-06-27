@@ -43,7 +43,10 @@ async def reply_and_save_to_db(
     await callback.answer()
 
 
-@router.callback_query(ConfirmMenuCallback.filter(F.confirm.is_(False)))
+@router.callback_query(
+    ConfirmMenuCallback.filter(F.confirm.is_(False)),
+    ScheduleStates.wait_for_confirmation,
+)
 async def handle_callback(callback: CallbackQuery, state: FSMContext):
     message = BotMessage(text=BotStrings.Teacher.SLOTS_FAILURE)
     await callback.message.answer(**message.to_aiogram_kwargs())

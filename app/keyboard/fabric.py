@@ -35,7 +35,7 @@ from app.schemas.slot import SlotDTO
 from app.schemas.student import StudentDTO
 from app.utils.bot_strings import BotStrings
 from app.utils.datetime_utils import WEEKDAYS, day_format, time_format_HM
-from app.utils.enums.bot_values import ActionType
+from app.utils.enums.bot_values import ActionType, UserRole
 from app.utils.enums.menu_type import MenuType
 
 from ..utils.datetime_utils import full_format_no_sec
@@ -78,6 +78,19 @@ def admin_main_menu() -> MarkupData:
     return MarkupData.from_row_callbacks(
         ("Пока командами", MenuCallback(menu_type=MenuType.ADMIN_TEMP).pack()),
     )
+
+
+def get_main_menu_by_role(role: UserRole) -> "MarkupData | None":
+    """Return the main menu markup for a given user role."""
+    match role:
+        case UserRole.TEACHER:
+            return teacher_main_menu()
+        case UserRole.STUDENT:
+            return student_main_menu()
+        case UserRole.ADMIN:
+            return admin_main_menu()
+        case _:
+            return None
 
 
 def teacher_sub_menu_student() -> MarkupData:

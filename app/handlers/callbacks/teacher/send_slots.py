@@ -36,12 +36,13 @@ async def handle_callback(
         recipients = [MessageRecipient(chat_id=student.chat_id) for student in students]
         await sender.send(message=message, recipients=recipients)
         logger.info(f"Teacher {teacher_uuid} sent slots to students")
+
+        markup = teacher_main_menu()
+        message = BotMessage(text=BotStrings.Common.MENU, markup=markup)
+        await callback.message.answer(**message.to_aiogram_kwargs())
     except TeacherStudentsNotFound as e:
         logger.error(e.message)
         msg = BotMessage(text=e.message)
         await callback.message.answer(**msg.to_aiogram_kwargs())
     finally:
-        markup = teacher_main_menu()
-        message = BotMessage(text=BotStrings.Common.MENU, markup=markup)
-        await callback.message.answer(**message.to_aiogram_kwargs())
         await callback.answer()

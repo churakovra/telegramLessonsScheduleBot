@@ -157,10 +157,11 @@ async def statistics(
         message = BotMessage(text=text)
         await callback.message.answer(**message.to_aiogram_kwargs())
     except LessonsNotFoundException:
-        pass
+        message = BotMessage(text=BotStrings.Teacher.SLOTS_NOT_FOUND)
+        await callback.message.answer(**message.to_aiogram_kwargs())
     except SlotsNotFoundException:
         message = BotMessage(
-            text="Окошек не найдено. Добавь их с помощью Меню -> Расписание -> Добавить окошки"
+            text=BotStrings.Teacher.SLOTS_NOT_FOUND
         )
         await callback.message.answer(**message.to_aiogram_kwargs())
     finally:

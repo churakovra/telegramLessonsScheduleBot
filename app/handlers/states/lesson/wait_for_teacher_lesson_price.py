@@ -10,6 +10,8 @@ from app.utils.bot_strings import BotStrings
 from app.utils.enums.bot_values import ActionType
 from app.utils.logger import setup_logger
 
+from ._helpers import delete_previous_messages, send_next_prompt
+
 router = Router()
 logger = setup_logger(__name__)
 
@@ -21,16 +23,16 @@ async def handle_state(
     state: FSMContext,
 ):
     data = await state.get_data()
-    previous_message_id = data["previous_message_id"]
     operation_type = data["operation_type"]
-    raw_mt = getattr(message, "text", "")
+    raw_mt = message.text or ""
 
     label = data["lesson_label"]
     duration = data["lesson_duration"]
-    price = int(raw_mt.strip())
     uuid_teacher = data["uuid_teacher"]
 
     try:
+        price = int(raw_mt.strip())
+
         if operation_type == ActionType.CREATE:
             await services.lesson.create_lesson(
                 label=label, duration=duration, uuid_teacher=uuid_teacher, price=price
@@ -45,18 +47,25 @@ async def handle_state(
 
         reply_message = BotMessage(text=response_msg, markup=fabric.teacher_main_menu())
         await message.answer(**reply_message.to_aiogram_kwargs())
+        await delete_previous_messages(message, state)
         await state.clear()
 
         logger.info(f"Teacher {uuid_teacher} added new lesson")
-    except Exception:
-        logger.error(type)
-        error_message = BotMessage(
-            text=BotStrings.Teacher.TEACHER_LESSON_ADD_PRICE_ERROR
+    except ValueError:
+        logger.warning(f"Invalid price input from user: {raw_mt!r}")
+        await delete_previous_messages(message, state)
+        await send_next_prompt(
+            message=message,
+            state=state,
+            next_state=ScheduleStates.wait_for_teacher_lesson_price,
+            prompt_text=BotStrings.Teacher.TEACHER_LESSON_ADD_PRICE_ERROR,
         )
-        sent_message = await message.answer(**error_message.to_aiogram_kwargs())
-        await state.update_data(previous_message_id=sent_message.message_id)
-        await state.set_state(ScheduleStates.wait_for_teacher_lesson_price)
-
-    finally:
-        await message.chat.delete_message(message_id=previous_message_id)
-        await message.delete()
+    except Exception:
+        logger.exception("Failed to process lesson price")
+        await delete_previous_messages(message, state)
+        await send_next_prompt(
+            message=message,
+            state=state,
+            next_state=ScheduleStates.wait_for_teacher_lesson_price,
+            prompt_text=BotStrings.Teacher.TEACHER_LESSON_ADD_PRICE_ERROR,
+        )

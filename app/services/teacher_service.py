@@ -59,6 +59,10 @@ class TeacherService:
     async def _detach_student(self, teacher_uuid: UUID, student_uuid: UUID):
         await self._repository.detach_student(student_uuid, teacher_uuid)
 
+    async def detach_student(self, teacher_uuid: UUID, student_uuid: UUID):
+        """Detach a single student from a teacher."""
+        await self._detach_student(teacher_uuid, student_uuid)
+
     async def detach_students(self, *, teacher_uuid: UUID, students: list[UserDTO]):
         for student in students:
             await self._detach_student(teacher_uuid, student.uuid)

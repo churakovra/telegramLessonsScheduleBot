@@ -26,7 +26,8 @@ async def handle_callback(
         markup = slots_for_students(slots=slots)
 
         # Build message
-        message = BotMessage(text=callback.message.text, markup=markup)
+        text = callback.message.text or "Выберите время"
+        message = BotMessage(text=text, markup=markup)
         await callback.message.answer(**message.to_aiogram_kwargs())
         await callback.message.delete()
     except SlotFreeNotFoundException as e:

@@ -6,6 +6,7 @@ from app.keyboard.callback_factories.menu import MenuCallback
 from app.keyboard.fabric import (
     admin_main_menu,
     admin_sub_menu_temp,
+    get_main_menu_by_role,
     student_main_menu,
     student_sub_menu_slot,
     student_sub_menu_teacher,
@@ -17,7 +18,6 @@ from app.keyboard.fabric import (
 from app.message.models import BotMessage
 from app.schemas.user import UserDTO
 from app.utils.bot_strings import BotStrings
-from app.utils.enums.bot_values import UserRole
 from app.utils.enums.menu_type import MenuType
 from app.utils.logger import setup_logger
 
@@ -42,7 +42,7 @@ main_menus = [MenuType.TEACHER, MenuType.STUDENT, MenuType.ADMIN]
 
 
 @router.callback_query(MenuCallback.filter(F.menu_type.in_(markup_type_by_menu_type)))
-async def handle_teacher_menu(
+async def handle_menu_navigation(
     callback: CallbackQuery, callback_data: MenuCallback
 ) -> None:
     menu_type = callback_data.menu_type
@@ -67,15 +67,7 @@ async def handle_cancel(
     state: FSMContext,
     user: UserDTO,
 ):
-    # Get appropriate main menu markup based on user role
-    if user.role.value == "teacher":
-        markup = teacher_main_menu()
-    elif user.role.value == "student":
-        markup = student_main_menu()
-    elif user.role.value == "admin":
-        markup = admin_main_menu()
-    else:
-        markup = None
+    markup = get_main_menu_by_role(user.role)
 
     message = BotMessage(text=BotStrings.Common.MENU, markup=markup)
     await state.clear()
@@ -85,16 +77,7 @@ async def handle_cancel(
 
 @router.callback_query(MenuCallback.filter(F.menu_type == MenuType.NEW))
 async def handle_callback(callback: CallbackQuery, user: UserDTO):
-    # Get appropriate main menu markup based on user role
-    match user.role:
-        case UserRole.TEACHER:
-            markup = teacher_main_menu()
-        case UserRole.STUDENT:
-            markup = student_main_menu()
-        case UserRole.ADMIN:
-            markup = admin_main_menu()
-        case _:
-            markup = None
+    markup = get_main_menu_by_role(user.role)
 
     message = BotMessage(
         text=BotStrings.Common.GREETING.format(user=user.username), markup=markup

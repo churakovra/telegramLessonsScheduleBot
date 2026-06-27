@@ -151,7 +151,7 @@ async def update_whole_lesson(
     await callback.answer()
 
 
-@router.callback_query(LessonDeleteCallback.filter(not F.confirmed))
+@router.callback_query(LessonDeleteCallback.filter(~F.confirmed))
 async def request_delete_confirmation(
     callback: CallbackQuery, callback_data: LessonDeleteCallback
 ):

@@ -7,6 +7,9 @@ class BotStrings:
         NOT_ENOUGH_RIGHTS = "Ошибка. Недостаточно прав для выполнения данной операции"
         CONFIRM_OPERATION = "Подтвердите операцию:"
 
+    class Errors:
+        INVALID_INPUT = "Неверный ввод. Пожалуйста, отправьте текстовое сообщение."
+
     class Teacher:
         # * Bind user
         TEACHER_STUDENT_ADD = "Отправь логин ученика (можно несколько через пробел)"
