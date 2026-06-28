@@ -9,6 +9,8 @@ from app.schemas.slot import CreateSlotDTO
 from app.services.container import Services
 from app.states.schedule_states import ScheduleStates
 from app.utils.bot_strings import BotStrings
+from app.utils.datetime_utils import full_format_no_sec
+from app.utils.exceptions.slot_exceptions import SlotConflictException
 from app.utils.logger import setup_logger
 
 router = Router()
@@ -27,10 +29,23 @@ async def reply_and_save_to_db(
     teacher_uuid = data["teacher_uuid"]
     action = data["action"]
 
-    if action == "Create":
-        await services.slot.add_slots(slots)
-    else:
-        await services.slot.update_slots(slots, teacher_uuid)
+    try:
+        if action == "Create":
+            await services.slot.add_slots(slots)
+        else:
+            await services.slot.update_slots(slots, teacher_uuid)
+    except SlotConflictException as e:
+        conflicted_slots = "\n".join(
+            f"• {dt_start.strftime(full_format_no_sec)}"
+            for dt_start in e.conflicted_datetimes
+        )
+        message = BotMessage(
+            text=BotStrings.Teacher.SLOTS_CONFLICT.format(slots=conflicted_slots)
+        )
+        await callback.message.answer(**message.to_aiogram_kwargs())
+        await state.set_state(ScheduleStates.wait_for_slots)
+        await callback.answer()
+        return
 
     logger.info(f"Teacher {teacher_uuid} successfully added slots")
 

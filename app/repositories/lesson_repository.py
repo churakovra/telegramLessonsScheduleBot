@@ -59,6 +59,19 @@ class LessonRepository(BaseRepository):
         )
         return await self.list_dto(stmt, LessonDTO)
 
+    async def get_student_lesson_for_teacher(
+        self, student_uuid: UUID, teacher_uuid: UUID
+    ) -> LessonDTO | None:
+        stmt = (
+            select(Lesson)
+            .join(TeacherStudent, Lesson.uuid == TeacherStudent.uuid_lesson)
+            .where(
+                TeacherStudent.uuid_student == student_uuid,
+                TeacherStudent.uuid_teacher == teacher_uuid,
+            )
+        )
+        return await self.one_or_none_dto(stmt, LessonDTO)
+
     async def detach_lesson(self, lesson_uuid: UUID) -> None:
         stmt = (
             update(TeacherStudent)

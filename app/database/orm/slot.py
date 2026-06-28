@@ -21,6 +21,9 @@ class Slot(Base):
         ForeignKey("users.uuid", ondelete="CASCADE"), nullable=True
     )
     dt_spot: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+    feedback_prompt_sent_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     __table_args__ = (
         UniqueConstraint("uuid_teacher", "dt_start", name="_teacher_dt_start_uc"),

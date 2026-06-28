@@ -73,6 +73,13 @@ class LessonService:
         lessons = await self._repository.get_student_lessons(student_uuid)
         return lessons
 
+    async def get_student_lesson_for_teacher(
+        self, student_uuid: UUID, teacher_uuid: UUID
+    ) -> LessonDTO | None:
+        return await self._repository.get_student_lesson_for_teacher(
+            student_uuid=student_uuid, teacher_uuid=teacher_uuid
+        )
+
     async def get_lessons_to_attach(
         self, student_uuid: UUID, teacher_uuid: UUID
     ) -> list[LessonDTO]:

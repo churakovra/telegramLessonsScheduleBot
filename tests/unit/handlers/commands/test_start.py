@@ -20,7 +20,12 @@ async def test_greets_registered_user(message, services):
     await add_new_user(message, services)
 
     message.answer.assert_awaited_once_with(
-        text=BotStrings.Common.GREETING.format(user="Alice"),
+        text="\n\n".join(
+            [
+                BotStrings.Common.START_WELCOME.format(name="Alice"),
+                BotStrings.Common.START_NEW_STUDENT,
+            ]
+        ),
         parse_mode=None,
     )
 
@@ -31,7 +36,12 @@ async def test_greets_existing_user(message, services):
     await add_new_user(message, services)
 
     message.answer.assert_awaited_once_with(
-        text=BotStrings.Common.GREETING.format(user="Alice"),
+        text="\n\n".join(
+            [
+                BotStrings.Common.START_WELCOME.format(name="Alice"),
+                BotStrings.Common.START_RETURNING,
+            ]
+        ),
         parse_mode=None,
     )
 

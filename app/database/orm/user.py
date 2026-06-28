@@ -23,6 +23,9 @@ class User(Base):
     is_teacher: Mapped[bool] = mapped_column(default=False)
     is_admin: Mapped[bool] = mapped_column(default=False)
     chat_id: Mapped[int] = mapped_column(BigInteger)
+    display_name: Mapped[str | None] = mapped_column(String, nullable=True)
+    bio: Mapped[str | None] = mapped_column(String, nullable=True)
+    subjects: Mapped[str | None] = mapped_column(String, nullable=True)
 
     lessons: Mapped[list["Lesson"]] = relationship(
         argument="Lesson", back_populates="teacher", passive_deletes=True

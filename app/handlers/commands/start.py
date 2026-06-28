@@ -34,8 +34,20 @@ async def add_new_user(message: Message, services: Services):
             chat_id=chat_id,
         )
         logger.info(f"New user registered. User id: {new_user_uuid}")
+        text = "\n\n".join(
+            [
+                BotStrings.Common.START_WELCOME.format(name=first_name),
+                BotStrings.Common.START_NEW_STUDENT,
+            ]
+        )
     except UserAlreadyExistsException:
         logger.info(f"User {username} already registered")
+        text = "\n\n".join(
+            [
+                BotStrings.Common.START_WELCOME.format(name=first_name),
+                BotStrings.Common.START_RETURNING,
+            ]
+        )
 
-    msg = BotMessage(text=BotStrings.Common.GREETING.format(user=first_name))
+    msg = BotMessage(text=text)
     await message.answer(**msg.to_aiogram_kwargs())

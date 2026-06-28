@@ -21,6 +21,12 @@ class SlotAlreadyTakenException(Exception):
         self.message = f"Slot {slot_uuid} is already taken"
 
 
+class SlotConflictException(Exception):
+    def __init__(self, conflicted_datetimes):
+        self.conflicted_datetimes = sorted(set(conflicted_datetimes))
+        self.message = "Slots conflict with existing slots"
+
+
 class SlotNotFoundException(Exception):
     def __init__(self, slot_uuid: UUID):
         self.slot_uuid = slot_uuid
