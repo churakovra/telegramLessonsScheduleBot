@@ -6,7 +6,7 @@ from aiogram.types import Message
 from app.keyboard import fabric
 from app.message.models import BotMessage
 from app.schemas.user import UserDTO
-from app.utils.enums.bot_values import UserRole
+from app.utils.bot_strings import BotStrings
 
 router = Router()
 
@@ -15,16 +15,8 @@ router = Router()
 async def cancel(message: Message, state: FSMContext, user: UserDTO) -> None:
     await state.clear()
 
-    # Get markup based on role
-    if user.role == UserRole.TEACHER:
-        markup = fabric.teacher_main_menu()
-    elif user.role == UserRole.STUDENT:
-        markup = fabric.student_main_menu()
-    elif user.role == UserRole.ADMIN:
-        markup = fabric.admin_main_menu()
-    else:
-        markup = None
+    markup = fabric.get_main_menu_by_role(user.role)
 
     # Build and send message
-    bot_message = BotMessage(text="Меню", markup=markup)
+    bot_message = BotMessage(text=BotStrings.Common.MENU, markup=markup)
     await message.answer(**bot_message.to_aiogram_kwargs())

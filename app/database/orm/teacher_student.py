@@ -14,8 +14,12 @@ if TYPE_CHECKING:
 class TeacherStudent(Base):
     __tablename__ = "teacher_student"
 
-    uuid_teacher: Mapped[UUID] = mapped_column(ForeignKey("users.uuid"))
-    uuid_student: Mapped[UUID] = mapped_column(ForeignKey("users.uuid"))
+    uuid_teacher: Mapped[UUID] = mapped_column(
+        ForeignKey("users.uuid", ondelete="CASCADE")
+    )
+    uuid_student: Mapped[UUID] = mapped_column(
+        ForeignKey("users.uuid", ondelete="CASCADE")
+    )
     uuid_lesson: Mapped[UUID] = mapped_column(ForeignKey("lessons.uuid"), nullable=True)
 
     __table_args__ = (
@@ -23,9 +27,15 @@ class TeacherStudent(Base):
     )
 
     teacher: Mapped["User"] = relationship(
-        argument="User", foreign_keys=[uuid_teacher], back_populates="teacher"
+        argument="User",
+        foreign_keys=[uuid_teacher],
+        back_populates="teacher",
+        passive_deletes=True,
     )
     student: Mapped["User"] = relationship(
-        argument="User", foreign_keys=[uuid_student], back_populates="student"
+        argument="User",
+        foreign_keys=[uuid_student],
+        back_populates="student",
+        passive_deletes=True,
     )
     lesson: Mapped["Lesson"] = relationship(argument="Lesson", back_populates="lessons")

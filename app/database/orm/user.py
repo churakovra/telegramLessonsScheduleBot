@@ -23,23 +23,34 @@ class User(Base):
     is_teacher: Mapped[bool] = mapped_column(default=False)
     is_admin: Mapped[bool] = mapped_column(default=False)
     chat_id: Mapped[int] = mapped_column(BigInteger)
+    display_name: Mapped[str | None] = mapped_column(String, nullable=True)
+    bio: Mapped[str | None] = mapped_column(String, nullable=True)
+    subjects: Mapped[str | None] = mapped_column(String, nullable=True)
 
     lessons: Mapped[list["Lesson"]] = relationship(
-        argument="Lesson", back_populates="teacher"
+        argument="Lesson", back_populates="teacher", passive_deletes=True
     )
     teacher_slots: Mapped[list["Slot"]] = relationship(
-        argument="Slot", foreign_keys="[Slot.uuid_teacher]", back_populates="teacher"
+        argument="Slot",
+        foreign_keys="[Slot.uuid_teacher]",
+        back_populates="teacher",
+        passive_deletes=True,
     )
     student_slots: Mapped[list["Slot"]] = relationship(
-        argument="Slot", foreign_keys="[Slot.uuid_student]", back_populates="student"
+        argument="Slot",
+        foreign_keys="[Slot.uuid_student]",
+        back_populates="student",
+        passive_deletes=True,
     )
     teacher: Mapped[list["TeacherStudent"]] = relationship(
         argument="TeacherStudent",
         foreign_keys="[TeacherStudent.uuid_teacher]",
         back_populates="teacher",
+        passive_deletes=True,
     )
     student: Mapped[list["TeacherStudent"]] = relationship(
         argument="TeacherStudent",
         foreign_keys="[TeacherStudent.uuid_student]",
         back_populates="student",
+        passive_deletes=True,
     )

@@ -10,7 +10,7 @@ from app.config.settings import (
     AMQP_DEFAULT_ROUTING_KEY,
     AMQP_URL,
 )
-from app.message.models import BotMessage, MessageEnvelope
+from app.message.models import MessageEnvelope
 from app.utils.logger import setup_logger
 
 logger = setup_logger(__name__)

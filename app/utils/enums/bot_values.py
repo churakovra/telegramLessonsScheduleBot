@@ -54,3 +54,26 @@ class KeyboardType(StrEnum):
     ENTITY_OPERATIONS = "entity_operations"
     LESSONS_TO_ASSIGN = "lessons_to_assign"
     CANCEL = "cancel"
+
+
+class NotificationTriggerType(StrEnum):
+    BEFORE_LESSON = "before_lesson"
+    CUSTOM = "custom"
+
+
+class StatisticsPeriod(StrEnum):
+    WEEK = "week"
+    MONTH = "month"
+    YEAR = "year"
+
+
+class RescheduleStatus(StrEnum):
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+
+
+class JoinRequestStatus(StrEnum):
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"

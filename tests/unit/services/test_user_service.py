@@ -1,22 +1,31 @@
+from datetime import datetime
 from uuid import UUID
 
 import pytest
 from pydantic import ValidationError
+from sqlalchemy.exc import IntegrityError
 
-from app.schemas.user import CreateUserDTO
+from app.schemas.user import UserDTO
 from app.services.user_service import UserService
 from app.utils.enums.bot_values import UserRole
 from app.utils.exceptions.user_exceptions import (
+    UserAlreadyExistsException,
     UserChangeRoleException,
     UserNotFoundException,
 )
 
-valid_user = CreateUserDTO(
+valid_user = UserDTO(
+    id=1,
+    uuid=UUID("00000000-0000-0000-0000-000000000001"),
     username="test-username",
     firstname="test-firstname",
     lastname="test-lastname",
-    role=UserRole.STUDENT,
+    is_student=True,
+    is_teacher=False,
+    is_admin=False,
     chat_id=123456789,
+    created_at=datetime.now(),
+    last_updated_at=datetime.now(),
 )
 
 valid_admin = valid_user.model_copy()
@@ -95,6 +104,28 @@ class TestRegisterUser(Base):
             )
             assert isinstance(new_user_uuid, UUID)
             mock.assert_awaited_once()
+
+    async def test_duplicate_user_is_translated_and_rolled_back(self, func_mock):
+        func_mock(
+            service=self.service._repository,
+            mock_method="add_user",
+            side_effect=IntegrityError("insert", {}, Exception("duplicate")),
+        )
+        rollback = func_mock(
+            service=self.service._repository.session,
+            mock_method="rollback",
+        )
+
+        with pytest.raises(UserAlreadyExistsException):
+            await self.service.register_user(
+                "test-username",
+                "test-firstname",
+                "test-lastname",
+                UserRole.STUDENT,
+                123456789,
+            )
+
+        rollback.assert_awaited_once()
 
 
 class TestAddRole(Base):

@@ -11,4 +11,5 @@ routers.extend(state_routers)
 
 
 def register_routers(dp: Dispatcher):
-    [dp.include_router(router) for router in routers]
+    for router in routers:
+        dp.include_router(router)

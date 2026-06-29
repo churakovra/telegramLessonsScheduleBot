@@ -20,3 +20,16 @@ class ScheduleStates(StatesGroup):
     wait_for_teacher_lesson_duration = State()  # wait for new lesson duration
     wait_for_teacher_lesson_price = State()  # wait for new lesson price
     wait_for_lesson_update = State()  # wait for new lesson label/duration/price
+    wait_for_notification_text = State()
+    wait_for_notification_minutes = State()
+    wait_for_recurrence_start_time = State()
+    wait_for_recurrence_end_time = State()
+    wait_for_recurrence_duration = State()
+    wait_for_recurrence_start_date = State()
+    wait_for_recurrence_end_date = State()
+    wait_for_reschedule_date = State()
+    wait_for_reschedule_time = State()
+    wait_for_feedback_comment = State()
+    wait_for_teacher_profile_display_name = State()
+    wait_for_teacher_profile_bio = State()
+    wait_for_teacher_profile_subjects = State()

@@ -34,6 +34,9 @@ class UserDTO(BaseDTO):
     is_teacher: bool
     is_admin: bool
     chat_id: int
+    display_name: str | None = None
+    bio: str | None = None
+    subjects: str | None = None
 
     model_config = {"from_attributes": True}
 

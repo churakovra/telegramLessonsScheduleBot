@@ -97,7 +97,7 @@ def get_slots_schedule_reply(
                 week_earning += day_earning
 
             current_day = slot_date
-            week_day_num = current_day.isocalendar().weekday
+            week_day_num = current_day.isocalendar().weekday - 1
             weekday = WEEKDAYS[week_day_num][2]
             response.write(f"{weekday} {current_day}\n")
             day_slots.clear()

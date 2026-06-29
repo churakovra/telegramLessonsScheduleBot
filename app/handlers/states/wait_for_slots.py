@@ -2,13 +2,11 @@ from aiogram import Router
 from aiogram.filters import or_f
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.keyboard import fabric
 from app.message.models import BotMessage
 from app.message.utils import slots_to_reply
-from app.services.slot_service import SlotService
-from app.services.teacher_service import TeacherService
+from app.services.container import Services
 from app.states.schedule_states import ScheduleStates
 from app.utils.logger import setup_logger
 
@@ -22,25 +20,23 @@ logger = setup_logger(__name__)
         ScheduleStates.wait_for_slots_update,
     )
 )
-async def wait_for_slots(message: Message, state: FSMContext, session: AsyncSession):
+async def wait_for_slots(message: Message, state: FSMContext, services: Services):
     data = await state.get_data()
     week_flag = data["week_flag"]
     slots_raw = message.text
-    teacher_service = TeacherService(session)
-    teacher = await teacher_service.get_teacher(message.from_user.username)
-    slot_service = SlotService(session)
-    slots = await slot_service.parse_slots(
+    teacher = await services.teacher.get_teacher(message.from_user.username)
+    slots = await services.slot.parse_slots(
         message_text=slots_raw, uuid_teacher=teacher.uuid, week_flag=week_flag
     )
     action = (
         "Create"
-        if await state.get_state() == "ScheduleStates:wait_for_slots"
+        if await state.get_state() == ScheduleStates.wait_for_slots.state
         else "Update"
     )
     await state.set_state(ScheduleStates.wait_for_confirmation)
     await state.update_data(teacher_uuid=teacher.uuid)
     await state.update_data(slots=slots)
     await state.update_data(action=action)
-    markup = fabric.parsed_slots(type("Context", (), {"slots": slots})())
+    markup = fabric.parsed_slots()
     msg = BotMessage(text=slots_to_reply(slots), markup=markup)
     await message.answer(**msg.to_aiogram_kwargs())
