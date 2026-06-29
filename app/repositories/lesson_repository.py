@@ -59,6 +59,19 @@ class LessonRepository(BaseRepository):
         )
         return await self.list_dto(stmt, LessonDTO)
 
+    async def get_student_lesson_for_teacher(
+        self, student_uuid: UUID, teacher_uuid: UUID
+    ) -> LessonDTO | None:
+        stmt = (
+            select(Lesson)
+            .join(TeacherStudent, Lesson.uuid == TeacherStudent.uuid_lesson)
+            .where(
+                TeacherStudent.uuid_student == student_uuid,
+                TeacherStudent.uuid_teacher == teacher_uuid,
+            )
+        )
+        return await self.one_or_none_dto(stmt, LessonDTO)
+
     async def detach_lesson(self, lesson_uuid: UUID) -> None:
         stmt = (
             update(TeacherStudent)
@@ -68,8 +81,17 @@ class LessonRepository(BaseRepository):
         await self.execute(stmt)
 
     async def delete_lesson(self, lesson_uuid: UUID) -> None:
-        stmt = delete(Lesson).where(Lesson.uuid == lesson_uuid)
-        await self.execute(stmt)
+        detach_stmt = (
+            update(TeacherStudent)
+            .where(TeacherStudent.uuid_lesson == lesson_uuid)
+            .values(uuid_lesson=None)
+        )
+        delete_stmt = delete(Lesson).where(Lesson.uuid == lesson_uuid)
+        await self.session.execute(detach_stmt)
+        await self.session.execute(delete_stmt)
+        await self.session.flush()
+        if self.auto_commit:
+            await self.session.commit()
 
     async def update_lesson(self, lesson_uuid: UUID, values: dict) -> None:
         if not values:

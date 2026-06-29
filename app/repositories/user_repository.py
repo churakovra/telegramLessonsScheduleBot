@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import delete, select, update
+from sqlalchemy import delete, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.orm.user import User
@@ -20,6 +20,17 @@ class UserRepository(BaseRepository):
     async def get_user(self, username: str) -> UserDTO | None:
         stmt = select(User).where(User.username == username)
         return await self.one_or_none_dto(stmt, UserDTO)
+
+    async def get_admin_counts(self) -> tuple[int, int, int]:
+        stmt = select(
+            func.count(User.uuid),
+            func.count().filter(User.is_teacher.is_(True)),
+            func.count().filter(User.is_student.is_(True)),
+        )
+        total_users, total_teachers, total_students = (
+            await self.session.execute(stmt)
+        ).one()
+        return int(total_users), int(total_teachers), int(total_students)
 
     async def edit_role(self, user_uuid: UUID, role: UserRole, status: bool) -> None:
         if role == UserRole.TEACHER:

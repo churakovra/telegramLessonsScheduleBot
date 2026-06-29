@@ -10,7 +10,10 @@ router = Router()
 
 @router.callback_query(F.data == BotStrings.User.CALLBACK_USER_INFO)
 async def send_user_info(callback: CallbackQuery, services: Services):
-    username = getattr(callback.from_user, "username", "") or ""
+    if callback.from_user is None:
+        await callback.answer()
+        return
+    username = callback.from_user.username or ""
     response = await services.user.get_user_info(username)
     if callback.message:
         message = BotMessage(text=response)

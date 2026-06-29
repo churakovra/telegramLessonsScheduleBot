@@ -1,3 +1,4 @@
+from .admin import admin_routers
 from .common import common_routers
 from .common.user_info import router as user_info_router
 from .student import student_routers
@@ -8,5 +9,6 @@ callback_routers = [
 ]
 
 callback_routers.extend(common_routers)
+callback_routers.extend(admin_routers)
 callback_routers.extend(teacher_routers)
 callback_routers.extend(student_routers)

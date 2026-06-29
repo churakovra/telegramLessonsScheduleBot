@@ -13,6 +13,7 @@ class CreateSlotDTO(BaseModel):
     dt_add: datetime = Field(default_factory=lambda: datetime.now(UTC))
     uuid_student: UUID | None
     dt_spot: datetime | None
+    feedback_prompt_sent_at: datetime | None = None
 
 
 class SlotDTO(BaseDTO):
@@ -22,10 +23,17 @@ class SlotDTO(BaseDTO):
     dt_add: datetime
     uuid_student: UUID | None
     dt_spot: datetime | None
+    feedback_prompt_sent_at: datetime | None = None
 
     model_config = {"from_attributes": True}
 
-    @field_validator("dt_start", "dt_add", "dt_spot", mode="before")
+    @field_validator(
+        "dt_start",
+        "dt_add",
+        "dt_spot",
+        "feedback_prompt_sent_at",
+        mode="before",
+    )
     @classmethod
     def convert_to_utc3(cls, value: datetime):
         utc3 = timezone(timedelta(hours=3))

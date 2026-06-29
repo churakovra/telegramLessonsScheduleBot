@@ -1,7 +1,14 @@
+from datetime import UTC, datetime, timedelta
+
 import pytest
 import pytest_asyncio
 
+from app.repositories.lesson_repository import LessonRepository
+from app.repositories.slot_repository import SlotRepository
+from app.repositories.teacher_repository import TeacherRepository
 from app.repositories.user_repository import UserRepository
+from app.schemas.lesson import CreateLessonDTO
+from app.schemas.slot import CreateSlotDTO
 from app.schemas.user import UserDTO
 from app.utils.enums.bot_values import UserRole
 
@@ -85,3 +92,37 @@ class TestEditRole(Base):
     ):
         with pytest.raises(ValueError):
             await self.repo.edit_role(prepare_student.uuid, UserRole.NOT_DEFINED, True)
+
+
+class TestDeleteUser(Base):
+    async def test_delete_user_cascades_related_rows(
+        self, setup_session, create_user
+    ):
+        teacher = await create_user(UserRole.TEACHER)
+        student = await create_user(UserRole.STUDENT)
+        teachers = TeacherRepository(setup_session)
+        lessons = LessonRepository(setup_session)
+        slots = SlotRepository(setup_session)
+        lesson = await lessons.create_lesson(
+            CreateLessonDTO(
+                label="History",
+                duration=60,
+                uuid_teacher=teacher.uuid,
+                price=1000,
+            )
+        )
+        slot = CreateSlotDTO(
+            uuid_teacher=teacher.uuid,
+            dt_start=datetime.now(UTC) + timedelta(days=1),
+            uuid_student=None,
+            dt_spot=None,
+        )
+        await teachers.attach_student(teacher.uuid, student.uuid, lesson.uuid)
+        await slots.add_slots([slot])
+        await slots.assign_slot(student.uuid, slot.uuid)
+
+        await self.repo.delete_user(student.uuid)
+
+        assert await self.repo.get_user(student.username) is None
+        assert await lessons.get_student_lessons(student.uuid) == []
+        assert await slots.get_slot(slot.uuid) is None

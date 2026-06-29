@@ -76,3 +76,25 @@ async def test_attach_and_detach_student_lesson(setup_session, create_user):
 
     await lessons.detach_specific_lesson(student.uuid, teacher.uuid, lesson.uuid)
     assert await lessons.get_student_lessons(student.uuid) == []
+
+
+async def test_delete_lesson_detaches_student_links(setup_session, create_user):
+    teacher = await create_user(UserRole.TEACHER)
+    student = await create_user(UserRole.STUDENT)
+    teachers = TeacherRepository(setup_session)
+    lessons = LessonRepository(setup_session)
+    lesson = await lessons.create_lesson(
+        CreateLessonDTO(
+            label="Chemistry",
+            duration=45,
+            uuid_teacher=teacher.uuid,
+            price=1200,
+        )
+    )
+    await teachers.attach_student(teacher.uuid, student.uuid, None)
+    await lessons.attach_lesson(student.uuid, teacher.uuid, lesson.uuid)
+
+    await lessons.delete_lesson(lesson.uuid)
+
+    assert await lessons.get_lesson_or_none(lesson.uuid) is None
+    assert await lessons.get_student_lessons(student.uuid) == []

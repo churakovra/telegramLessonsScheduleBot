@@ -7,6 +7,7 @@ import pytest
 from app.schemas.slot import SlotDTO
 from app.services.slot_service import SlotService
 from app.utils.exceptions.slot_exceptions import (
+    SlotConflictException,
     SlotFreeNotFoundException,
     SlotNotFoundException,
 )
@@ -56,6 +57,7 @@ class TestAddSlot:
 
     async def test_all_valid_slots_added(self, slots_multiple_elements):
         self.service._repository.add_slots = AsyncMock()
+        self.service._repository.find_slots_by_starts = AsyncMock(return_value=[])
 
         await self.service.add_slots(slots_multiple_elements)
 
@@ -65,6 +67,7 @@ class TestAddSlot:
 
     async def test_handle_value_error(self, slots_multiple_elements):
         self.service._repository.add_slots = AsyncMock(side_effect=ValueError)
+        self.service._repository.find_slots_by_starts = AsyncMock(return_value=[])
 
         with pytest.raises(ValueError):
             await self.service.add_slots(slots_multiple_elements)
@@ -75,6 +78,17 @@ class TestAddSlot:
         self.service._repository.add_slots = AsyncMock()
 
         await self.service.add_slots(empty_slots_list)
+
+        self.service._repository.add_slots.assert_not_called()
+
+    async def test_existing_slot_start_raises_conflict(self, slots_multiple_elements):
+        self.service._repository.add_slots = AsyncMock()
+        self.service._repository.find_slots_by_starts = AsyncMock(
+            return_value=[slots_multiple_elements[0]]
+        )
+
+        with pytest.raises(SlotConflictException):
+            await self.service.add_slots(slots_multiple_elements)
 
         self.service._repository.add_slots.assert_not_called()
 

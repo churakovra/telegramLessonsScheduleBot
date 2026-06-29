@@ -151,7 +151,7 @@ async def update_whole_lesson(
     await callback.answer()
 
 
-@router.callback_query(LessonDeleteCallback.filter(not F.confirmed))
+@router.callback_query(LessonDeleteCallback.filter(~F.confirmed))
 async def request_delete_confirmation(
     callback: CallbackQuery, callback_data: LessonDeleteCallback
 ):
@@ -170,7 +170,6 @@ async def request_delete_confirmation(
 async def delete_lesson(
     callback: CallbackQuery, callback_data: LessonDeleteCallback, services: Services
 ):
-    await services.lesson.detach_lesson(callback_data.uuid)
     await services.lesson.delete_lesson(callback_data.uuid)
 
     markup = teacher_main_menu()

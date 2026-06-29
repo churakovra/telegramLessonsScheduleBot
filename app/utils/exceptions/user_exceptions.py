@@ -9,10 +9,15 @@ class UserRoleException(Exception):
         self.message = f"User {username} doesn't have access to make an operation"
 
 
-class UserAddException(Exception):
+class UserAlreadyExistsException(Exception):
     def __init__(self, username: str):
-        self.username = (username,)
+        self.username = username
         self.message = f"Error creating user {username}: User already exists"
+        super().__init__(self.message)
+
+
+# Backward-compatible name for existing imports.
+UserAddException = UserAlreadyExistsException
 
 
 class UserChangeRoleException(Exception):

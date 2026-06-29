@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.user_repository import UserRepository
@@ -8,6 +9,7 @@ from app.utils.bot_strings import BotStrings
 from app.utils.datetime_utils import day_format
 from app.utils.enums.bot_values import UserRole
 from app.utils.exceptions.user_exceptions import (
+    UserAlreadyExistsException,
     UserChangeRoleException,
     UserNotFoundException,
     UserUnknownRoleException,
@@ -41,7 +43,11 @@ class UserService:
             role=role,
             chat_id=chat_id,
         )
-        user = await self._repository.add_user(new_user)
+        try:
+            user = await self._repository.add_user(new_user)
+        except IntegrityError as exc:
+            await self._repository.session.rollback()
+            raise UserAlreadyExistsException(username) from exc
         return user.uuid if user else new_user.uuid
 
     async def add_role(self, initiator_username: str, username: str, role: UserRole):

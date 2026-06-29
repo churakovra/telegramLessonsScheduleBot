@@ -30,7 +30,7 @@ async def wait_for_slots(message: Message, state: FSMContext, services: Services
     )
     action = (
         "Create"
-        if await state.get_state() == "ScheduleStates:wait_for_slots"
+        if await state.get_state() == ScheduleStates.wait_for_slots.state
         else "Update"
     )
     await state.set_state(ScheduleStates.wait_for_confirmation)

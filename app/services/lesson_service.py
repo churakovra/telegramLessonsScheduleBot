@@ -49,7 +49,7 @@ class LessonService:
             raise LessonsNotFoundException()
         return lessons
 
-    async def detach_lesson(self, lesson_uuid: UUID) -> None:
+    async def _detach_lesson(self, lesson_uuid: UUID) -> None:
         await self._repository.detach_lesson(lesson_uuid)
 
     async def delete_lesson(self, lesson_uuid: UUID) -> None:
@@ -72,6 +72,13 @@ class LessonService:
     async def get_student_lessons(self, student_uuid: UUID) -> list[LessonDTO]:
         lessons = await self._repository.get_student_lessons(student_uuid)
         return lessons
+
+    async def get_student_lesson_for_teacher(
+        self, student_uuid: UUID, teacher_uuid: UUID
+    ) -> LessonDTO | None:
+        return await self._repository.get_student_lesson_for_teacher(
+            student_uuid=student_uuid, teacher_uuid=teacher_uuid
+        )
 
     async def get_lessons_to_attach(
         self, student_uuid: UUID, teacher_uuid: UUID
