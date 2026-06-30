@@ -10,6 +10,7 @@ from typing import Sequence, Union
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects import postgresql
 
 
 revision: str = "2f7b9c4d1a6e"
@@ -20,11 +21,12 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     """Upgrade schema."""
-    join_request_status = sa.Enum(
+    join_request_status = postgresql.ENUM(
         "PENDING",
         "APPROVED",
         "REJECTED",
         name="join_request_status",
+        create_type=False,
     )
     join_request_status.create(op.get_bind(), checkfirst=True)
 
