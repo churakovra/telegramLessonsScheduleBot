@@ -7,12 +7,6 @@ from app.keyboard.callback_factories.feedback import (
     FeedbackCommentCallback,
     TeacherFeedbackListCallback,
 )
-from app.keyboard.callback_factories.join_request import (
-    StudentJoinRequestCallback,
-    StudentTeacherInfoCallback,
-    TeacherJoinRequestDecisionCallback,
-    TeacherJoinRequestListCallback,
-)
 from app.keyboard.callback_factories.lesson import (
     LessonCreateCallback,
     LessonDeleteCallback,
@@ -66,7 +60,6 @@ from app.keyboard.callback_factories.student import (
     StudentListCallback,
 )
 from app.message.models import MarkupData
-from app.schemas.join_request import JoinRequestInfoDTO
 from app.schemas.lesson import LessonDTO
 from app.schemas.notification import NotificationDTO
 from app.schemas.recurrence import RecurrenceRuleDTO
@@ -102,16 +95,9 @@ ENTITY_OPERATIONS: EntityCallbackMap = {
 }
 
 
-def teacher_main_menu(*, pending_join_requests_count: int = 0) -> MarkupData:
-    join_requests_label = BotStrings.Menu.JOIN_REQUESTS
-    if pending_join_requests_count > 0:
-        join_requests_label = f"{join_requests_label} ({pending_join_requests_count})"
+def teacher_main_menu() -> MarkupData:
     return MarkupData.from_row_callbacks(
         ("Ученики", MenuCallback(menu_type=MenuType.TEACHER_STUDENT).pack()),
-        (
-            join_requests_label,
-            TeacherJoinRequestListCallback().pack(),
-        ),
         ("Окошки", MenuCallback(menu_type=MenuType.TEACHER_SLOT).pack()),
         ("Предметы", MenuCallback(menu_type=MenuType.TEACHER_LESSON).pack()),
         (BotStrings.Menu.PROFILE, TeacherProfileCallback().pack()),
@@ -132,7 +118,6 @@ def teacher_main_menu(*, pending_join_requests_count: int = 0) -> MarkupData:
 
 def student_main_menu() -> MarkupData:
     return MarkupData.from_row_callbacks(
-        ("Преподаватели", MenuCallback(menu_type=MenuType.STUDENT_TEACHER).pack()),
         ("Занятия", MenuCallback(menu_type=MenuType.STUDENT_SLOT).pack()),
         (
             BotStrings.Menu.STATISTICS,
@@ -239,78 +224,6 @@ def teacher_reschedule_menu() -> MarkupData:
         (BotStrings.Menu.RESCHEDULE_REQUESTS, TeacherRescheduleListCallback().pack()),
         (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER).pack()),
     )
-
-
-def student_sub_menu_teacher() -> MarkupData:
-    return MarkupData.from_row_callbacks(
-        (BotStrings.Menu.TEACHERS, MenuCallback(menu_type=MenuType.STUDENT_TEACHER).pack()),
-        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.STUDENT).pack()),
-    )
-
-
-def student_teachers_buttons(*, teachers: list[UserDTO]) -> MarkupData:
-    rows_data = []
-    for teacher in teachers:
-        name = teacher_display_name(teacher)
-        subjects_count = teacher_subjects_count(teacher)
-        rows_data.append(
-            (
-                f"{name} ({subjects_count})",
-                StudentTeacherInfoCallback(teacher_uuid=teacher.uuid).pack(),
-            )
-        )
-    rows_data.append(
-        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.STUDENT).pack())
-    )
-    return MarkupData.from_row_callbacks(*rows_data)
-
-
-def student_teacher_profile_menu(*, teacher_uuid) -> MarkupData:
-    return MarkupData.from_row_callbacks(
-        (
-            BotStrings.Menu.SEND_JOIN_REQUEST,
-            StudentJoinRequestCallback(teacher_uuid=teacher_uuid).pack(),
-        ),
-        (
-            BotStrings.Menu.BACK,
-            MenuCallback(menu_type=MenuType.STUDENT_TEACHER).pack(),
-        ),
-    )
-
-
-def teacher_join_request_buttons(
-    *, requests: list[JoinRequestInfoDTO]
-) -> MarkupData:
-    rows_data = []
-    for request in requests:
-        student_name = " ".join(
-            part
-            for part in [request.student_firstname, request.student_lastname]
-            if part
-        )
-        label = f"@{request.student_username} {student_name}".strip()
-        rows_data.append(
-            [
-                (
-                    f"{BotStrings.Menu.APPROVE}: {label}",
-                    TeacherJoinRequestDecisionCallback(
-                        request_uuid=request.uuid,
-                        approve=True,
-                    ).pack(),
-                ),
-                (
-                    BotStrings.Menu.REJECT,
-                    TeacherJoinRequestDecisionCallback(
-                        request_uuid=request.uuid,
-                        approve=False,
-                    ).pack(),
-                ),
-            ]
-        )
-    rows_data.append(
-        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER).pack())
-    )
-    return MarkupData.from_row_callbacks(*rows_data)
 
 
 def teacher_profile_menu() -> MarkupData:

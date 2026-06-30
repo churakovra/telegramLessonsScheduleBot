@@ -155,13 +155,6 @@ class BotStrings:
         FEEDBACK_NOT_FOUND = "Отзывов пока нет"
         FEEDBACK_LIST = "Отзывы:\nСредняя оценка: {average}"
 
-        # * Join requests
-        JOIN_REQUESTS = "Заявки от учеников:"
-        JOIN_REQUESTS_NOT_FOUND = "Нет новых заявок"
-        JOIN_REQUEST_APPROVED = "Заявка одобрена"
-        JOIN_REQUEST_REJECTED = "Заявка отклонена"
-        JOIN_REQUEST_CREATED = "Новая заявка от ученика @{student}"
-
         # * Profile
         PROFILE = (
             "Мой профиль\n\n"
@@ -201,18 +194,6 @@ class BotStrings:
         FEEDBACK_THANKS = "Спасибо за отзыв!"
         STATISTICS_PERIOD = "Выбери период:"
         STATISTICS_NOT_FOUND = "Статистика пока пустая"
-        TEACHERS = "Преподаватели:"
-        TEACHERS_NOT_FOUND = "Преподаватели пока не найдены"
-        TEACHER_PROFILE = (
-            "{name}\n\n"
-            "Предметы: {subjects}\n"
-            "Количество предметов: {subjects_count}\n"
-            "Описание: {bio}"
-        )
-        JOIN_REQUEST_SENT = "Заявка отправлена преподавателю"
-        JOIN_REQUEST_ALREADY_EXISTS = "Заявка уже отправлена или обработана"
-        JOIN_REQUEST_APPROVED = "Заявка одобрена! Теперь вы ученик {teacher_name}"
-        JOIN_REQUEST_REJECTED = "Заявка отклонена"
 
     class Admin:
         MAKE_TEACHER_COMMAND_IS_EMPTY = (
@@ -275,8 +256,5 @@ class BotStrings:
         WEEK = "Неделя"
         MONTH = "Месяц"
         YEAR = "Год"
-        TEACHERS = "Преподаватели"
-        JOIN_REQUESTS = "Заявки от учеников"
-        SEND_JOIN_REQUEST = "Отправить заявку"
         PROFILE = "Мой профиль"
         EDIT = "Редактировать"

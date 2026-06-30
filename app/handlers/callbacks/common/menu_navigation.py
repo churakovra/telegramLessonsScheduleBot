@@ -10,8 +10,6 @@ from app.keyboard.fabric import (
     student_main_menu,
     student_sub_menu_slot,
     student_sub_menu_statistics,
-    student_sub_menu_teacher,
-    student_teachers_buttons,
     teacher_main_menu,
     teacher_recurrence_menu,
     teacher_reschedule_menu,
@@ -23,7 +21,6 @@ from app.keyboard.fabric import (
 )
 from app.message.models import BotMessage
 from app.schemas.user import UserDTO
-from app.services.container import Services
 from app.utils.bot_strings import BotStrings
 from app.utils.enums.menu_type import MenuType
 from app.utils.logger import setup_logger
@@ -45,7 +42,6 @@ markup_type_by_menu_type = {
     MenuType.TEACHER_RECURRENCE: teacher_recurrence_menu,
     MenuType.TEACHER_RESCHEDULE: teacher_reschedule_menu,
     MenuType.STUDENT_SLOT: student_sub_menu_slot,
-    MenuType.STUDENT_TEACHER: student_sub_menu_teacher,
     MenuType.STUDENT_STATISTICS: student_sub_menu_statistics,
     MenuType.ADMIN_TEMP: admin_sub_menu_temp,
 }
@@ -57,26 +53,9 @@ main_menus = [MenuType.TEACHER, MenuType.STUDENT, MenuType.ADMIN]
 async def handle_menu_navigation(
     callback: CallbackQuery,
     callback_data: MenuCallback,
-    services: Services,
     user: UserDTO,
 ) -> None:
     menu_type = callback_data.menu_type
-    if menu_type == MenuType.STUDENT_TEACHER:
-        teachers = await services.teacher.get_all_teachers()
-        if teachers:
-            message = BotMessage(
-                text=BotStrings.Student.TEACHERS,
-                markup=student_teachers_buttons(teachers=teachers),
-            )
-        else:
-            message = BotMessage(
-                text=BotStrings.Student.TEACHERS_NOT_FOUND,
-                markup=student_main_menu(),
-            )
-        await callback.message.answer(**message.to_aiogram_kwargs())
-        await callback.answer()
-        return
-
     message_text = (
         BotStrings.Common.MENU
         if menu_type in main_menus
@@ -85,11 +64,7 @@ async def handle_menu_navigation(
 
     # Get markup from fabric function
     fabric_func = markup_type_by_menu_type[menu_type]
-    if menu_type == MenuType.TEACHER:
-        pending_count = await services.join_request.count_pending_for_teacher(user.uuid)
-        markup = teacher_main_menu(pending_join_requests_count=pending_count)
-    else:
-        markup = fabric_func()
+    markup = fabric_func()
 
     message = BotMessage(text=message_text, markup=markup)
     await callback.message.answer(**message.to_aiogram_kwargs())
