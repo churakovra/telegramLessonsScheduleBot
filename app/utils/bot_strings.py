@@ -182,6 +182,7 @@ class BotStrings:
         FEEDBACK_THANKS = "Спасибо за отзыв!"
         STATISTICS_PERIOD = "Выбери период:"
         STATISTICS_NOT_FOUND = "Статистика пока пустая"
+        ATTACHED_TO_TEACHER = "Приветствую! Вы прикреплены к преподавателю {teacher_name} @{teacher_username}!"
 
     class Admin:
         MAKE_TEACHER_COMMAND_IS_EMPTY = (
