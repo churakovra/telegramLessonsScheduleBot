@@ -1,7 +1,6 @@
 from .feedback import router as feedback_router
 from .lesson import router as lesson_router
 from .notification import router as notification_router
-from .profile import router as profile_router
 from .recurrence import router as recurrence_router
 from .reschedule import router as reschedule_router
 from .send_slots import router as send_slots_router
@@ -14,7 +13,6 @@ teacher_routers = [
     student_router,
     lesson_router,
     notification_router,
-    profile_router,
     recurrence_router,
     reschedule_router,
     feedback_router,

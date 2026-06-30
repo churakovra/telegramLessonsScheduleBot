@@ -42,21 +42,6 @@ class TeacherService:
     async def get_all_teachers(self) -> list[UserDTO]:
         return await self._repository.get_all_teachers()
 
-    async def update_profile(
-        self,
-        teacher_uuid: UUID,
-        *,
-        display_name: str | None,
-        bio: str | None,
-        subjects: str | None,
-    ) -> None:
-        await self._repository.update_profile(
-            teacher_uuid,
-            display_name=display_name,
-            bio=bio,
-            subjects=subjects,
-        )
-
     async def _attach_student(
         self, teacher_uuid: UUID, student_uuid: UUID, uuid_lesson: UUID | None
     ):

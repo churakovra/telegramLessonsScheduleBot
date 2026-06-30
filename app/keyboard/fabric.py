@@ -20,7 +20,6 @@ from app.keyboard.callback_factories.notification import (
     NotificationDeleteCallback,
     NotificationListCallback,
 )
-from app.keyboard.callback_factories.profile import TeacherProfileCallback
 from app.keyboard.callback_factories.recurrence import (
     RecurrenceConfirmCallback,
     RecurrenceCreateCallback,
@@ -66,7 +65,6 @@ from app.schemas.recurrence import RecurrenceRuleDTO
 from app.schemas.reschedule import RescheduleRequestInfoDTO
 from app.schemas.slot import SlotDTO
 from app.schemas.student import StudentDTO
-from app.schemas.user import UserDTO
 from app.utils.bot_strings import BotStrings
 from app.utils.datetime_utils import WEEKDAYS, day_format, time_format_HM
 from app.utils.enums.bot_values import StatisticsPeriod, UserRole
@@ -100,7 +98,6 @@ def teacher_main_menu() -> MarkupData:
         ("Ученики", MenuCallback(menu_type=MenuType.TEACHER_STUDENT).pack()),
         ("Окошки", MenuCallback(menu_type=MenuType.TEACHER_SLOT).pack()),
         ("Предметы", MenuCallback(menu_type=MenuType.TEACHER_LESSON).pack()),
-        (BotStrings.Menu.PROFILE, TeacherProfileCallback().pack()),
         (
             BotStrings.Menu.NOTIFICATIONS,
             MenuCallback(menu_type=MenuType.TEACHER_NOTIFICATION).pack(),
@@ -143,26 +140,6 @@ def get_main_menu_by_role(role: UserRole) -> "MarkupData | None":
             return admin_main_menu()
         case _:
             return None
-
-
-def teacher_display_name(teacher: UserDTO) -> str:
-    full_name = " ".join(part for part in [teacher.firstname, teacher.lastname] if part)
-    return teacher.display_name or full_name or f"@{teacher.username}"
-
-
-def teacher_subjects(teacher: UserDTO) -> list[str]:
-    if not teacher.subjects:
-        return []
-    return [subject.strip() for subject in teacher.subjects.split(",") if subject.strip()]
-
-
-def teacher_subjects_text(teacher: UserDTO) -> str:
-    subjects = teacher_subjects(teacher)
-    return ", ".join(subjects) if subjects else "-"
-
-
-def teacher_subjects_count(teacher: UserDTO) -> int:
-    return len(teacher_subjects(teacher))
 
 
 def teacher_sub_menu_student() -> MarkupData:
@@ -222,13 +199,6 @@ def teacher_recurrence_menu() -> MarkupData:
 def teacher_reschedule_menu() -> MarkupData:
     return MarkupData.from_row_callbacks(
         (BotStrings.Menu.RESCHEDULE_REQUESTS, TeacherRescheduleListCallback().pack()),
-        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER).pack()),
-    )
-
-
-def teacher_profile_menu() -> MarkupData:
-    return MarkupData.from_row_callbacks(
-        (BotStrings.Menu.EDIT, TeacherProfileCallback(edit=True).pack()),
         (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER).pack()),
     )
 

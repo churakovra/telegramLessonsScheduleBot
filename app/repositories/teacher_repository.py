@@ -43,21 +43,6 @@ class TeacherRepository(BaseRepository):
         )
         return await self.list_dto(stmt, UserDTO)
 
-    async def update_profile(
-        self,
-        teacher_uuid: UUID,
-        *,
-        display_name: str | None,
-        bio: str | None,
-        subjects: str | None,
-    ) -> None:
-        stmt = (
-            update(User)
-            .where(and_(User.uuid == teacher_uuid, User.is_teacher.is_(True)))
-            .values(display_name=display_name, bio=bio, subjects=subjects)
-        )
-        await self.execute(stmt)
-
     async def remove_teacher(self, teacher_uuid: UUID) -> None:
         stmt = (
             update(User)

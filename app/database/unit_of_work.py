@@ -1,7 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.feedback_repository import FeedbackRepository
-from app.repositories.join_request_repository import JoinRequestRepository
 from app.repositories.lesson_repository import LessonRepository
 from app.repositories.notification_repository import NotificationRepository
 from app.repositories.recurrence_repository import RecurrenceRepository
@@ -24,7 +23,6 @@ class UnitOfWork:
         self.recurrences = RecurrenceRepository(session, auto_commit=False)
         self.reschedules = RescheduleRepository(session, auto_commit=False)
         self.feedback = FeedbackRepository(session, auto_commit=False)
-        self.join_requests = JoinRequestRepository(session, auto_commit=False)
 
     async def commit(self) -> None:
         await self.session.commit()

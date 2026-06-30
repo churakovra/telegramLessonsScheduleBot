@@ -155,18 +155,6 @@ class BotStrings:
         FEEDBACK_NOT_FOUND = "Отзывов пока нет"
         FEEDBACK_LIST = "Отзывы:\nСредняя оценка: {average}"
 
-        # * Profile
-        PROFILE = (
-            "Мой профиль\n\n"
-            "Имя: {display_name}\n"
-            "Предметы: {subjects}\n"
-            "Описание: {bio}"
-        )
-        PROFILE_DISPLAY_NAME = "Отправьте имя для профиля или '-' чтобы пропустить"
-        PROFILE_BIO = "Отправьте описание или '-' чтобы пропустить"
-        PROFILE_SUBJECTS = "Отправьте предметы через запятую или '-' чтобы пропустить"
-        PROFILE_SAVED = "Профиль сохранён"
-
     class Student:
         SLOTS_ADDED = "Привет! Выбери окошки на следующую неделю:"
         SLOTS_UPDATED = "Привет! Окошки обновились, выбери пожалуйста новое время:"
@@ -256,5 +244,4 @@ class BotStrings:
         WEEK = "Неделя"
         MONTH = "Месяц"
         YEAR = "Год"
-        PROFILE = "Мой профиль"
         EDIT = "Редактировать"

@@ -143,10 +143,7 @@ class StatisticsService:
 
             lesson_label = lesson.label if lesson else "-"
             teacher_name = (
-                teacher.display_name
-                or " ".join(
-                    part for part in [teacher.firstname, teacher.lastname] if part
-                )
+                " ".join(part for part in [teacher.firstname, teacher.lastname] if part)
                 or teacher.username
             )
             if lesson:
