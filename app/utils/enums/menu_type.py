@@ -12,7 +12,6 @@ class MenuType(StrEnum):
     TEACHER_RESCHEDULE = "T-RS"
     TEACHER_FEEDBACK = "T-FB"
     STUDENT = "S"
-    STUDENT_TEACHER = "S-T"
     STUDENT_SLOT = "S-SL"
     STUDENT_LESSON = "S-L"
     STUDENT_SCHEDULE = "S-SCH"

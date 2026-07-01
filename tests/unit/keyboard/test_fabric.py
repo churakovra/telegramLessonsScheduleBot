@@ -26,7 +26,6 @@ from app.keyboard.fabric import (
     student_buttons,
     student_main_menu,
     student_sub_menu_slot,
-    student_sub_menu_teacher,
     success_slot_bind,
     teacher_main_menu,
     teacher_sub_menu_lesson,
@@ -98,7 +97,6 @@ def make_student():
         teacher_sub_menu_student,
         teacher_sub_menu_slot,
         teacher_sub_menu_lesson,
-        student_sub_menu_teacher,
         student_sub_menu_slot,
         admin_sub_menu_temp,
         parsed_slots,
@@ -107,6 +105,11 @@ def make_student():
 )
 def test_static_keyboards_have_buttons(factory):
     assert labels(factory())
+
+
+def test_pin_request_controls_are_not_shown():
+    assert "Заявки от учеников" not in labels(teacher_main_menu())
+    assert "Преподаватели" not in labels(student_main_menu())
 
 
 def test_slot_selection_keyboards():
