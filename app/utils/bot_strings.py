@@ -102,8 +102,9 @@ class BotStrings:
         SLOTS_ADD = "Отправь окошки"
         SLOTS_LIST = "Ваши окошки:"
         SLOTS_PROCESSING_SUCCESS = (
-            "Окошки добавлены🥳\nНажми кнопку, чтобы отправить их студентам"
+            "Окошки добавлены! Теперь их можно отправить ученикам или вернуться в меню."
         )
+        SLOTS_SENT = "Сообщение с окошками отправлено ученикам: {count}"
         SLOTS_FAILURE = "Отправь окошки еще раз"
         SLOTS_CONFLICT = (
             "Некоторые слоты конфликтуют с существующими:\n"
@@ -117,6 +118,7 @@ class BotStrings:
         CALLBACK_SLOTS_INCORRECT = "slots_incorrect"
         SLOT_INFO = "Информация об окошке"
         SLOT_DELETE_SUCCESS = "Слот успешно удалён!"
+        SLOTS_CLEAR_SUCCESS = "Очищено свободных окошек: {count}"
         SLOT_CANCELLED_BY_STUDENT = "Ученик @{student} отменил запись на {slot_time}"
 
         # * Notifications
@@ -220,6 +222,8 @@ class BotStrings:
         BACK = "Назад"
         CANCEL = "Отмена"
         SEND = "Отправить"
+        SEND_SLOTS = "Отправить окошки"
+        CLEAR_SLOTS = "Очистить окошки"
         UPDATE = "Изменить"
         ATTACH = "Прикрепить к уроку"
         DETACH = "Открепить от урока"
@@ -246,3 +250,4 @@ class BotStrings:
         MONTH = "Месяц"
         YEAR = "Год"
         EDIT = "Редактировать"
+        CONFIRM = "Подтвердите действие"

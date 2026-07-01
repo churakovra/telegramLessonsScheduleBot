@@ -9,7 +9,7 @@ from app.keyboard.callback_factories.common import (
     BaseListCallback,
     BaseUpdateCallback,
 )
-from app.keyboard.callback_factories.mixins import SpecifyWeekMixin
+from app.keyboard.callback_factories.mixins import ConfirmMixin, SpecifyWeekMixin
 
 
 class SlotCreateCallback(BaseCreateCallback, SpecifyWeekMixin, prefix="create-sl"):
@@ -28,6 +28,10 @@ class SlotsUpdateCallback(SlotCreateCallback, SpecifyWeekMixin, prefix="update-s
     pass
 
 
+class SlotsClearCallback(ConfirmMixin, SpecifyWeekMixin, prefix="clear-slts"):
+    pass
+
+
 class SlotUpdateCallback(BaseUpdateCallback, prefix="update-sl"):
     pass
 
@@ -38,6 +42,10 @@ class SlotDeleteCallback(BaseDeleteCallback, prefix="delete-sl"):
 
 class SendSlots(CallbackData, prefix="send-slots-to-students"):
     teacher_uuid: UUID
+
+
+class SendTeacherSlots(CallbackData, prefix="send-teacher-slots"):
+    pass
 
 
 class ResendSlotsCallback(CallbackData, prefix="resend-s-t-s"):
