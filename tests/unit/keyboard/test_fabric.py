@@ -190,7 +190,7 @@ def test_action_keyboards():
     ]
     assert labels(
         confirm_action(
-            LessonDeleteCallback
+            LessonDeleteCallback(uuid=uuid4())
         )
     ) == [BotStrings.Menu.YES, BotStrings.Menu.NO]
     assert labels(

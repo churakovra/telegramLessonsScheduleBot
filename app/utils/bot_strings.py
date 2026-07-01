@@ -10,20 +10,20 @@ class BotStrings:
             "Воскресенье",
         ]
         WEEKDAY_SHORT_LABELS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]
-        GREETING = "Привет, {user}! Я буду сообщать тебе когда у твоего преподавателя появятся окошки для занятий"
+        GREETING = "Привет, {user}! Я буду сообщать Вам когда у Ваше преподавателя появятся окошки для занятий"
         START_WELCOME = "👋 Добро пожаловать в Slotty, {name}!"
         START_NEW_STUDENT = (
             "Вы зарегистрированы как ученик. Вот что вы можете:\n"
-            "• Найти преподавателя в разделе Преподаватели\n"
-            "• Отправить заявку на обучение\n"
             "• Получать расписание от преподавателя\n"
+            "• Записываться на уроки\n"
+            "• Переносить уроки при необходимости\n"
             "• Отслеживать свою статистику\n\n"
             "Используйте /menu для навигации или /help для справки."
         )
         START_RETURNING = "С возвращением! Используйте /menu чтобы открыть меню."
-        MENU = "Привет! Ты в главном меню. Жми кнопочки и управляй мечтой!"
-        SUB_MENU = "Выбери необходимое действие:"
-        SPECIFY_WEEK = "Отлично! Для начала выбери неделю:"
+        MENU = "Привет! Вы в главном меню."
+        SUB_MENU = "Выберите необходимое действие:"
+        SPECIFY_WEEK = "Отлично! Для начала выберите неделю:"
         NOT_ENOUGH_RIGHTS = "Ошибка. Недостаточно прав для выполнения данной операции"
         CONFIRM_OPERATION = "Подтвердите операцию:"
         HELP = (
@@ -34,18 +34,9 @@ class BotStrings:
             "/menu - открыть главное меню\n"
             "/cancel - отменить текущее действие\n"
             "/help - помощь и инструкции\n\n"
-            "Ученикам:\n"
-            "• Откройте /menu и раздел Преподаватели\n"
-            "• Выберите преподавателя и отправьте заявку\n"
-            "• После одобрения записывайтесь на окошки и проверяйте расписание\n\n"
-            "Преподавателям:\n"
-            "• Заполните Мой профиль, чтобы ученики понимали, чему вы учите\n"
-            "• Добавляйте учеников вручную или принимайте заявки\n"
-            "• Создавайте предметы, окошки и уведомления\n"
-            "• Следите за переносами, отзывами и статистикой\n\n"
             "FAQ:\n"
             "Меня не добавили к преподавателю - что делать?\n"
-            "Проверьте, что заявка отправлена в разделе Преподаватели, или напишите преподавателю напрямую."
+            "Пожалуйста подождите, преподаватель обязательно Вас прикрепит к себе."
         )
 
     class Errors:
@@ -53,28 +44,28 @@ class BotStrings:
 
     class Teacher:
         # * Bind user
-        TEACHER_STUDENT_ADD = "Отправь логин ученика (можно несколько через пробел)"
-        TEACHER_STUDENTS_ADD_SUCCESS = "Успешно добавил студентов {student}. Теперь они будут получать сообщения о новых окошках"
-        TEACHER_STUDENT_ADD_SUCCESS = "Успешно добавил студента {student}. Теперь он будут получать сообщения о новых окошках"
-        TEACHER_STUDENT_ADD_UNKNOWN_STUDENTS = "Смогу прикрепить всех кроме {student}\nПроверь, правильно ли указаны их логины"
+        TEACHER_STUDENT_ADD = "Отправьте логин ученика (можно несколько через пробел)"
+        TEACHER_STUDENTS_ADD_SUCCESS = "Успешно добавил учеников {student}. Теперь они будут получать сообщения о новых окошках"
+        TEACHER_STUDENT_ADD_SUCCESS = "Успешно добавил ученика {student}. Теперь он(а) будут получать сообщения о новых окошках"
+        TEACHER_STUDENT_ADD_UNKNOWN_STUDENTS = "Смогу прикрепить всех кроме {student}\Пожалуйста проверьте, правильно ли указаны их логины"
         TEACHER_STUDENT_ADD_UNKNOWN_STUDENT = (
-            "Смогу прикрепить всех кроме {student}\nПроверь, правильно ли указан логин"
+            "Смогу прикрепить всех кроме {student}\Пожалуйста проверьте, правильно ли указан логин"
         )
 
         # * Unbind user
-        TEACHER_STUDENT_DELETE = "Выбери ученика для удаления: "
+        TEACHER_STUDENT_DELETE = "Выберите ученика для удаления: "
         TEACHER_STUDENT_DELETE_CONFIRMATION_REQUEST = (
             "Вы уверены, что хотите удалить ученика?"
         )
         TEACHER_STUDENT_DELETE_SUCCESS = "Ученик успешно удален!"
 
         TEACHER_STUDENTS_NOT_FOUND = (
-            "Студенты не найдены\nПроверь, правильно ли указаны данные"
+            "Ученики не найдены\Пожалуйста проверьте, правильно ли указаны данные"
         )
 
         TEACHER_STUDENTS_LIST = "Ваши ученики:"
 
-        STUDENT_ATTACH_LESSONS_LIST = "Выбери урок:"
+        STUDENT_ATTACH_LESSONS_LIST = "Выберите урок:"
         STUDENT_ATTACH_SUCCESS = "Ученик успешно записан на предмет"
         STUDENT_DETACH_SUCCESS = "Ученик успешно откреплён!"
 
@@ -82,49 +73,49 @@ class BotStrings:
         TEACHER_LESSON_ADD_LABEL = "Как называется предмет?"
         TEACHER_LESSON_ADD_DURATION = "Какая продолжительность в минутах?"
         TEACHER_LESSON_ADD_DURATION_ERROR = (
-            "Неверный формат. Укажи пожалуйста в минутах:  45, 60, 90..."
+            "Неверный формат. Пожалуйста укажите в минутах:  45, 60, 90..."
         )
         TEACHER_LESSON_ADD_PRICE = "Стоимость?"
         TEACHER_LESSON_ADD_PRICE_ERROR = (
-            "Неверный формат. Укажи пожалуйста сумму: 500, 800, 1500..."
+            "Неверный формат. Пожалуйста укажите сумму: 500, 800, 1500..."
         )
         TEACHER_LESSON_ADD_SUCCESS = "Предмет успешно добавлен"
-        TEACHER_LESSON_DELETE = "Выбери предмет для удаления:"
+        TEACHER_LESSON_DELETE = "Выберите предмет для удаления:"
         TEACHER_LESSONS_WERE_NOT_FOUND = "Ошибка. Предметы не найдены"
         TEACHER_LESSON_DELETE_CONFIRMATION_REQUEST = "Вы уверены, что хотите удалить урок? Это автоматически удалит и записи учеников."
         TEACHER_LESSON_DELETE_SUCCESS = "Предмет успешно удалён"
-        TEACHER_LESSON_UPDATE = "Выбери предмет для изменения:"
+        TEACHER_LESSON_UPDATE = "Выберите предмет для изменения:"
         TEACHER_LESSON_UPDATE_SELECT_SPEC = "Что поменять?"
         TEACHER_LESSON_UPDATE_SUCCESS = "Предмет успешно обновлен"
         TEACHER_LESSON_LIST = "Список Ваших уроков:"
 
         # * Slots
-        SLOTS_ADD = "Отправь окошки"
+        SLOTS_ADD = "Отправьте окошки"
         SLOTS_LIST = "Ваши окошки:"
         SLOTS_PROCESSING_SUCCESS = (
             "Окошки добавлены! Теперь их можно отправить ученикам или вернуться в меню."
         )
         SLOTS_SENT = "Сообщение с окошками отправлено ученикам: {count}"
-        SLOTS_FAILURE = "Отправь окошки еще раз"
+        SLOTS_FAILURE = "Пожалуйста отправьте окошки еще раз"
         SLOTS_CONFLICT = (
-            "Некоторые слоты конфликтуют с существующими:\n"
+            "Некоторые окошки конфликтуют с существующими:\n"
             "{slots}\n\n"
             "Исправьте и попробуйте снова."
         )
         SLOTS_NOT_FOUND = "Окошки не найдены"
         NOT_ENOUGH_RIGHTS = "Ошибка. Вы должны быть в статусе Преподаватель для выполнения данного действия"
-        SLOT_IS_TAKEN = "@{student} записался на урок {slot_time}"
+        SLOT_IS_TAKEN = "Ученик @{student} записался на урок {slot_time}"
         CALLBACK_SLOTS_CORRECT = "slots_correct"
         CALLBACK_SLOTS_INCORRECT = "slots_incorrect"
         SLOT_INFO = "Информация об окошке"
-        SLOT_DELETE_SUCCESS = "Слот успешно удалён!"
+        SLOT_DELETE_SUCCESS = "Окошко успешно удалено!"
         SLOTS_CLEAR_SUCCESS = "Очищено свободных окошек: {count}"
         SLOT_CANCELLED_BY_STUDENT = "Ученик @{student} отменил запись на {slot_time}"
 
         # * Notifications
-        NOTIFICATION_ADD_TEXT = "Отправь текст уведомления"
+        NOTIFICATION_ADD_TEXT = "Отправьте текст уведомления"
         NOTIFICATION_ADD_MINUTES = "За сколько минут до занятия отправлять?"
-        NOTIFICATION_ADD_MINUTES_ERROR = "Неверный формат. Укажи число минут: 60, 120, 1440..."
+        NOTIFICATION_ADD_MINUTES_ERROR = "Неверный формат. Укажите число минут: 60, 120, 1440..."
         NOTIFICATION_ADD_SUCCESS = "Уведомление создано"
         NOTIFICATIONS_LIST = "Ваши уведомления:"
         NOTIFICATIONS_NOT_FOUND = "Уведомления не найдены"
@@ -134,12 +125,12 @@ class BotStrings:
         RECURRENCE_RULES = "Повторяющиеся окошки:"
         RECURRENCE_RULES_NOT_FOUND = "Повторяющиеся окошки не найдены"
         RECURRENCE_SELECT_DAY = "Выбери день недели"
-        RECURRENCE_START_TIME = "Отправь время начала в формате HH:MM"
-        RECURRENCE_END_TIME = "Отправь время окончания в формате HH:MM"
-        RECURRENCE_DURATION = "Отправь длительность окошка в минутах"
-        RECURRENCE_START_DATE = "Отправь дату начала в формате ДД.ММ.ГГГГ"
-        RECURRENCE_END_DATE = "Отправь дату окончания в формате ДД.ММ.ГГГГ"
-        RECURRENCE_CONFIRM = "Проверь правило:\n{summary}"
+        RECURRENCE_START_TIME = "Отправьте время начала в формате HH:MM"
+        RECURRENCE_END_TIME = "Отправьте время окончания в формате HH:MM"
+        RECURRENCE_DURATION = "Отправьте длительность окошка в минутах"
+        RECURRENCE_START_DATE = "Отправьте дату начала в формате ДД.ММ.ГГГГ"
+        RECURRENCE_END_DATE = "Отправьте дату окончания в формате ДД.ММ.ГГГГ"
+        RECURRENCE_CONFIRM = "Проверьте правило:\n{summary}"
         RECURRENCE_SUMMARY = "День: {day}\nВремя: {time_start}-{time_end}\nДлительность: {duration} мин\nПериод: {date_start}-{date_end}"
         RECURRENCE_CREATE_SUCCESS = "Повторяющееся расписание создано"
         RECURRENCE_DELETE_SUCCESS = "Правило удалено"
@@ -152,14 +143,14 @@ class BotStrings:
         RESCHEDULE_CREATED = "Ученик @{student} просит перенести занятие с {old_time} на {new_time}"
 
         # * Statistics
-        STATISTICS_PERIOD = "Выбери период:"
+        STATISTICS_PERIOD = "Выберите период:"
         STATISTICS_NOT_FOUND = "Статистика пока пустая"
         FEEDBACK_NOT_FOUND = "Отзывов пока нет"
         FEEDBACK_LIST = "Отзывы:\nСредняя оценка: {average}"
 
     class Student:
-        SLOTS_ADDED = "Привет! Выбери окошки на следующую неделю:"
-        SLOTS_UPDATED = "Привет! Окошки обновились, выбери пожалуйста новое время:"
+        SLOTS_ADDED = "Привет! Выберите окошки на следующую неделю:"
+        SLOTS_UPDATED = "Привет! Окошки обновились, выберите пожалуйста новое время:"
         SLOTS_ASSIGN_SUCCESS = (
             "Отлично! Вы записаны к @{teacher}, время занятия {slot_time}"
         )
@@ -172,8 +163,8 @@ class BotStrings:
         WEEKLY_SCHEDULE_TOTAL = "Всего: {count} занятия, {hours} часов"
         SLOT_CANCEL_SUCCESS = "Запись отменена"
         SLOT_CANCEL_CONFIRM = "Отменить запись на {slot_time}?"
-        RESCHEDULE_DATE = "Отправь новую дату в формате ДД.ММ.ГГГГ"
-        RESCHEDULE_TIME = "Отправь новое время в формате HH:MM"
+        RESCHEDULE_DATE = "Отправьте новую дату в формате ДД.ММ.ГГГГ"
+        RESCHEDULE_TIME = "Отправьте новое время в формате HH:MM"
         RESCHEDULE_CONFIRM = "Запросить перенос на {new_time}?"
         RESCHEDULE_SENT = "Запрос на перенос отправлен преподавателю"
         RESCHEDULE_APPROVED = "Перенос одобрен: {new_time}"
