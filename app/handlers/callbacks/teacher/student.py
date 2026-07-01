@@ -12,7 +12,7 @@ from app.keyboard.callback_factories.student import (
 )
 from app.keyboard.fabric import (
     cancel_markup,
-    confirm_deletion,
+    confirm_action,
     entity_operations,
     lessons_to_assign,
     student_buttons,
@@ -98,9 +98,7 @@ async def info(
 async def request_delete_confirmation(
     callback: CallbackQuery, callback_data: StudentDeleteCallback
 ) -> None:
-    markup = confirm_deletion(
-        callback_data_cls=StudentDeleteCallback, uuid=callback_data.uuid
-    )
+    markup = confirm_action(callback_data)
     msg = BotMessage(
         text=BotStrings.Teacher.TEACHER_STUDENT_DELETE_CONFIRMATION_REQUEST,
         markup=markup,

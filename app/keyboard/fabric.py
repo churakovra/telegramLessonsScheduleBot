@@ -42,11 +42,14 @@ from app.keyboard.callback_factories.slot import (
     DaysForStudents,
     ResendSlotsCallback,
     SendSlots,
+    SendTeacherSlots,
     SlotCreateCallback,
     SlotDeleteCallback,
     SlotInfoCallback,
     SlotListCallback,
+    SlotsClearCallback,
     SlotsForStudents,
+    SlotsUpdateCallback,
     SlotUpdateCallback,
 )
 from app.keyboard.callback_factories.statistics import StatisticsPeriodCallback
@@ -67,7 +70,7 @@ from app.schemas.slot import SlotDTO
 from app.schemas.student import StudentDTO
 from app.utils.bot_strings import BotStrings
 from app.utils.datetime_utils import WEEKDAYS, day_format, time_format_HM
-from app.utils.enums.bot_values import StatisticsPeriod, UserRole
+from app.utils.enums.bot_values import StatisticsPeriod, UserRole, WeekFlag
 from app.utils.enums.menu_type import MenuType
 
 from ..utils.datetime_utils import full_format_no_sec
@@ -272,7 +275,16 @@ def parsed_slots() -> MarkupData:
 def send_slots(*, teacher_uuid: str) -> MarkupData:
     return MarkupData.from_row_callbacks(
         (BotStrings.Menu.SEND, SendSlots(teacher_uuid=teacher_uuid).pack()),
-        (BotStrings.Menu.CANCEL, MenuCallback(menu_type=MenuType.TEACHER).pack()),
+        (BotStrings.Menu.MENU, MenuCallback(menu_type=MenuType.TEACHER).pack()),
+    )
+
+
+def listed_slots_actions(*, week_flag: WeekFlag) -> MarkupData:
+    return MarkupData.from_row_callbacks(
+        (BotStrings.Menu.UPDATE, SlotsUpdateCallback(week_flag=week_flag).pack()),
+        (BotStrings.Menu.CLEAR_SLOTS, SlotsClearCallback(week_flag=week_flag).pack()),
+        (BotStrings.Menu.SEND_SLOTS, SendTeacherSlots().pack()),
+        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER_SLOT).pack()),
     )
 
 
@@ -474,11 +486,15 @@ def specify_week(*, current_week_callback: str, next_week_callback: str) -> Mark
     )
 
 
-def confirm_deletion(*, callback_data_cls, uuid: str) -> MarkupData:
+def confirm_action(callback_data=None, *args, **kwargs) -> MarkupData:
+    if callback_data is not None:
+        callback_data_cls = type(callback_data)
+        kwargs = {**callback_data.model_dump(), **kwargs}
+    kwargs["confirmed"] = True
     return MarkupData.from_row_callbacks(
         (
             BotStrings.Menu.YES,
-            callback_data_cls(uuid=uuid, confirmed=True).pack(),
+            callback_data_cls(*args, **kwargs).pack(),
         ),
         (BotStrings.Menu.NO, MenuCallback(menu_type=MenuType.TEACHER).pack()),
     )

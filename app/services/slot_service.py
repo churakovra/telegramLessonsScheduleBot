@@ -1,5 +1,5 @@
 import string
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
 from sqlalchemy.exc import IntegrityError
@@ -18,6 +18,7 @@ from app.utils.exceptions.slot_exceptions import (
 from app.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
+MOSCOW_TZ = timezone(timedelta(hours=3))
 
 
 class SlotService:
@@ -43,22 +44,32 @@ class SlotService:
             raise SlotConflictException([slot.dt_start for slot in slots]) from e
 
     async def update_slots(self, slots: list[CreateSlotDTO], teacher_uuid: UUID):
+        if not slots:
+            return
+
         week = slots[0].dt_start.isocalendar().week
         existing_slots = await self._repository.get_slots(
             teacher_uuid=teacher_uuid, week=week
         )
-        slots_dts = {slot.dt_start for slot in slots}
+        slots_dts = {self._dt_key(slot.dt_start) for slot in slots}
+        existing_free_slots_dts = {
+            self._dt_key(existing_slot.dt_start)
+            for existing_slot in existing_slots
+            if existing_slot.uuid_student is None
+        }
         existing_slots_dts = {
-            existing_slot.dt_start for existing_slot in existing_slots
+            self._dt_key(existing_slot.dt_start) for existing_slot in existing_slots
         }
 
-        to_delete = existing_slots_dts - slots_dts
+        to_delete = existing_free_slots_dts - slots_dts
         to_add = slots_dts - existing_slots_dts
 
         slots_to_delete = [
-            slot for slot in existing_slots if slot.dt_start in to_delete
+            slot
+            for slot in existing_slots
+            if slot.uuid_student is None and self._dt_key(slot.dt_start) in to_delete
         ]
-        slots_to_add = [slot for slot in slots if slot.dt_start in to_add]
+        slots_to_add = [slot for slot in slots if self._dt_key(slot.dt_start) in to_add]
 
         await self._raise_on_conflicts(slots_to_add)
         await self._repository.delete_slots(slots=slots_to_delete)
@@ -74,12 +85,20 @@ class SlotService:
         return slot
 
     async def get_slots(self, teacher_uuid: UUID, week_flag: WeekFlag) -> list[SlotDTO]:
-        week = datetime.now().isocalendar().week
-        week = week + 1 if week_flag == WeekFlag.NEXT else week
+        week = self._week_by_flag(week_flag)
         slots = await self._repository.get_slots(teacher_uuid, week)
         if len(slots) <= 0:
             raise SlotsNotFoundException(teacher_uuid, week_flag)
         return slots
+
+    async def delete_free_slots(self, teacher_uuid: UUID, week_flag: WeekFlag) -> int:
+        slots = await self._repository.get_slots(
+            teacher_uuid=teacher_uuid,
+            week=self._week_by_flag(week_flag),
+        )
+        slots_to_delete = [slot for slot in slots if slot.uuid_student is None]
+        await self._repository.delete_slots(slots=slots_to_delete)
+        return len(slots_to_delete)
 
     async def get_free_slots(self, teacher_uuid: UUID) -> list[SlotDTO]:
         slots = await self._repository.get_free_slots(teacher_uuid)
@@ -135,6 +154,7 @@ class SlotService:
                     year=slot_date.year,
                     hour=time.hour,
                     minute=time.minute,
+                    tzinfo=MOSCOW_TZ,
                 )
                 slots.append(
                     CreateSlotDTO(
@@ -177,3 +197,12 @@ class SlotService:
         }
         if conflicted_datetimes:
             raise SlotConflictException(conflicted_datetimes)
+
+    @staticmethod
+    def _dt_key(dt_start: datetime) -> datetime:
+        return dt_start.replace(tzinfo=None)
+
+    @staticmethod
+    def _week_by_flag(week_flag: WeekFlag) -> int:
+        week = datetime.now().isocalendar().week
+        return week + 1 if week_flag == WeekFlag.NEXT else week
