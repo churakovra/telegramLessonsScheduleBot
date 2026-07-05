@@ -10,6 +10,7 @@ from typing import Sequence, Union
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects import postgresql
 
 
 revision: str = "9c1e7f4a2b33"
@@ -20,11 +21,12 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     """Upgrade schema."""
-    reschedule_status = sa.Enum(
+    reschedule_status = postgresql.ENUM(
         "PENDING",
         "APPROVED",
         "REJECTED",
         name="reschedule_status",
+        create_type=False,
     )
     reschedule_status.create(op.get_bind(), checkfirst=True)
 

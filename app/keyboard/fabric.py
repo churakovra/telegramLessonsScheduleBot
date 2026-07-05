@@ -7,12 +7,6 @@ from app.keyboard.callback_factories.feedback import (
     FeedbackCommentCallback,
     TeacherFeedbackListCallback,
 )
-from app.keyboard.callback_factories.join_request import (
-    StudentJoinRequestCallback,
-    StudentTeacherInfoCallback,
-    TeacherJoinRequestDecisionCallback,
-    TeacherJoinRequestListCallback,
-)
 from app.keyboard.callback_factories.lesson import (
     LessonCreateCallback,
     LessonDeleteCallback,
@@ -26,7 +20,6 @@ from app.keyboard.callback_factories.notification import (
     NotificationDeleteCallback,
     NotificationListCallback,
 )
-from app.keyboard.callback_factories.profile import TeacherProfileCallback
 from app.keyboard.callback_factories.recurrence import (
     RecurrenceConfirmCallback,
     RecurrenceCreateCallback,
@@ -49,11 +42,14 @@ from app.keyboard.callback_factories.slot import (
     DaysForStudents,
     ResendSlotsCallback,
     SendSlots,
+    SendTeacherSlots,
     SlotCreateCallback,
     SlotDeleteCallback,
     SlotInfoCallback,
     SlotListCallback,
+    SlotsClearCallback,
     SlotsForStudents,
+    SlotsUpdateCallback,
     SlotUpdateCallback,
 )
 from app.keyboard.callback_factories.statistics import StatisticsPeriodCallback
@@ -66,17 +62,15 @@ from app.keyboard.callback_factories.student import (
     StudentListCallback,
 )
 from app.message.models import MarkupData
-from app.schemas.join_request import JoinRequestInfoDTO
 from app.schemas.lesson import LessonDTO
 from app.schemas.notification import NotificationDTO
 from app.schemas.recurrence import RecurrenceRuleDTO
 from app.schemas.reschedule import RescheduleRequestInfoDTO
 from app.schemas.slot import SlotDTO
 from app.schemas.student import StudentDTO
-from app.schemas.user import UserDTO
 from app.utils.bot_strings import BotStrings
 from app.utils.datetime_utils import WEEKDAYS, day_format, time_format_HM
-from app.utils.enums.bot_values import StatisticsPeriod, UserRole
+from app.utils.enums.bot_values import StatisticsPeriod, UserRole, WeekFlag
 from app.utils.enums.menu_type import MenuType
 
 from ..utils.datetime_utils import full_format_no_sec
@@ -102,19 +96,11 @@ ENTITY_OPERATIONS: EntityCallbackMap = {
 }
 
 
-def teacher_main_menu(*, pending_join_requests_count: int = 0) -> MarkupData:
-    join_requests_label = BotStrings.Menu.JOIN_REQUESTS
-    if pending_join_requests_count > 0:
-        join_requests_label = f"{join_requests_label} ({pending_join_requests_count})"
+def teacher_main_menu() -> MarkupData:
     return MarkupData.from_row_callbacks(
         ("Ученики", MenuCallback(menu_type=MenuType.TEACHER_STUDENT).pack()),
-        (
-            join_requests_label,
-            TeacherJoinRequestListCallback().pack(),
-        ),
         ("Окошки", MenuCallback(menu_type=MenuType.TEACHER_SLOT).pack()),
         ("Предметы", MenuCallback(menu_type=MenuType.TEACHER_LESSON).pack()),
-        (BotStrings.Menu.PROFILE, TeacherProfileCallback().pack()),
         (
             BotStrings.Menu.NOTIFICATIONS,
             MenuCallback(menu_type=MenuType.TEACHER_NOTIFICATION).pack(),
@@ -132,7 +118,6 @@ def teacher_main_menu(*, pending_join_requests_count: int = 0) -> MarkupData:
 
 def student_main_menu() -> MarkupData:
     return MarkupData.from_row_callbacks(
-        ("Преподаватели", MenuCallback(menu_type=MenuType.STUDENT_TEACHER).pack()),
         ("Занятия", MenuCallback(menu_type=MenuType.STUDENT_SLOT).pack()),
         (
             BotStrings.Menu.STATISTICS,
@@ -158,26 +143,6 @@ def get_main_menu_by_role(role: UserRole) -> "MarkupData | None":
             return admin_main_menu()
         case _:
             return None
-
-
-def teacher_display_name(teacher: UserDTO) -> str:
-    full_name = " ".join(part for part in [teacher.firstname, teacher.lastname] if part)
-    return teacher.display_name or full_name or f"@{teacher.username}"
-
-
-def teacher_subjects(teacher: UserDTO) -> list[str]:
-    if not teacher.subjects:
-        return []
-    return [subject.strip() for subject in teacher.subjects.split(",") if subject.strip()]
-
-
-def teacher_subjects_text(teacher: UserDTO) -> str:
-    subjects = teacher_subjects(teacher)
-    return ", ".join(subjects) if subjects else "-"
-
-
-def teacher_subjects_count(teacher: UserDTO) -> int:
-    return len(teacher_subjects(teacher))
 
 
 def teacher_sub_menu_student() -> MarkupData:
@@ -237,85 +202,6 @@ def teacher_recurrence_menu() -> MarkupData:
 def teacher_reschedule_menu() -> MarkupData:
     return MarkupData.from_row_callbacks(
         (BotStrings.Menu.RESCHEDULE_REQUESTS, TeacherRescheduleListCallback().pack()),
-        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER).pack()),
-    )
-
-
-def student_sub_menu_teacher() -> MarkupData:
-    return MarkupData.from_row_callbacks(
-        (BotStrings.Menu.TEACHERS, MenuCallback(menu_type=MenuType.STUDENT_TEACHER).pack()),
-        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.STUDENT).pack()),
-    )
-
-
-def student_teachers_buttons(*, teachers: list[UserDTO]) -> MarkupData:
-    rows_data = []
-    for teacher in teachers:
-        name = teacher_display_name(teacher)
-        subjects_count = teacher_subjects_count(teacher)
-        rows_data.append(
-            (
-                f"{name} ({subjects_count})",
-                StudentTeacherInfoCallback(teacher_uuid=teacher.uuid).pack(),
-            )
-        )
-    rows_data.append(
-        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.STUDENT).pack())
-    )
-    return MarkupData.from_row_callbacks(*rows_data)
-
-
-def student_teacher_profile_menu(*, teacher_uuid) -> MarkupData:
-    return MarkupData.from_row_callbacks(
-        (
-            BotStrings.Menu.SEND_JOIN_REQUEST,
-            StudentJoinRequestCallback(teacher_uuid=teacher_uuid).pack(),
-        ),
-        (
-            BotStrings.Menu.BACK,
-            MenuCallback(menu_type=MenuType.STUDENT_TEACHER).pack(),
-        ),
-    )
-
-
-def teacher_join_request_buttons(
-    *, requests: list[JoinRequestInfoDTO]
-) -> MarkupData:
-    rows_data = []
-    for request in requests:
-        student_name = " ".join(
-            part
-            for part in [request.student_firstname, request.student_lastname]
-            if part
-        )
-        label = f"@{request.student_username} {student_name}".strip()
-        rows_data.append(
-            [
-                (
-                    f"{BotStrings.Menu.APPROVE}: {label}",
-                    TeacherJoinRequestDecisionCallback(
-                        request_uuid=request.uuid,
-                        approve=True,
-                    ).pack(),
-                ),
-                (
-                    BotStrings.Menu.REJECT,
-                    TeacherJoinRequestDecisionCallback(
-                        request_uuid=request.uuid,
-                        approve=False,
-                    ).pack(),
-                ),
-            ]
-        )
-    rows_data.append(
-        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER).pack())
-    )
-    return MarkupData.from_row_callbacks(*rows_data)
-
-
-def teacher_profile_menu() -> MarkupData:
-    return MarkupData.from_row_callbacks(
-        (BotStrings.Menu.EDIT, TeacherProfileCallback(edit=True).pack()),
         (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER).pack()),
     )
 
@@ -389,7 +275,16 @@ def parsed_slots() -> MarkupData:
 def send_slots(*, teacher_uuid: str) -> MarkupData:
     return MarkupData.from_row_callbacks(
         (BotStrings.Menu.SEND, SendSlots(teacher_uuid=teacher_uuid).pack()),
-        (BotStrings.Menu.CANCEL, MenuCallback(menu_type=MenuType.TEACHER).pack()),
+        (BotStrings.Menu.MENU, MenuCallback(menu_type=MenuType.TEACHER).pack()),
+    )
+
+
+def listed_slots_actions(*, week_flag: WeekFlag) -> MarkupData:
+    return MarkupData.from_row_callbacks(
+        (BotStrings.Menu.UPDATE, SlotsUpdateCallback(week_flag=week_flag).pack()),
+        (BotStrings.Menu.CLEAR_SLOTS, SlotsClearCallback(week_flag=week_flag).pack()),
+        (BotStrings.Menu.SEND_SLOTS, SendTeacherSlots().pack()),
+        (BotStrings.Menu.BACK, MenuCallback(menu_type=MenuType.TEACHER_SLOT).pack()),
     )
 
 
@@ -591,11 +486,15 @@ def specify_week(*, current_week_callback: str, next_week_callback: str) -> Mark
     )
 
 
-def confirm_deletion(*, callback_data_cls, uuid: str) -> MarkupData:
+def confirm_action(callback_data=None, *args, **kwargs) -> MarkupData:
+    if callback_data is not None:
+        callback_data_cls = type(callback_data)
+        kwargs = {**callback_data.model_dump(), **kwargs}
+    kwargs["confirmed"] = True
     return MarkupData.from_row_callbacks(
         (
             BotStrings.Menu.YES,
-            callback_data_cls(uuid=uuid, confirmed=True).pack(),
+            callback_data_cls(*args, **kwargs).pack(),
         ),
         (BotStrings.Menu.NO, MenuCallback(menu_type=MenuType.TEACHER).pack()),
     )

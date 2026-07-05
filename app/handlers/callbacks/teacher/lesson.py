@@ -11,7 +11,7 @@ from app.keyboard.callback_factories.lesson import (
 )
 from app.keyboard.fabric import (
     cancel_markup,
-    confirm_deletion,
+    confirm_action,
     entity_operations,
     lesson_buttons,
     specs_to_update,
@@ -155,9 +155,7 @@ async def update_whole_lesson(
 async def request_delete_confirmation(
     callback: CallbackQuery, callback_data: LessonDeleteCallback
 ):
-    markup = confirm_deletion(
-        callback_data_cls=LessonDeleteCallback, uuid=callback_data.uuid
-    )
+    markup = confirm_action(callback_data)
     message = BotMessage(
         text=BotStrings.Teacher.TEACHER_LESSON_DELETE_CONFIRMATION_REQUEST,
         markup=markup,

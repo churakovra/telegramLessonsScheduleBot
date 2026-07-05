@@ -30,6 +30,3 @@ class ScheduleStates(StatesGroup):
     wait_for_reschedule_date = State()
     wait_for_reschedule_time = State()
     wait_for_feedback_comment = State()
-    wait_for_teacher_profile_display_name = State()
-    wait_for_teacher_profile_bio = State()
-    wait_for_teacher_profile_subjects = State()

@@ -12,11 +12,12 @@ from app.keyboard.fabric import (
     admin_main_menu,
     admin_sub_menu_temp,
     cancel_markup,
-    confirm_deletion,
+    confirm_action,
     days_for_students,
     entity_operations,
     lesson_buttons,
     lessons_to_assign,
+    listed_slots_actions,
     parsed_slots,
     send_slots,
     slot_buttons,
@@ -26,7 +27,6 @@ from app.keyboard.fabric import (
     student_buttons,
     student_main_menu,
     student_sub_menu_slot,
-    student_sub_menu_teacher,
     success_slot_bind,
     teacher_main_menu,
     teacher_sub_menu_lesson,
@@ -37,6 +37,7 @@ from app.schemas.lesson import LessonDTO
 from app.schemas.slot import SlotDTO
 from app.schemas.student import StudentDTO
 from app.utils.bot_strings import BotStrings
+from app.utils.enums.bot_values import WeekFlag
 
 
 def labels(markup):
@@ -98,7 +99,6 @@ def make_student():
         teacher_sub_menu_student,
         teacher_sub_menu_slot,
         teacher_sub_menu_lesson,
-        student_sub_menu_teacher,
         student_sub_menu_slot,
         admin_sub_menu_temp,
         parsed_slots,
@@ -107,6 +107,21 @@ def make_student():
 )
 def test_static_keyboards_have_buttons(factory):
     assert labels(factory())
+
+
+def test_pin_request_controls_are_not_shown():
+    assert "Заявки от учеников" not in labels(teacher_main_menu())
+    assert "Преподаватели" not in labels(student_main_menu())
+
+
+def test_teacher_slot_menu_does_not_send_slots_before_listing_schedule():
+    assert BotStrings.Menu.SEND_SLOTS not in labels(teacher_sub_menu_slot())
+    assert labels(listed_slots_actions(week_flag=WeekFlag.CURRENT)) == [
+        BotStrings.Menu.UPDATE,
+        BotStrings.Menu.CLEAR_SLOTS,
+        BotStrings.Menu.SEND_SLOTS,
+        BotStrings.Menu.BACK,
+    ]
 
 
 def test_slot_selection_keyboards():
@@ -160,7 +175,7 @@ def test_action_keyboards():
 
     assert labels(send_slots(teacher_uuid=teacher_uuid)) == [
         BotStrings.Menu.SEND,
-        BotStrings.Menu.CANCEL,
+        BotStrings.Menu.MENU,
     ]
     assert labels(success_slot_bind(teacher_uuid=teacher_uuid, student_chat_id=42)) == [
         BotStrings.Menu.BIND_ANOTHER_SLOT,
@@ -174,9 +189,8 @@ def test_action_keyboards():
         BotStrings.Menu.BACK,
     ]
     assert labels(
-        confirm_deletion(
-            callback_data_cls=LessonDeleteCallback,
-            uuid=lesson.uuid,
+        confirm_action(
+            LessonDeleteCallback(uuid=uuid4())
         )
     ) == [BotStrings.Menu.YES, BotStrings.Menu.NO]
     assert labels(

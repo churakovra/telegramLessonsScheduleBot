@@ -10,6 +10,7 @@ from typing import Sequence, Union
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects import postgresql
 
 
 revision: str = "5f0c2dfbb6f1"
@@ -20,10 +21,11 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     """Upgrade schema."""
-    trigger_type = sa.Enum(
+    trigger_type = postgresql.ENUM(
         "BEFORE_LESSON",
         "CUSTOM",
         name="notification_trigger_type",
+        create_type=False,
     )
     trigger_type.create(op.get_bind(), checkfirst=True)
     op.create_table(

@@ -1,6 +1,5 @@
 from app.database.unit_of_work import UnitOfWork
 from app.services.feedback_service import FeedbackService
-from app.services.join_request_service import JoinRequestService
 from app.services.lesson_service import LessonService
 from app.services.notification_service import NotificationService
 from app.services.recurrence_service import RecurrenceService
@@ -35,8 +34,4 @@ class Services:
         self.feedback = FeedbackService(
             repository=uow.feedback,
             slot_repository=uow.slots,
-        )
-        self.join_request = JoinRequestService(
-            repository=uow.join_requests,
-            teacher_repository=uow.teachers,
         )

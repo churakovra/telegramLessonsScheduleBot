@@ -116,6 +116,8 @@ app-up:
 app-down:
 	$(COMPOSE) down
 
+app-restart: app-down app-up
+
 app-logs:
 	$(COMPOSE) logs -f scheduler notifier
 
